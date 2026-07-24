@@ -1,6 +1,19 @@
 export const PLAYER_COUNTS = [2, 3, 4, 5] as const
 export type PlayerCount = typeof PLAYER_COUNTS[number]
 
+/**
+ * Game setup, as ordered steps for the player-reference sheet (see
+ * FocusReferencePage). Kept terse — talking points, not a rulebook.
+ */
+export const SETUP = {
+  steps: [
+    "Draft 4 Field Cards each; keep 1 as your starting Field, face down. Reveal together, then work its first row for free.",
+    "Reveal 3 Field Cards face-up as the visible set; the rest form the Field supply stack.",
+    "Take 2 Family Workers each, both starting in the Harvest zone.",
+    "Deal starting Gold by seating: 1st player 1, 2nd 2, and so on."
+  ]
+} as const
+
 export const FRUIT_LIST_WITH_METADATA = [
   {
     name: "Rambutan",

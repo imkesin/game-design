@@ -6,6 +6,18 @@ export const FOCUSES = [
 ] as const
 export type Focus = typeof FOCUSES[number]
 
+export type FocusAction = {
+  readonly id: string
+  readonly name: string
+  readonly ruleDescription: string
+  /**
+   * Optional cross-reference callout, rendered as a small aside under the rule.
+   * Used to flag an optional add-on that lives in another section — e.g. Sell's
+   * overflow into a Trade Route (see ForeignMarketDefinitions).
+   */
+  readonly note?: string
+}
+
 export const FOCUS_ACTION_METADATA = {
   Expand: {
     actions: [
@@ -13,7 +25,7 @@ export const FOCUS_ACTION_METADATA = {
         id: "expand-expand",
         name: "Expand",
         ruleDescription:
-          "Select 1 of the visible Field Cards, collect all gold on it, and place it in your player zone. Or, reveal 1 Field Card from your hand and place it in your Player Zone.\n\nImmediately pay the cost listed on the card. Each Family Worker in the Expand zone is counted toward the Worker cost.\n\nIf the Field was selected from the visible set, place 1 coin from Supply on each of the remaining Field Cards. Then, reveal another Field card from the Field Card Supply."
+          "Take a visible Field Card (collect its Gold) or reveal one from your hand; place it and pay its cost. Expand-zone Family Workers count toward the Worker cost.\n\nIf taken from the visible set, drop 1 coin on each remaining Field, then reveal a replacement."
       }
     ]
   },
@@ -23,7 +35,7 @@ export const FOCUS_ACTION_METADATA = {
         id: "harvest-harvest",
         name: "Harvest",
         ruleDescription:
-          "Produce 1 or more Fruits from your Fields by assigning Workers to their rows.\n\nRows must be worked from top to bottom. Each of your Family Workers in the Harvest zone is counted toward the Worker cost.\n\nA field with any number of Fruits already on it may not be harvested; they must be taken to market first."
+          "Assign Workers to Field rows to produce Fruit, working rows top to bottom. Harvest-zone Family Workers count toward the cost.\n\nA Field still holding Fruit can't be harvested — sell it first."
       }
     ]
   },
@@ -33,7 +45,7 @@ export const FOCUS_ACTION_METADATA = {
         id: "recruit-recruit",
         name: "Recruit",
         ruleDescription:
-          "For each Family Worker in the Recruit zone, hire the lowest cost Worker for free. Then, you may hire any number of additional Workers by paying their cost in Gold.\n\nIf, at the start of your turn, you employed fewer Workers than another player, you may Poach any number of workers from other Players by paying 1 Gold more than the highest cost listed in the labor pool."
+          "Each Recruit-zone Family Worker hires the cheapest Worker free; hire more by paying their Gold cost.\n\nPoach: if you started the turn with fewer Workers than another player, take their Workers for 1 Gold over the pool's highest cost."
       }
     ]
   },
@@ -43,8 +55,10 @@ export const FOCUS_ACTION_METADATA = {
         id: "sell-sell",
         name: "Sell",
         ruleDescription:
-          "Move 1 or more Fruits from your Fields to the Market.\n\nFor each Family Worker in the Sell zone, you may transport any number of Fruits of 1 type. For each additional Worker assigned to this action, you may transport 1 additional type of Fruit.\n\nPlace Fruit Crates into the empty slots in the Market and collect the corresponding amount of Gold.\n\nThen, induce demand by removing other Fruits from their Demand Tracks and returning them to Supply. You collect 1 additional Gold for every Fruit Crate removed through induced demand."
+          "Transport Fruit into Market slots for Gold. Each Sell-zone Family Worker moves any number of one Fruit type; each extra Worker adds one more type.\n\nThen induce demand: clear other Fruits from their Demand Tracks, earning 1 Gold per Crate removed.",
+        note:
+          "Overflow with no open Market slot may develop a Trade Route instead — see Trade Routes."
       }
     ]
   }
-}
+} as const satisfies Record<Focus, { readonly actions: readonly FocusAction[] }>

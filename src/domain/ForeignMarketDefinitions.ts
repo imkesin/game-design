@@ -5,16 +5,6 @@
  * trade route to the North", binding that slot's *variable* to Lime. The
  * variables are Greek letters, unique across all zones (α β / γ δ / ε ζ), so a
  * recipe can in principle reference any route.
- *
- * Below the two slots sits a ladder of quests, completed top-to-bottom in order
- * to gain influence in that market. A quest is a crate requirement expressed
- * over the zone variables; a claim slot at the front of each row marks who has
- * completed it.
- *
- * Grammar (see types): a Quest is 1–3 CrateTerms, all required together and
- * rendered joined by `+`. A term is `qty × ref`, where `ref` is either a bound
- * route variable or the "any" wildcard — a crate of any fruit. So
- * `[{2,"α"},{1,"β"},{1,"any"}]` reads "2×α + 1×β + 1×✱".
  */
 
 export const FOREIGN_VARIABLES = ["α", "β", "γ", "δ", "ε", "ζ"] as const
@@ -86,3 +76,33 @@ export const foreignMarketZones = [
     ]
   }
 ] as const satisfies readonly ForeignMarketZone[]
+
+/**
+ * Player-reference prose for the Foreign Markets, kept beside the mechanics they
+ * describe. Rendered on the one-sheet reference (see FocusReferencePage); each
+ * value is `\n\n`-split into paragraphs at render time.
+ *
+ * `unlocking` — how a route's blank slot first gets bound to a fruit.
+ * `developing` — how surplus fruit from a Sell advances a bound route.
+ */
+export const TRADE_ROUTE_RULES = {
+  unlocking:
+    "First player to fill a Market's final slot unlocks a route: place a matching Fruit from Supply in any open route slot, binding that route to that Fruit for good.",
+  developing: "Surplus fruit may develop one route per turn.",
+  timing: "Resolve routes before Gold and induced demand, while the full tracks are still visible."
+} as const
+
+/**
+ * The victory rules. `lead` is the marker/ladder-race mechanic (one paragraph);
+ * `conditions` are the three independent ways to win, rendered as a list. The
+ * game ends the moment any player meets one.
+ */
+export const WINNING = {
+  lead:
+    "Mark each development on the route ladder; players race down it level by level. First to reach any of these wins:",
+  conditions: [
+    "A route developed in every direction",
+    "One route developed three times",
+    "Five total developments"
+  ]
+} as const

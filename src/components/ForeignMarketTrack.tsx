@@ -8,19 +8,6 @@ import { ANY_CRATE, foreignMarketZones } from "~/domain/ForeignMarketDefinitions
 import type { CrateRef, ForeignMarketZone, ForeignMarketZoneName, Quest } from "~/domain/ForeignMarketDefinitions"
 import { css, cx } from "~/generated/styled-system/css"
 
-/**
- * The Foreign Markets section that fills the board's left rail: three trade
- * zones (Northern, Western, Southern) stacked top-to-bottom. Each zone names two
- * blank crate slots with Greek variables — a player drops a physical fruit into
- * one to declare a trade route, binding that variable — then lists a ladder of
- * quests completed top-to-bottom to gain influence in that market.
- *
- * Data-driven off ForeignMarketDefinitions; a quest is 1–3 crate terms joined by
- * `+` (CrateCount), and a ClaimSlot at the front of each row marks completion.
- * Neutral (stone) framing throughout since the crates are generic greys rather
- * than fruit-tinted.
- */
-
 // The whole rail: three zone cards spread over the full height so Northern pins
 // to the top, Western sits in the middle, and Southern to the bottom.
 const track = css({
