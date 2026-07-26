@@ -1,5 +1,5 @@
 import { SETUP } from "~/games/graft/domain/CoreDefinitions"
-import { FOCUS_ACTION_METADATA, FOCUSES } from "~/games/graft/domain/FocusDefinitions"
+import { FOCUS_ACTION_METADATA, type FocusAction, FOCUSES } from "~/games/graft/domain/FocusDefinitions"
 import { TRADE_ROUTE_RULES, WINNING } from "~/games/graft/domain/ForeignMarketDefinitions"
 import { css } from "~/generated/styled-system/css"
 
@@ -48,13 +48,15 @@ type Subsection = { readonly heading: string; readonly paragraphs: readonly stri
 type Section = {
   readonly key: string
   readonly title: string
-  /** Small uppercase label beside the title (e.g. a Focus's action name). */
-  readonly kicker?: string
+  /** Small uppercase label beside the title (e.g. a Focus's action name).
+   *  Explicitly nullable: sections without a kicker set it to `undefined`. */
+  readonly kicker?: string | undefined
   readonly accent: string
   readonly paragraphs?: readonly string[]
   readonly subsections?: readonly Subsection[]
   readonly list?: { readonly ordered?: boolean; readonly items: readonly string[] }
-  readonly note?: string
+  /** Explicitly nullable: sourced from an optional domain field. */
+  readonly note?: string | undefined
 }
 
 // Split a domain prose string into its paragraphs.
@@ -71,7 +73,7 @@ const SECTIONS: readonly Section[] = [
     list: { ordered: true, items: SETUP.steps }
   },
   ...FOCUSES.map((focus): Section => {
-    const action = FOCUS_ACTION_METADATA[focus].actions[0]!
+    const action: FocusAction = FOCUS_ACTION_METADATA[focus].actions[0]!
     return {
       key: focus,
       title: focus,
