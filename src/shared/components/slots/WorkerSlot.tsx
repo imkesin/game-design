@@ -41,7 +41,9 @@ const OCTAGON = [
 
 const slot = css({ display: "block", width: "18", height: "18" })
 
-export function WorkerSlot({ className, badge }: { className?: string; badge?: string }) {
+export function WorkerSlot(
+  { className, badge }: { className?: string; badge?: string | undefined }
+) {
   return (
     <svg
       className={className ? `${slot} ${className}` : slot}

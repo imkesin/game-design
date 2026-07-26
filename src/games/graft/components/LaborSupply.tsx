@@ -97,7 +97,10 @@ export function LaborSupply({ track: tiers }: { track: readonly LaborSupplyTier[
             </span>
             <div className={cx(tokens, t.slots.length % 2 === 1 && staggered)}>
               {t.slots.map((minPlayers, j) => (
-                <WorkerSlot key={j} badge={minPlayers > BASE_PLAYERS ? `${minPlayers}+` : undefined} />
+                <WorkerSlot
+                  key={j}
+                  badge={minPlayers > BASE_PLAYERS ? `${minPlayers}+` : undefined}
+                />
               ))}
             </div>
           </div>
