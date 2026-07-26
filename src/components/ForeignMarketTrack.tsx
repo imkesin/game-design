@@ -8,12 +8,11 @@ import { ANY_CRATE, foreignMarketZones } from "~/domain/ForeignMarketDefinitions
 import type { CrateRef, ForeignMarketZone, ForeignMarketZoneName, Quest } from "~/domain/ForeignMarketDefinitions"
 import { css, cx } from "~/generated/styled-system/css"
 
-// The whole rail: three zone cards spread over the full height so Northern pins
-// to the top, Western sits in the middle, and Southern to the bottom.
+// The whole rail: a single zone card, vertically centred over the full height.
 const track = css({
   display: "flex",
   flexDirection: "column",
-  justifyContent: "space-between",
+  justifyContent: "center",
   height: "100%"
 })
 
@@ -49,8 +48,8 @@ const zoneBody = css({
 // Top-left cell: intentionally empty for now — a compass will live here.
 const compassCell = css({ gridColumn: 1 })
 
-// The two blank route slots sit centred as a tight pair (α left, β right) — a
-// tidy header over the ladder, no longer stretched to the card's edges.
+// The two route columns sit centred as a tight pair (γ left, δ right) — a tidy
+// header over the ladder, each column a vertical stack of blank crate slots.
 const slotPair = css({
   gridColumn: 2,
   display: "flex",
@@ -77,9 +76,10 @@ const rowDivider = css({
   borderBlockEndColor: "stone.400/40"
 })
 
-// Each route slot wrapped in a tall rectangle: the blank crate up top, its Greek
-// variable large below. The wrapper border + the crate rim share the variable's
-// accent colour (set inline), so the whole frame carries the zone colour.
+// Each route column wrapped in a tall rectangle: a vertical stack of blank
+// crates up top, its Greek variable large below. The wrapper border + the crate
+// rims share the variable's accent colour (set inline), so the whole frame
+// carries the zone colour.
 const routeSlot = css({
   display: "flex",
   flexDirection: "column",
@@ -104,9 +104,7 @@ const routeVar = css({
 // first slot light and second dark, so a variable reads the same light/dark
 // wherever it appears — header frame or recipe cube.
 const ZONE_ACCENT: Partial<Record<ForeignMarketZoneName, string>> = {
-  Northern: "stone",
-  Western: "blue",
-  Southern: "emerald"
+  Western: "blue"
 }
 
 // The wildcard crate: a generic mid-grey cube stamped `✱`, deliberately toneless
@@ -186,7 +184,9 @@ function Zone({ zone }: { zone: ForeignMarketZone }) {
                 className={routeSlot}
                 style={{ borderColor: rim }}
               >
-                <FruitCrateSlot size={12} rim={rim} />
+                {Array.from({ length: zone.slotsPerVariable }, (_, i) => (
+                  <FruitCrateSlot key={i} size={12} rim={rim} />
+                ))}
                 <span className={routeVar} style={{ color: ink }}>{v}</span>
               </div>
             )
