@@ -7,8 +7,8 @@ import { FruitCrateSlot } from "~/games/graft/components/slots/FruitCrateSlot"
 import { FRUIT_COLOR } from "~/games/graft/domain/CoreDefinitions"
 import type { PlayerCount } from "~/games/graft/domain/CoreDefinitions"
 import { css, cva, cx } from "~/generated/styled-system/css"
+import { Guides } from "~/shared/components/Guides"
 import { paperFrame } from "~/shared/components/paperFrame"
-import { Guides } from "./Guides"
 
 /**
  * Field cards read as green (fields, crops); field-improvements as stone.

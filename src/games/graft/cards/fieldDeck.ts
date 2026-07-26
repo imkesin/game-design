@@ -1,5 +1,5 @@
-import { FRUIT_LIST_WITH_METADATA, PLAYER_COUNTS } from "~/games/graft/domain/CoreDefinitions"
-import type { Card, CardDefinition, Deck } from "./domain"
+import { FRUIT_LIST_WITH_METADATA } from "~/games/graft/domain/CoreDefinitions"
+import type { CardDefinition, Deck } from "./domain"
 
 const smallFields = FRUIT_LIST_WITH_METADATA.map(({ name, fieldName }) => ({
   kind: "field",
@@ -211,12 +211,3 @@ export const fieldDeck: Deck = [
       "Whenever all rows of this Field are harvested, you may retain one Worker that would otherwise be returned to the Labor Supply this turn."
   }
 ]
-
-/**
- * Turn a catalog definition into a single physical card for preview, stamped
- * with the lowest player count at which it appears.
- */
-export function previewCard({ copies, ...base }: CardDefinition): Card {
-  const minPlayerCount = PLAYER_COUNTS.find((n) => copies[n] > 0) ?? PLAYER_COUNTS[0]
-  return { ...base, minPlayerCount }
-}

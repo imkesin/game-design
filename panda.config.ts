@@ -67,6 +67,9 @@ export default defineConfig({
           }
         },
         fontSizes: {
+          // Numina's action cards carry nothing but their name, so it is set at
+          // display size — the largest step in the scale.
+          hero: u(6),
           title: u(5),
           name: u(3.8),
           body: u(3.4),

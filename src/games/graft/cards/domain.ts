@@ -1,17 +1,11 @@
-import type { FruitName, PlayerCount } from "~/games/graft/domain/CoreDefinitions"
+import type { FruitName } from "~/games/graft/domain/CoreDefinitions"
+import type { Copies, PlayerCount } from "~/shared/cards/playerCount"
 
 /** Resource cost to play a card. Both required; 0 = none of that resource. */
 export type Cost = {
   readonly workers: number
   readonly gold: number
 }
-
-/**
- * Copies present in the printed deck, keyed by player count. Every count is
- * required so omissions are impossible; 0 means the card is absent at that
- * count.
- */
-export type Copies = Record<PlayerCount, number>
 
 /**
  * One harvest row on a Field, unlocked in order. `capacity` is the Harvest

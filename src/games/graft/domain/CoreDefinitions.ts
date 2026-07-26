@@ -1,5 +1,6 @@
-export const PLAYER_COUNTS = [2, 3, 4, 5] as const
-export type PlayerCount = typeof PLAYER_COUNTS[number]
+// Player counts are common to every game; re-exported here so graft code keeps
+// a single domain import.
+export { PLAYER_COUNTS, type PlayerCount } from "~/shared/cards/playerCount"
 
 /**
  * Game setup, as ordered steps for the player-reference sheet (see
