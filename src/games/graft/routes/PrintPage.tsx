@@ -1,10 +1,10 @@
 import { type CSSProperties, useState } from "react"
-import { CARD_TRIM_H_MM, CARD_TRIM_W_MM } from "~/cards/cardSize"
-import { expandDeck } from "~/cards/deckUtils"
-import { fieldDeck } from "~/cards/fieldDeck"
-import { Card } from "~/components/Card"
-import { PLAYER_COUNTS, type PlayerCount } from "~/domain/CoreDefinitions"
+import { expandDeck } from "~/games/graft/cards/deckUtils"
+import { fieldDeck } from "~/games/graft/cards/fieldDeck"
+import { Card } from "~/games/graft/components/Card"
+import { PLAYER_COUNTS, type PlayerCount } from "~/games/graft/domain/CoreDefinitions"
 import { css } from "~/generated/styled-system/css"
+import { CARD_TRIM_H_MM, CARD_TRIM_W_MM } from "~/shared/print/cardSize"
 
 /**
  * Home print-and-play sheet. Lays cards out 3-across on US Letter, trim size

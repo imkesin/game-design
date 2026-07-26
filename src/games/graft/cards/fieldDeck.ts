@@ -1,4 +1,4 @@
-import { FRUIT_LIST_WITH_METADATA, PLAYER_COUNTS } from "~/domain/CoreDefinitions"
+import { FRUIT_LIST_WITH_METADATA, PLAYER_COUNTS } from "~/games/graft/domain/CoreDefinitions"
 import type { Card, CardDefinition, Deck } from "./domain"
 
 const smallFields = FRUIT_LIST_WITH_METADATA.map(({ name, fieldName }) => ({

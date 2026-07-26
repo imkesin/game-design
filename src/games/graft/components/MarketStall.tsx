@@ -1,13 +1,13 @@
-import { GoldCost } from "~/components/icons/GoldCost"
-import { InducedDemand } from "~/components/icons/InducedDemand"
-import { darkBand, panelTint, paperFrame } from "~/components/paperFrame"
-import { FruitCrateSlot } from "~/components/slots/FruitCrateSlot"
-import { value } from "~/components/trackSlot"
+import { GoldCost } from "~/games/graft/components/icons/GoldCost"
+import { InducedDemand } from "~/games/graft/components/icons/InducedDemand"
+import { FruitCrateSlot } from "~/games/graft/components/slots/FruitCrateSlot"
+import { darkBand, panelTint, paperFrame } from "~/shared/components/paperFrame"
+import { value } from "~/shared/components/trackSlot"
 // A crate slot is tinted by its fruit's own colour, independent of the stall
 // frame's colour (which the board flattens to stone) — see FruitCrateSlot.
-import { FRUIT_COLOR, PLAYER_COUNTS } from "~/domain/CoreDefinitions"
-import type { FruitColor, FruitName } from "~/domain/CoreDefinitions"
-import type { DemandColumn } from "~/domain/MarketDefinitions"
+import { FRUIT_COLOR, PLAYER_COUNTS } from "~/games/graft/domain/CoreDefinitions"
+import type { FruitColor, FruitName } from "~/games/graft/domain/CoreDefinitions"
+import type { DemandColumn } from "~/games/graft/domain/MarketDefinitions"
 import { css, cx } from "~/generated/styled-system/css"
 
 /**

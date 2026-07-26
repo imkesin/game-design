@@ -1,12 +1,17 @@
 import { Fragment } from "react"
-import { CrateCount } from "~/components/CrateCount"
-import type { CrateTone } from "~/components/icons/FruitCrateIcon"
-import { paperFrame, softBand } from "~/components/paperFrame"
-import { ClaimSlot } from "~/components/slots/ClaimSlot"
-import { FruitCrateSlot } from "~/components/slots/FruitCrateSlot"
-import { ANY_CRATE, foreignMarketZones } from "~/domain/ForeignMarketDefinitions"
-import type { CrateRef, ForeignMarketZone, ForeignMarketZoneName, Quest } from "~/domain/ForeignMarketDefinitions"
+import { CrateCount } from "~/games/graft/components/CrateCount"
+import type { CrateTone } from "~/games/graft/components/icons/FruitCrateIcon"
+import { FruitCrateSlot } from "~/games/graft/components/slots/FruitCrateSlot"
+import { ANY_CRATE, foreignMarketZones } from "~/games/graft/domain/ForeignMarketDefinitions"
+import type {
+  CrateRef,
+  ForeignMarketZone,
+  ForeignMarketZoneName,
+  Quest
+} from "~/games/graft/domain/ForeignMarketDefinitions"
 import { css, cx } from "~/generated/styled-system/css"
+import { paperFrame, softBand } from "~/shared/components/paperFrame"
+import { ClaimSlot } from "~/shared/components/slots/ClaimSlot"
 
 // The whole rail: a single zone card, vertically centred over the full height.
 const track = css({
@@ -184,9 +189,10 @@ function Zone({ zone }: { zone: ForeignMarketZone }) {
                 className={routeSlot}
                 style={{ borderColor: rim }}
               >
-                {Array.from({ length: zone.slotsPerVariable }, (_, i) => (
-                  <FruitCrateSlot key={i} size={12} rim={rim} />
-                ))}
+                {Array.from(
+                  { length: zone.slotsPerVariable },
+                  (_, i) => <FruitCrateSlot key={i} size={12} rim={rim} />
+                )}
                 <span className={routeVar} style={{ color: ink }}>{v}</span>
               </div>
             )

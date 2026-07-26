@@ -1,6 +1,6 @@
-import { SETUP } from "~/domain/CoreDefinitions"
-import { FOCUS_ACTION_METADATA, FOCUSES } from "~/domain/FocusDefinitions"
-import { TRADE_ROUTE_RULES, WINNING } from "~/domain/ForeignMarketDefinitions"
+import { SETUP } from "~/games/graft/domain/CoreDefinitions"
+import { FOCUS_ACTION_METADATA, FOCUSES } from "~/games/graft/domain/FocusDefinitions"
+import { TRADE_ROUTE_RULES, WINNING } from "~/games/graft/domain/ForeignMarketDefinitions"
 import { css } from "~/generated/styled-system/css"
 
 /**
@@ -279,15 +279,17 @@ function SectionBlock({ section }: { section: Section }) {
       ))}
 
       {section.list &&
-        (section.list.ordered ? (
-          <ol className={list} style={{ listStyleType: "decimal" }}>
-            {section.list.items.map((item) => <li key={item} className={listItem}>{item}</li>)}
-          </ol>
-        ) : (
-          <ul className={list}>
-            {section.list.items.map((item) => <li key={item} className={listItem}>{item}</li>)}
-          </ul>
-        ))}
+        (section.list.ordered ?
+          (
+            <ol className={list} style={{ listStyleType: "decimal" }}>
+              {section.list.items.map((item) => <li key={item} className={listItem}>{item}</li>)}
+            </ol>
+          ) :
+          (
+            <ul className={list}>
+              {section.list.items.map((item) => <li key={item} className={listItem}>{item}</li>)}
+            </ul>
+          ))}
 
       {section.note && (
         <div className={callout} style={{ background: `${accent}14`, color: accent }}>

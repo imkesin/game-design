@@ -1,5 +1,5 @@
 import { defineConfig } from "@pandacss/dev"
-import { CARD_TRIM_H_MM, CARD_TRIM_W_MM } from "./src/cards/cardSize"
+import { CARD_TRIM_H_MM, CARD_TRIM_W_MM } from "./src/shared/print/cardSize"
 
 /**
  * Card-unit token system.

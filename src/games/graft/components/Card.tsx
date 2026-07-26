@@ -1,13 +1,13 @@
 import { ArrowRight } from "lucide-react"
 import { Fragment, type ReactNode } from "react"
-import type { Card, CardBase, Cost, FieldCardBase, FieldImprovementCardBase } from "~/cards/domain"
-import { GoldCost } from "~/components/icons/GoldCost"
-import { WorkerCost } from "~/components/icons/WorkerCost"
-import { paperFrame } from "~/components/paperFrame"
-import { FruitCrateSlot } from "~/components/slots/FruitCrateSlot"
-import { FRUIT_COLOR } from "~/domain/CoreDefinitions"
-import type { PlayerCount } from "~/domain/CoreDefinitions"
+import type { Card, CardBase, Cost, FieldCardBase, FieldImprovementCardBase } from "~/games/graft/cards/domain"
+import { GoldCost } from "~/games/graft/components/icons/GoldCost"
+import { WorkerCost } from "~/games/graft/components/icons/WorkerCost"
+import { FruitCrateSlot } from "~/games/graft/components/slots/FruitCrateSlot"
+import { FRUIT_COLOR } from "~/games/graft/domain/CoreDefinitions"
+import type { PlayerCount } from "~/games/graft/domain/CoreDefinitions"
 import { css, cva, cx } from "~/generated/styled-system/css"
+import { paperFrame } from "~/shared/components/paperFrame"
 import { Guides } from "./Guides"
 
 /**
@@ -16,7 +16,7 @@ import { Guides } from "./Guides"
 type CardKind = CardBase["kind"]
 
 // The card's base surface, by kind — the shared `paperFrame` recipe (see
-// ~/components/paperFrame) covers both kinds with no deviation.
+// ~/shared/components/paperFrame) covers both kinds with no deviation.
 const KIND_PAPER_COLOR = {
   field: "green",
   "field-improvement": "stone"
