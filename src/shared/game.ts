@@ -10,5 +10,7 @@ export type GameRoutes = Record<string, ComponentType>
 /** A self-contained game module: an id (also its theme key) and its routes. */
 export type Game = {
   id: string
+  /** Human-readable title, shown on the landing page and in the document title. */
+  name: string
   routes: GameRoutes
 }

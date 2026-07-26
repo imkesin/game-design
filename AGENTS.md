@@ -1,6 +1,6 @@
-# Graft
+# Game Design
 
-This project defines a "Print and Play" version of the prototype board game Graft.
+This project defines a print-and-play version of several prototype board games.
 
 ## Interaction w/ User
 

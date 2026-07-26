@@ -7,6 +7,7 @@ import { GRAFT_THEME_ID } from "./theme"
 
 export const graft: Game = {
   id: GRAFT_THEME_ID,
+  name: "Graft",
   routes: {
     "/": PreviewPage,
     "/print/cards": PrintPage,

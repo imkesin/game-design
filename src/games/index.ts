@@ -5,6 +5,3 @@ import { graft } from "./graft"
 export const games: Record<string, Game> = {
   [graft.id]: graft
 }
-
-/** Game served when the path has no (or an unknown) game segment. */
-export const DEFAULT_GAME = graft.id
