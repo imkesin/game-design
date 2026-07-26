@@ -1,4 +1,9 @@
-import { FRUIT_LIST_WITH_METADATA, type FruitColor, type FruitName, type PlayerCount } from "~/domain/CoreDefinitions"
+import {
+  FRUIT_LIST_WITH_METADATA,
+  type FruitColor,
+  type FruitName,
+  type PlayerCount
+} from "~/games/graft/domain/CoreDefinitions"
 
 /**
  * One column on a fruit's demand track: a price/demand level (`gold` paid,

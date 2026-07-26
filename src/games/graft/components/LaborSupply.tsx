@@ -1,9 +1,9 @@
-import { GoldCost } from "~/components/icons/GoldCost"
-import { paperFrame, softBand } from "~/components/paperFrame"
-import { WorkerSlot } from "~/components/slots/WorkerSlot"
-import { PLAYER_COUNTS } from "~/domain/CoreDefinitions"
-import type { LaborSupplyTier } from "~/domain/LaborSupplyDefinitions"
+import { GoldCost } from "~/games/graft/components/icons/GoldCost"
+import { PLAYER_COUNTS } from "~/games/graft/domain/CoreDefinitions"
+import type { LaborSupplyTier } from "~/games/graft/domain/LaborSupplyDefinitions"
 import { css, cx } from "~/generated/styled-system/css"
+import { paperFrame, softBand } from "~/shared/components/paperFrame"
+import { WorkerSlot } from "~/shared/components/slots/WorkerSlot"
 
 // Slots at this player count are the always-printed base and go unbadged; a
 // slot unlocking above it prints a "3+"/"4+" badge.

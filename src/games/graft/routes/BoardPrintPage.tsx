@@ -1,11 +1,11 @@
-import { CARD_TRIM_H_MM, CARD_TRIM_W_MM } from "~/cards/cardSize"
-import { ForeignMarketTrack } from "~/components/ForeignMarketTrack"
-import { LaborSupply } from "~/components/LaborSupply"
-import { MarketStall } from "~/components/MarketStall"
-import { WorkerZone } from "~/components/WorkerZone"
-import { laborSupply } from "~/domain/LaborSupplyDefinitions"
-import { marketStalls } from "~/domain/MarketDefinitions"
+import { ForeignMarketTrack } from "~/games/graft/components/ForeignMarketTrack"
+import { LaborSupply } from "~/games/graft/components/LaborSupply"
+import { MarketStall } from "~/games/graft/components/MarketStall"
+import { WorkerZone } from "~/games/graft/components/WorkerZone"
+import { laborSupply } from "~/games/graft/domain/LaborSupplyDefinitions"
+import { marketStalls } from "~/games/graft/domain/MarketDefinitions"
 import { css } from "~/generated/styled-system/css"
+import { CARD_TRIM_H_MM, CARD_TRIM_W_MM } from "~/shared/print/cardSize"
 
 /**
  * Full board sheet for an 18x24in print-shop sheet, printed landscape (24in wide
@@ -123,7 +123,8 @@ const sheetStyle = css({
   display: "grid",
   gridTemplateColumns: "3in 0.5in 16in 0.5in 3in",
   gridTemplateRows: "5.5in 0.5in 8.5in 0.5in 2in",
-  gridTemplateAreas: `"leftRail . topBand topBand topBand" "leftRail . . . ." "leftRail . market . workers" "leftRail . market . workers" "leftRail . market . workers"`,
+  gridTemplateAreas:
+    `"leftRail . topBand topBand topBand" "leftRail . . . ." "leftRail . market . workers" "leftRail . market . workers" "leftRail . market . workers"`,
   gap: 0,
   padding: "0.5in"
 })

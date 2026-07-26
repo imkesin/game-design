@@ -1,5 +1,5 @@
-import { FruitCrateIcon } from "~/components/icons/FruitCrateIcon"
-import type { CrateTone } from "~/components/icons/FruitCrateIcon"
+import { FruitCrateIcon } from "~/games/graft/components/icons/FruitCrateIcon"
+import type { CrateTone } from "~/games/graft/components/icons/FruitCrateIcon"
 import { css } from "~/generated/styled-system/css"
 
 /**

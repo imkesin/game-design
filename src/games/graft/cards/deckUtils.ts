@@ -1,4 +1,4 @@
-import { PLAYER_COUNTS, type PlayerCount } from "~/domain/CoreDefinitions"
+import { PLAYER_COUNTS, type PlayerCount } from "~/games/graft/domain/CoreDefinitions"
 import type { Card, Deck } from "./domain"
 
 /**

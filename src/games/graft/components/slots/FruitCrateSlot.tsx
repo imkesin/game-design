@@ -1,4 +1,4 @@
-import type { FruitColor } from "~/domain/CoreDefinitions"
+import type { FruitColor } from "~/games/graft/domain/CoreDefinitions"
 import { css } from "~/generated/styled-system/css"
 import { token } from "~/generated/styled-system/tokens"
 

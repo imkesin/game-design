@@ -56,8 +56,7 @@ export const FOCUS_ACTION_METADATA = {
         name: "Sell",
         ruleDescription:
           "Transport Fruit into Market slots for Gold. Each Sell-zone Family Worker moves any number of one Fruit type; each extra Worker adds one more type.\n\nThen induce demand: clear other Fruits from their Demand Tracks, earning 1 Gold per Crate removed.",
-        note:
-          "Overflow with no open Market slot may develop a Trade Route instead — see Trade Routes."
+        note: "Overflow with no open Market slot may develop a Trade Route instead — see Trade Routes."
       }
     ]
   }

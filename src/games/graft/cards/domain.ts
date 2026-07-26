@@ -1,4 +1,4 @@
-import type { FruitName, PlayerCount } from "~/domain/CoreDefinitions"
+import type { FruitName, PlayerCount } from "~/games/graft/domain/CoreDefinitions"
 
 /** Resource cost to play a card. Both required; 0 = none of that resource. */
 export type Cost = {

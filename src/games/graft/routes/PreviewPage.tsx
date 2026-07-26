@@ -1,16 +1,16 @@
 import { useEffect, useState } from "react"
-import { fieldDeck, previewCard } from "~/cards/fieldDeck"
-import { Card } from "~/components/Card"
-import { GoldCost } from "~/components/icons/GoldCost"
-import { InducedDemand } from "~/components/icons/InducedDemand"
-import { WorkerCost } from "~/components/icons/WorkerCost"
-import { MarketStall } from "~/components/MarketStall"
-import { FruitCrateSlot } from "~/components/slots/FruitCrateSlot"
-import { WorkerSlot } from "~/components/slots/WorkerSlot"
-import { ZoomControl } from "~/components/ZoomControl"
-import { FRUIT_LIST_WITH_METADATA, type FruitName } from "~/domain/CoreDefinitions"
-import { marketStalls } from "~/domain/MarketDefinitions"
+import { fieldDeck, previewCard } from "~/games/graft/cards/fieldDeck"
+import { Card } from "~/games/graft/components/Card"
+import { GoldCost } from "~/games/graft/components/icons/GoldCost"
+import { InducedDemand } from "~/games/graft/components/icons/InducedDemand"
+import { WorkerCost } from "~/games/graft/components/icons/WorkerCost"
+import { MarketStall } from "~/games/graft/components/MarketStall"
+import { FruitCrateSlot } from "~/games/graft/components/slots/FruitCrateSlot"
+import { FRUIT_LIST_WITH_METADATA, type FruitName } from "~/games/graft/domain/CoreDefinitions"
+import { marketStalls } from "~/games/graft/domain/MarketDefinitions"
 import { css } from "~/generated/styled-system/css"
+import { WorkerSlot } from "~/shared/components/slots/WorkerSlot"
+import { ZoomControl } from "~/shared/components/ZoomControl"
 
 const allCards = [
   ...fieldDeck
@@ -35,7 +35,7 @@ const select = css({
   fontSize: "14px"
 })
 
-export function App() {
+export function PreviewPage() {
   const [zoom, setZoom] = useState(2.5)
   const [showGuides, setShowGuides] = useState(true)
   const [selectedId, setSelectedId] = useState(allCards[0]?.id)
@@ -113,4 +113,4 @@ export function App() {
   )
 }
 
-export default App
+export default PreviewPage
