@@ -1,3 +1,4 @@
+import { artProps } from "~/games/numina/assets/cardArt"
 import { POWER_LIST_WITH_METADATA } from "~/games/numina/domain/CoreDefinitions"
 import { flatCopies } from "~/shared/cards/playerCount"
 import type { Deck } from "./domain"
@@ -21,5 +22,6 @@ export const permanentSupply: Deck = POWER_LIST_WITH_METADATA.map(({ name }) => 
   id: `permanent-${name.toLowerCase()}`,
   name,
   power: name,
-  copies: flatCopies(6)
+  copies: flatCopies(6),
+  ...artProps(name)
 }))

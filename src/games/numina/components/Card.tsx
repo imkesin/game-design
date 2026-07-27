@@ -4,6 +4,7 @@ import { css, cx } from "~/generated/styled-system/css"
 import type { PlayerCount } from "~/shared/cards/playerCount"
 import { Guides } from "~/shared/components/Guides"
 import {
+  artTint,
   darkBand,
   paperFrame,
   softBand,
@@ -153,7 +154,7 @@ const hazardStripes = css({
 })
 
 // Open art area. Full bleed (`1 / -1`, no padding) so a future illustration can
-// run to the card's edges; `position: relative` anchors the image and the
+// run to the card's edges; `position: relative` anchors the mark and the
 // placeholder.
 const artRegion = css({
   gridColumn: "1 / -1",
@@ -162,12 +163,34 @@ const artRegion = css({
   overflow: "hidden"
 })
 
-const artImage = css({
+/**
+ * The art itself: an inlined SVG scaled to the region, taking the card's tint through
+ * `fill="currentColor"` (see assets/cardArt).
+ *
+ * `fill` on the root `<svg>` is the other half of that: SVG inherits `fill`, so it is
+ * what colours a file that names no fill of its own — which would otherwise fall back
+ * to the SVG default of black and be the one export the rewrite cannot reach. A shape
+ * that explicitly says `fill="none"` still overrides it and stays unfilled.
+ *
+ * `inset: var(--gutter)` holds it inside the safe area rather than letting it bleed.
+ * Art here is a mark rather than a full-bleed illustration, and the safe area is the
+ * one box nothing else claims: the bands stop at it, and a permanent's rail stops 1u
+ * short of it, so the mark can never be crossed by the rail or crowd the name.
+ *
+ * With no `preserveAspectRatio` of its own an SVG defaults to `xMidYMid meet`, so the
+ * mark is centred and scaled to fit whole. Nothing is cropped — which is what a mark
+ * needs, and why the region's own aspect ratio is not something the art has to match.
+ */
+const artMark = css({
   position: "absolute",
-  inset: 0,
-  width: "100%",
-  height: "100%",
-  objectFit: "cover"
+  inset: "var(--gutter)",
+  "& svg": {
+    display: "block",
+    width: "100%",
+    height: "100%",
+    overflow: "hidden",
+    fill: "currentColor"
+  }
 })
 
 // Screen-only marker for the empty art area, shown with the print guides. Never
@@ -283,7 +306,14 @@ export function Card({
       </div>
       <div className={artRegion}>
         {card.art !== undefined
-          ? <img className={artImage} src={card.art} alt="" />
+          ? (
+            // The markup is our own asset, read off disk at build time (see
+            // assets/cardArt) — never user input.
+            <div
+              className={cx(artMark, artTint({ color }))}
+              dangerouslySetInnerHTML={{ __html: card.art }}
+            />
+          )
           : showGuides && <span className={artPlaceholder}>Art</span>}
       </div>
       <Footer minPlayerCount={card.minPlayerCount} band={band} />

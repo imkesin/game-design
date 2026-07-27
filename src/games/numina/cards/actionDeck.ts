@@ -1,3 +1,4 @@
+import { artProps } from "~/games/numina/assets/cardArt"
 import { DISASTER, POWER_LIST_WITH_METADATA, type PowerName } from "~/games/numina/domain/CoreDefinitions"
 import { assertCopyTotals, type Copies, flatCopies, perCount } from "~/shared/cards/playerCount"
 import type { CardDefinition, Deck } from "./domain"
@@ -30,7 +31,8 @@ const actions = POWER_LIST_WITH_METADATA.map(({ name }) => ({
   id: name.toLowerCase(),
   name,
   power: name,
-  copies: ACTION_COPIES[name]
+  copies: ACTION_COPIES[name],
+  ...artProps(name)
 })) satisfies ReadonlyArray<CardDefinition>
 
 export const actionDeck: Deck = [
@@ -40,6 +42,7 @@ export const actionDeck: Deck = [
     id: "disaster",
     name: DISASTER.name,
     // Fixed at 1 regardless of player count.
-    copies: flatCopies(1)
+    copies: flatCopies(1),
+    ...artProps(DISASTER.name)
   }
 ]

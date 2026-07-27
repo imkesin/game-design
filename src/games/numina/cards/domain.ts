@@ -4,8 +4,9 @@ import type { Copies, PlayerCount } from "~/shared/cards/playerCount"
 /**
  * Action cards carry no rules text and no cost. Each Action recurs often enough
  * that players learn it, so the face is just the name at display size over an
- * open art area. `art` is the eventual illustration; until one exists the area is
- * left blank on the printed card.
+ * open art area. `art` is inline SVG source rather than a URL — the Card inlines it
+ * so the mark can take the card's own tint (see assets/cardArt) — and until a file
+ * exists the area is left blank on the printed card.
  */
 export type ActionCardBase = {
   readonly kind: "action"

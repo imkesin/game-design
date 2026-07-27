@@ -190,6 +190,43 @@ export const strongRail = cva({
 })
 
 /**
+ * Ink for card art: a light-but-present tint of the scale (`{color}.300`), set as
+ * `color` so an inlined SVG picks it up through `fill="currentColor"`.
+ *
+ * One rung for every band weight, deliberately. Art is the same element on every
+ * card — a tinted mark under the name — and pegging it to the paper rather than to
+ * the band keeps that relationship identical across the deck instead of making the
+ * art heavier on a `strong` card than on a `soft` one.
+ *
+ * `.300` is the lightest rung that still reads as the card's hue at a glance while
+ * staying clearly subordinate to the name. It sits between the paper (`.50`) and the
+ * band on a `strong` or `vivid` card. On `soft` — Guidance alone — the band is itself
+ * only `.200`, and the one rung below it (`.100`) is indistinguishable from the
+ * paper, so there the art goes a step *darker* than the band rather than vanishing.
+ */
+export const artTint = cva({
+  variants: {
+    color: {
+      red: { color: "red.300" },
+      blue: { color: "blue.300" },
+      orange: { color: "orange.300" },
+      yellow: { color: "yellow.300" },
+      amber: { color: "amber.300" },
+      lime: { color: "lime.300" },
+      green: { color: "green.300" },
+      violet: { color: "violet.300" },
+      purple: { color: "purple.300" },
+      pink: { color: "pink.300" },
+      stone: { color: "stone.300" },
+      brown: { color: "brown.300" },
+      zinc: { color: "zinc.300" },
+      cyan: { color: "cyan.300" },
+      neutral: { color: "neutral.300" }
+    }
+  }
+})
+
+/**
  * A bright band from the light half of the scale (`{color}.400`) with dark ink
  * (`{color}.900`). Between `softBand` and `darkBand`: for a colour whose identity
  * lives in the bright part of its scale, where the `.900` end reads as brown or
