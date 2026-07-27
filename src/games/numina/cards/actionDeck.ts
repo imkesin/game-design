@@ -1,26 +1,28 @@
 import { DISASTER, POWER_LIST_WITH_METADATA, type PowerName } from "~/games/numina/domain/CoreDefinitions"
-import { flatCopies } from "~/shared/cards/playerCount"
+import { assertCopyTotals, type Copies, flatCopies, perCount } from "~/shared/cards/playerCount"
 import type { CardDefinition, Deck } from "./domain"
 
 /**
- * Copies of each Action in the deck.
- *
- * Authored at 2 players and held flat across 3-5 (`flatCopies`) — the per-count
- * columns exist and print correctly, they just aren't tuned yet. To scale a Power
- * with the table, swap its `flatCopies(n)` for an explicit `{ 2: …, 3: …, 4: …,
- * 5: … }` table; `expandDeck` stamps each added copy with the count at which it
- * enters.
- *
- * Guidance and Impulse run nearly twice as thick as the other three, so the deck
- * is 26 cards: 4+4+4+7+7 Actions plus the 2 Disasters (a ~7.7% Disaster density).
+ * Regular (non-Disaster) cards in the printed deck. The deck grows sub-linearly
+ * with the table: every extra player adds fewer cards than the last, so a larger
+ * game runs shorter per head and the deck still cycles.
  */
-const ACTION_COPIES: Record<PowerName, number> = {
-  Abundance: 4,
-  Ingenuity: 4,
-  Devotion: 4,
-  Guidance: 7,
-  Impulse: 7
+const ACTION_TOTALS = perCount(18, 24, 28, 30)
+
+/**
+ * Copies of each Action per player count. Guidance and Impulse run richer than
+ * the three set-building Powers and hold that lead as the deck grows, so the
+ * per-Power ratio a player learns at two holds at five.
+ */
+const ACTION_COPIES: Record<PowerName, Copies> = {
+  Abundance: perCount(3, 4, 4, 5),
+  Ingenuity: perCount(3, 4, 5, 5),
+  Devotion: perCount(3, 4, 5, 5),
+  Guidance: perCount(5, 7, 8, 8),
+  Impulse: perCount(4, 5, 6, 7)
 }
+
+assertCopyTotals("actionDeck", ACTION_COPIES, ACTION_TOTALS)
 
 /** Exactly one Action per Power for now, so the card's name is the Power's name. */
 const actions = POWER_LIST_WITH_METADATA.map(({ name }) => ({
@@ -28,7 +30,7 @@ const actions = POWER_LIST_WITH_METADATA.map(({ name }) => ({
   id: name.toLowerCase(),
   name,
   power: name,
-  copies: flatCopies(ACTION_COPIES[name])
+  copies: ACTION_COPIES[name]
 })) satisfies ReadonlyArray<CardDefinition>
 
 export const actionDeck: Deck = [
@@ -37,7 +39,7 @@ export const actionDeck: Deck = [
     kind: "disaster",
     id: "disaster",
     name: DISASTER.name,
-    // Fixed at 2 regardless of player count.
-    copies: flatCopies(2)
+    // Fixed at 1 regardless of player count.
+    copies: flatCopies(1)
   }
 ]

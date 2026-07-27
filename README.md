@@ -20,4 +20,5 @@ pnpm run dev
 ## Games
 
 - **Graft** (`/graft`) — interactive preview at `/graft`; print sheets under `/graft/print/*`.
-- **Numina** (`/numina`) — action-deck preview at `/numina`; print sheet at `/numina/print/cards`.
+- **Numina** (`/numina`) — action-deck preview at `/numina`; print sheet at `/numina/print/cards`;
+  one-page player reference at `/numina/print/reference`.

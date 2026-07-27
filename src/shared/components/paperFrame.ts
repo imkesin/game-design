@@ -108,6 +108,88 @@ export const darkBand = cva({
 })
 
 /**
+ * Border colours darker than the band of the same name — `softRail` sits under
+ * `softBand`, `vividRail` under `vividBand`, `strongRail` under `darkBand`.
+ *
+ * For a rule drawn *across* a band rather than beside it, which is the case for any
+ * border that runs the full edge of a card: taking the band's own colour would make
+ * the border vanish wherever it crosses the band, and jumping to the scale's dark
+ * end makes a near-black rule regardless of the band's weight. Stepping down keeps
+ * the border a deepening of the band it crosses, so its weight reads the same on a
+ * light band as on a dark one.
+ *
+ * `softRail` and `vividRail` are two steps down rather than one: at one step the
+ * light-band rails (Guidance in particular) washed out at the card's edge.
+ * `strongRail` is `{color}.950` — a half step, because `darkBand` is already at
+ * `.900` and `.950` is the last rung on the scale.
+ */
+export const softRail = cva({
+  variants: {
+    color: {
+      red: { borderColor: "red.400" },
+      blue: { borderColor: "blue.400" },
+      orange: { borderColor: "orange.400" },
+      yellow: { borderColor: "yellow.400" },
+      amber: { borderColor: "amber.400" },
+      lime: { borderColor: "lime.400" },
+      green: { borderColor: "green.400" },
+      violet: { borderColor: "violet.400" },
+      purple: { borderColor: "purple.400" },
+      pink: { borderColor: "pink.400" },
+      stone: { borderColor: "stone.400" },
+      brown: { borderColor: "brown.400" },
+      zinc: { borderColor: "zinc.400" },
+      cyan: { borderColor: "cyan.400" },
+      neutral: { borderColor: "neutral.400" }
+    }
+  }
+})
+
+export const vividRail = cva({
+  variants: {
+    color: {
+      red: { borderColor: "red.600" },
+      blue: { borderColor: "blue.600" },
+      orange: { borderColor: "orange.600" },
+      yellow: { borderColor: "yellow.600" },
+      amber: { borderColor: "amber.600" },
+      lime: { borderColor: "lime.600" },
+      green: { borderColor: "green.600" },
+      violet: { borderColor: "violet.600" },
+      purple: { borderColor: "purple.600" },
+      pink: { borderColor: "pink.600" },
+      stone: { borderColor: "stone.600" },
+      brown: { borderColor: "brown.600" },
+      zinc: { borderColor: "zinc.600" },
+      cyan: { borderColor: "cyan.600" },
+      neutral: { borderColor: "neutral.600" }
+    }
+  }
+})
+
+export const strongRail = cva({
+  variants: {
+    color: {
+      red: { borderColor: "red.950" },
+      blue: { borderColor: "blue.950" },
+      orange: { borderColor: "orange.950" },
+      yellow: { borderColor: "yellow.950" },
+      amber: { borderColor: "amber.950" },
+      lime: { borderColor: "lime.950" },
+      green: { borderColor: "green.950" },
+      violet: { borderColor: "violet.950" },
+      purple: { borderColor: "purple.950" },
+      pink: { borderColor: "pink.950" },
+      stone: { borderColor: "stone.950" },
+      brown: { borderColor: "brown.950" },
+      zinc: { borderColor: "zinc.950" },
+      cyan: { borderColor: "cyan.950" },
+      neutral: { borderColor: "neutral.950" }
+    }
+  }
+})
+
+/**
  * A bright band from the light half of the scale (`{color}.400`) with dark ink
  * (`{color}.900`). Between `softBand` and `darkBand`: for a colour whose identity
  * lives in the bright part of its scale, where the `.900` end reads as brown or

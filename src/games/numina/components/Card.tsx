@@ -3,11 +3,19 @@ import { type Band, DISASTER, POWER_PALETTE } from "~/games/numina/domain/CoreDe
 import { css, cx } from "~/generated/styled-system/css"
 import type { PlayerCount } from "~/shared/cards/playerCount"
 import { Guides } from "~/shared/components/Guides"
-import { darkBand, paperFrame, softBand, vividBand } from "~/shared/components/paperFrame"
+import {
+  darkBand,
+  paperFrame,
+  softBand,
+  softRail,
+  strongRail,
+  vividBand,
+  vividRail
+} from "~/shared/components/paperFrame"
 
 /**
- * A Numina action card. Deliberately spare: the name at display size in a band
- * across the top, an open art area filling everything below it, and a footer band
+ * A Numina card. Deliberately spare: the name at display size in a band across
+ * the top, an open art area filling everything below it, and a footer band
  * carrying the player-count symbol. No cost rail, no rules text — each Action
  * recurs often enough that players learn what it does.
  *
@@ -32,6 +40,10 @@ import { darkBand, paperFrame, softBand, vividBand } from "~/shared/components/p
  * *content* sits in the middle column via `grid-template-columns: subgrid`, so it
  * lines up. The art row spans edge to edge with no inset at all — art is expected
  * to bleed, and the trim/safe lines are what constrain it (toggle `showGuides`).
+ *
+ * Permanents are this same card with a thick dark rail inside the trim (see
+ * `permanentRail`) — same size, same palette, same name, so they print on the deck's
+ * own sheet and differ by one unmistakable cue.
  */
 export type CardVariant = "bleed" | "trim"
 
@@ -55,6 +67,36 @@ const trimFrame = css({
   width: "trimW",
   height: "trimH",
   "--gutter": "calc(3 * var(--u))"
+})
+
+/**
+ * What marks a permanent: a thick dark rail running just inside the trim, on all
+ * four edges.
+ *
+ * It is an overlay rather than a `border` on the frame so it costs the layout
+ * nothing — the name, art and pip sit exactly where they do on an Action, which is
+ * the point. A permanent is meant to read as the same card wearing one extra cue.
+ *
+ * Geometry: `inset: 0` runs the rail right out to the sheet edge, so it *bleeds* —
+ * on a bleed card the outer 3u of it is trimmed away. The width therefore has to
+ * carry that loss: `--gutter - 1u` is 5u on a bleed card (3u bleed + 2u visible) and
+ * 2u on a trim card, leaving the same 2u of rail on the cut card either way. Cutting
+ * to the edge is what makes it robust — drift eats into the bleed instead of exposing
+ * a sliver of paper outside the rail — and it stops 1u clear of the safe line, so it
+ * can never crowd the name or the pip.
+ *
+ * Colour comes from `RAIL_RECIPE`, one step darker than the card's own band, rather
+ * than from `currentColor`. That matters twice over: the rail crosses the bands, so
+ * matching a band's colour would erase it there; and on the sheet, where cards touch
+ * and two rails abut, a rail at `currentColor` would swallow the `accentOutline` cut
+ * line drawn in that same ink.
+ */
+const permanentRail = css({
+  position: "absolute",
+  inset: 0,
+  borderWidth: "calc(var(--gutter) - 1 * var(--u))",
+  borderStyle: "solid",
+  pointerEvents: "none"
 })
 
 // Hairline cut line on the trim boundary. `outline` doesn't affect layout, so
@@ -191,6 +233,14 @@ const BAND_RECIPE = {
   soft: softBand
 } as const satisfies Record<Band, unknown>
 
+// A permanent's rail, keyed by the same band weight so it always lands one step
+// darker than that card's band. See `permanentRail`.
+const RAIL_RECIPE = {
+  strong: strongRail,
+  vivid: vividRail,
+  soft: softRail
+} as const satisfies Record<Band, unknown>
+
 // One step brighter than a `strong` band's own `{color}.50` ink: pure white, so the
 // name reads at full strength rather than as a tinted off-white. Only `strong`
 // bands get it — `vivid` and `soft` bands are light, so their ink must stay dark.
@@ -198,7 +248,7 @@ const brightInk = css({ color: "white" })
 
 /** A card's palette: its Panda colour scale plus its band weight. */
 function paletteOf(card: Card) {
-  return card.kind === "action" ? POWER_PALETTE[card.power] : DISASTER
+  return card.kind === "disaster" ? DISASTER : POWER_PALETTE[card.power]
 }
 
 export function Card({
@@ -237,6 +287,8 @@ export function Card({
           : showGuides && <span className={artPlaceholder}>Art</span>}
       </div>
       <Footer minPlayerCount={card.minPlayerCount} band={band} />
+      {/* Last, so the rail sits over the bands and the art rather than under them. */}
+      {card.kind === "permanent" && <div className={cx(permanentRail, RAIL_RECIPE[weight]({ color }))} />}
       {showGuides && variant === "bleed" && <Guides />}
     </div>
   )

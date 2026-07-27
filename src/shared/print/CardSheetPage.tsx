@@ -38,6 +38,12 @@ const MARGIN_Y = (PAGE_H - ROWS * CARD_H) / 2 // 7.7mm
 const TICK_LEN = 4 // mm
 const TICK_W = 0.2 // mm
 
+// Page label lives in the bottom margin, below the tick zone and horizontally
+// centred so it never collides with a column tick. Small enough to ignore while
+// cutting, large enough to read from a stack of sheets.
+const LABEL_TOP = MARGIN_Y + ROWS * CARD_H + TICK_LEN
+const LABEL_SIZE = 2.6 // mm
+
 function chunks<T>(arr: readonly T[], size: number): T[][] {
   const out: T[][] = []
   for (let i = 0; i < arr.length; i += size) out.push(arr.slice(i, i + size))
@@ -145,6 +151,16 @@ function Ticks() {
   )
 }
 
+const labelStyle = css({
+  position: "absolute",
+  left: 0,
+  right: 0,
+  textAlign: "center",
+  fontFamily: "sans-serif",
+  color: "#737373",
+  letterSpacing: "0.4mm"
+})
+
 export function CardSheetPage<T>({
   cards,
   renderCard,
@@ -162,7 +178,7 @@ export function CardSheetPage<T>({
       <style>{printCss}</style>
       <div className={`print-root ${screen}`}>
         <div className={`${note} screen-only`}>
-          Print → Letter · Margins: None · Scale: 100%
+          Print → Letter · Margins: None · Scale: 100% · {cards.length} cards on {pages.length} pages
           {controls}
         </div>
         {pages.map((page, pi) => (
@@ -181,6 +197,16 @@ export function CardSheetPage<T>({
               style={{ gridTemplateColumns: `repeat(${COLS}, ${CARD_W}mm)` }}
             >
               {page.map((card, ci) => renderCard(card, `${pi}-${ci}`))}
+            </div>
+            <div
+              className={labelStyle}
+              style={{
+                top: `${LABEL_TOP}mm`,
+                fontSize: `${LABEL_SIZE}mm`,
+                lineHeight: `${PAGE_H - LABEL_TOP}mm`
+              }}
+            >
+              {pi + 1} / {pages.length} · {page.length} cards
             </div>
           </div>
         ))}

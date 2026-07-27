@@ -1,6 +1,7 @@
 import type { Game } from "~/shared/game"
 import { PreviewPage } from "./routes/PreviewPage"
 import { PrintPage } from "./routes/PrintPage"
+import { ReferencePage } from "./routes/ReferencePage"
 import { NUMINA_THEME_ID } from "./theme"
 
 export const numina: Game = {
@@ -8,6 +9,7 @@ export const numina: Game = {
   name: "Numina",
   routes: {
     "/": PreviewPage,
-    "/print/cards": PrintPage
+    "/print/cards": PrintPage,
+    "/print/reference": ReferencePage
   }
 }
