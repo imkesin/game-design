@@ -44,13 +44,13 @@ export const POWER_REFERENCE: Record<PowerName, PowerAction> = {
   },
   Ingenuity: {
     options: [
-      "Add 1 Gold per person already there, in regions adjacent to your God. Add 1 more Gold if your God is in the region."
+      "Add 1 gold for every person in your God's region. Or, add 1 gold in an adjacent region. You cannot add gold to a region that has no people."
     ]
   },
   Devotion: {
     options: [
-      "Convert a region's Gold into a pantheon. Max 2 per region. The first costs 2, the second 3, and so on.",
-      "Gain 1 Energy for every pantheon you have whose region holds at least one person."
+      "Convert a region's Gold into a pantheon. Max 2 per God per region. The first costs 2, the second 3, and so on.",
+      "Gain 1 Energy for every pantheon you have in a region with at least 1 person."
     ]
   },
   Guidance: {
@@ -60,7 +60,7 @@ export const POWER_REFERENCE: Record<PowerName, PowerAction> = {
   },
   Impulse: {
     options: [
-      "Move your God 1 region, into any region without the leading God.",
+      "Move your God into another region without the leading God.",
       "Move into the leading God's region and challenge. Higher Energy wins: discard down to the difference, then take 1 more. Ties go to the leading God, so a winner always keeps at least 1."
     ]
   }
@@ -97,7 +97,7 @@ export const GLOSSARY: readonly { readonly term: string; readonly gloss: string 
 
 export const SETUP = {
   steps: [
-    `Place the Old God with 5 Energy. It claims two adjacent regions, each with 1 pantheon and 1 person.`,
+    `Place the Old God with 5 Energy. It claims two adjacent regions, each with 1 pantheons and 1 person.`,
     `Place your God in a region not adjacent to the Old God's; players may share. Take 1 pantheon, 1 person, and 3 Energy.`,
     `Deck: every Action but the Disaster, minus 3 per player. Shuffle the Disaster back in.`,
     `Reveal 5 cards to the track. Farthest from the Old God goes first.`
