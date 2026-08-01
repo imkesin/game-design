@@ -7,6 +7,7 @@
     "prepare": "panda codegen",
     "dev": "panda codegen && vite",
     "build": "panda codegen && tsc -b && vite build",
+    "map:build": "tsx src/games/numina/map/build.ts",
     "lint": "oxlint && dprint check",
     "lint:fix": "oxlint --fix && dprint fmt",
     "format": "dprint fmt",
@@ -20,13 +21,17 @@
   },
   "devDependencies": {
     "@pandacss/dev": "^1.11.4",
+    "@types/d3-delaunay": "^6.0.4",
+    "@types/geojson": "^7946.0.16",
     "@types/node": "^24.13.2",
     "@types/react": "^19.2.17",
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^6.0.2",
+    "d3-delaunay": "^6.0.4",
     "dprint": "^0.54.0",
     "oxlint": "^1.69.0",
     "playwright": "^1.61.1",
+    "tsx": "^4.23.1",
     "typescript": "~6.0.2",
     "vite": "^8.1.0"
   }

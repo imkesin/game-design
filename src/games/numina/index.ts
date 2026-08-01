@@ -1,4 +1,6 @@
 import type { Game } from "~/shared/game"
+import { MapPage } from "./routes/MapPage"
+import { MapPrintPage } from "./routes/MapPrintPage"
 import { PreviewPage } from "./routes/PreviewPage"
 import { PrintPage } from "./routes/PrintPage"
 import { ReferencePage } from "./routes/ReferencePage"
@@ -9,6 +11,8 @@ export const numina: Game = {
   name: "Numina",
   routes: {
     "/": PreviewPage,
+    "/map": MapPage,
+    "/print/map": MapPrintPage,
     "/print/cards": PrintPage,
     "/print/reference": ReferencePage
   }

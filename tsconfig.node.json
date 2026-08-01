@@ -7,5 +7,8 @@
     "module": "nodenext",
     "moduleResolution": "nodenext"
   },
-  "include": ["vite.config.ts"]
+  // A `build.ts` under src is a per-game asset generator: a Node script living
+  // beside the game data it emits. Excluded from tsconfig.app for that reason,
+  // so its `node:` imports typecheck without leaking Node globals into the app.
+  "include": ["vite.config.ts", "src/**/build.ts"]
 }
