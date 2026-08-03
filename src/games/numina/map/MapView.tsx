@@ -1,25 +1,129 @@
 import type { CSSProperties } from "react"
 import { css } from "~/generated/styled-system/css"
 import type { GeneratedMap } from "./generate.ts"
+import { MARKER_TYPE } from "./markers.ts"
 
 /**
  * Renders a generated map. All geometry arrives precomputed in `map.json`; this
  * component only paints it and reports clicks.
  *
- * Ink-only: the board has to survive a black-and-white printer. Nothing is
- * filled — the two tiers are told apart by line weight alone, the way a road
- * atlas separates county lines from state lines. Only the sea is textured, and
- * only so the landmass reads as land.
+ * Ink-only: the board has to survive a black-and-white printer, so the tiers are
+ * told apart by the *kind* of line as much as its weight, the way a road atlas
+ * separates county lines from state lines. Sea and mountain are the only
+ * textured terrain, each with its own rule pattern so the three `kind`s read
+ * apart at a glance. Nothing is labelled: the board carries no type at all.
+ *
+ * One strict hierarchy governs every line, loudest first:
+ *
+ *   state     heavy unbroken ink — the only solid black line on the sheet
+ *   province  a double hairline, distinct in kind rather than just in weight
+ *   coast     the softest mark there is; the sea's own texture does the work
+ *
+ * The coast used to be the heaviest line here, which inverted the whole order
+ * and made every province look subordinate to the shoreline.
+ *
+ * Markers — goods and capitals — are the one exception to the no-type rule, and
+ * are outside that hierarchy entirely: they mark where a component goes rather
+ * than what the ground is, so they sit above every line without competing with
+ * any.
  */
 
 const INK = "#000"
 
-/** Antique-map coastline shading: strokes fanning outward, hidden inside by the land fill. */
+/**
+ * Antique-map coastline shading: strokes fanning outward, hidden inside by the
+ * land fill. Kept faint — enough to feel the shore without the coast shouting
+ * over the borders that actually matter to play.
+ */
 const HALO = [
-  { width: 26, opacity: 0.07 },
-  { width: 17, opacity: 0.1 },
-  { width: 9, opacity: 0.16 }
+  { width: 18, opacity: 0.04 },
+  { width: 11, opacity: 0.06 },
+  { width: 5, opacity: 0.09 }
 ]
+
+/** Coast: the softest line on the board. */
+const COAST = { width: 1.4, opacity: 0.38 }
+
+const PAPER = "#fff"
+/** Every rail is the same weight, so the tiers differ only in how many there are. */
+const RAIL_OPACITY = 0.8
+
+/**
+ * A border tier is a stack of strokes of decreasing width, alternating ink and
+ * paper down the same centreline. Each paper stroke cuts a gap out of the ink
+ * beneath it, so `n` alternations leave `n` parallel rails: two strokes give a
+ * double line, four give a quad.
+ *
+ * The tiers are told apart by rail *count*, not by blackness — a state drawn as
+ * a solid slab against province hairlines opened a gap far wider than the
+ * difference in what the two actually mean.
+ *
+ * Widths are chosen so rails and gaps come out even. Reading from the centre of
+ * a state line: a 2.0 gap, a 1.2 rail, a 2.0 gap, a 1.2 rail — 10.8 across.
+ */
+type Rail = { width: number; ink: boolean }
+
+const PROVINCE_LINE: readonly Rail[] = [
+  { width: 4.4, ink: true },
+  { width: 2.2, ink: false }
+]
+
+const STATE_LINE: readonly Rail[] = [
+  { width: 10.8, ink: true },
+  { width: 8.4, ink: false },
+  { width: 4.4, ink: true },
+  { width: 2, ink: false }
+]
+
+/**
+ * Markers: the chip's footprint, and what goes in it. Set in map units like
+ * every other measurement here, so a marker keeps its proportions at any
+ * printed size.
+ *
+ * A good is named in type rather than given a glyph, because four invented
+ * icons would need a key and four words do not. A capital is the reverse — one
+ * mark, so a star carries it — and is told apart by a second rule inside the
+ * first rather than by a heavier line, the same way the border tiers separate.
+ *
+ * Kept small and light enough to read as something resting on the ground rather
+ * than as a label for the province.
+ */
+const MARKER = {
+  stroke: 1.6,
+  strokeOpacity: 0.55,
+  opacity: 0.72
+}
+
+/**
+ * Draws one tier.
+ *
+ * Every stroke runs over *all* the borders before the next stroke starts. Done
+ * per border instead, one border's paper stroke would cut through the ink of
+ * the neighbour it meets at a junction. Paper strokes take butt caps so they
+ * cannot overshoot their own ends and nibble whatever they run into.
+ */
+function Rails(
+  { borders, rails }: { borders: GeneratedMap["borders"]; rails: readonly Rail[] }
+) {
+  return (
+    <>
+      {rails.map((rail) =>
+        borders.map((border) => (
+          <path
+            key={`${rail.width}|${border.a}|${border.b}`}
+            d={border.d}
+            fill="none"
+            stroke={rail.ink ? INK : PAPER}
+            strokeWidth={rail.width}
+            strokeOpacity={rail.ink ? RAIL_OPACITY : undefined}
+            strokeLinejoin="round"
+            strokeLinecap={rail.ink ? "round" : "butt"}
+          />
+        ))
+      )}
+    </>
+  )
+}
 
 // An unfilled path is only clickable on its stroke, which would make provinces
 // near-impossible to hit. `pointerEvents: all` restores hit-testing over the
@@ -32,65 +136,6 @@ const province = css({
   strokeWidth: 0,
   _hover: { stroke: "#000", strokeWidth: 2, strokeOpacity: 0.3 }
 })
-
-/*
- * Type is sized in map units, which at the spec's 100-per-inch means a size of
- * 36 prints at 0.36in — roughly 26pt. Sizes are chosen for the printed sheet,
- * not the screen preview.
- */
-const stateLabel = css({
-  fill: INK,
-  fontSize: "36px",
-  fontWeight: 700,
-  letterSpacing: "0.3em",
-  textTransform: "uppercase",
-  textAnchor: "middle",
-  pointerEvents: "none",
-  userSelect: "none"
-})
-
-const provinceLabel = css({
-  fill: INK,
-  fontSize: "21px",
-  fontWeight: 400,
-  letterSpacing: "0.14em",
-  textTransform: "uppercase",
-  textAnchor: "middle",
-  pointerEvents: "none",
-  userSelect: "none"
-})
-
-/** Water names are set in italic, the long-standing cartographic convention. */
-const seaLabel = css({
-  fill: INK,
-  fillOpacity: 0.6,
-  fontSize: "30px",
-  fontStyle: "italic",
-  letterSpacing: "0.26em",
-  textAnchor: "middle",
-  pointerEvents: "none",
-  userSelect: "none"
-})
-
-/** White casing so a name stays legible where it crosses a border line. */
-const halo = css({
-  fill: "none",
-  stroke: "#fff",
-  strokeWidth: 8,
-  strokeLinejoin: "round",
-  pointerEvents: "none",
-  userSelect: "none"
-})
-
-/**
- * A one-province sea would otherwise print its name twice, once as the state and
- * once as the province. The state name wins; province names appear only where
- * they say something the state name does not.
- */
-function showProvinceLabel(map: GeneratedMap, province: GeneratedMap["provinces"][number]) {
-  const state = map.states.find((s) => s.id === province.state)
-  return state !== undefined && state.provinces.length > 1
-}
 
 type Props = {
   map: GeneratedMap
@@ -105,6 +150,9 @@ type Props = {
 
 export function MapView({ map, selectedId, onSelect, rough, className, style }: Props) {
   const selected = map.provinces.find((p) => p.id === selectedId)
+
+  const frontiers = map.borders.filter((b) => b.interstate)
+  const interior = map.borders.filter((b) => !b.interstate)
 
   return (
     <svg
@@ -136,11 +184,28 @@ export function MapView({ map, selectedId, onSelect, rough, className, style }: 
           <rect width={12} height={12} fill="#fff" />
           <line x1={0} y1={6} x2={12} y2={6} stroke={INK} strokeWidth={0.7} strokeOpacity={0.3} />
         </pattern>
+
+        {
+          /* Diagonal hatch, rotated rather than drawn at an angle so the tile
+            itself stays axis-aligned. Pitched much finer than the sea's rules
+            and struck twice per tile, so high ground reads as the darkest thing
+            on the sheet without any fill to carry it. */
+        }
+        <pattern
+          id="tex-mountain"
+          width={5}
+          height={5}
+          patternUnits="userSpaceOnUse"
+          patternTransform="rotate(45)"
+        >
+          <rect width={5} height={5} fill="#fff" />
+          <line x1={0} y1={0} x2={0} y2={5} stroke={INK} strokeWidth={1.1} strokeOpacity={0.62} />
+          <line x1={2.5} y1={0} x2={2.5} y2={5} stroke={INK} strokeWidth={0.6} strokeOpacity={0.4} />
+        </pattern>
       </defs>
 
       <rect width={map.width} height={map.height} fill="url(#tex-sea)" />
 
-      {/* Labels sit outside this group so the displacement never smears the type. */}
       <g filter={rough ? "url(#map-rough)" : undefined}>
         {HALO.map((ring) => (
           <path
@@ -160,55 +225,88 @@ export function MapView({ map, selectedId, onSelect, rough, className, style }: 
         }
         <path d={map.land} fill="#fff" />
 
+        <path d={map.mountain} fill="url(#tex-mountain)" />
+
         {
-          /* Shorelines are skipped: the landmass outline already draws them, once.
-            Open water stays faint whether or not it divides states — a line at
-            sea is a convention, not a feature you can stand on. Land goes
-            light-then-heavy so state lines print over province lines. */
+          /* The coast, kept faint, and drawn before the borders so the two
+            heavier tiers always sit on top of it. */
         }
-        {map.borders.filter((b) => b.medium === "sea").map((border) => (
-          <path
-            key={`${border.a}|${border.b}`}
-            d={border.d}
-            fill="none"
-            stroke={INK}
-            strokeWidth={1}
-            strokeOpacity={0.3}
-            strokeDasharray="2 7"
-            strokeLinecap="round"
-          />
-        ))}
+        <path
+          d={map.land}
+          fill="none"
+          stroke={INK}
+          strokeWidth={COAST.width}
+          strokeOpacity={COAST.opacity}
+          strokeLinejoin="round"
+        />
 
-        {map.borders.filter((b) => b.medium === "land" && !b.interstate).map((border) => (
-          <path
-            key={`${border.a}|${border.b}`}
-            d={border.d}
-            fill="none"
-            stroke={INK}
-            strokeWidth={1}
-            strokeOpacity={0.55}
-            strokeDasharray="5 5"
-            strokeLinecap="round"
-          />
-        ))}
+        <Rails borders={interior} rails={PROVINCE_LINE} />
 
-        {map.borders.filter((b) => b.medium === "land" && b.interstate).map((border) => (
-          <path
-            key={`${border.a}|${border.b}`}
-            d={border.d}
-            fill="none"
-            stroke={INK}
-            strokeWidth={2.4}
-            strokeLinejoin="round"
-            strokeLinecap="round"
-          />
-        ))}
+        {
+          /* Drawn after the province tier, so its paper strokes trim the province
+            rails back where they run into a frontier — the way a minor road
+            stops short at a major one. */
+        }
+        <Rails borders={frontiers} rails={STATE_LINE} />
 
         {selected !== undefined && (
           <path d={selected.d} fill="none" stroke={INK} strokeWidth={3.5} strokeLinejoin="round" />
         )}
+      </g>
 
-        <path d={map.land} fill="none" stroke={INK} strokeWidth={4} strokeLinejoin="round" />
+      {
+        /* Outside the rough filter: a displacement map that flatters a coastline
+          would chew a 14-unit caption to pieces. The white fill is load-bearing
+          — it clears whatever line or texture the marker lands on, so the chip's
+          slot reads as bare paper. */
+      }
+      <g opacity={MARKER.opacity}>
+        {map.resources.map((resource) => (
+          <g key={`${resource.province}|${resource.x},${resource.y}`}>
+            <path
+              d={resource.d}
+              fill={PAPER}
+              stroke={INK}
+              strokeWidth={MARKER.stroke}
+              strokeOpacity={MARKER.strokeOpacity}
+              strokeLinejoin="round"
+            />
+            <text
+              x={resource.x}
+              y={resource.y}
+              textAnchor="middle"
+              dominantBaseline="central"
+              fontFamily="system-ui, -apple-system, sans-serif"
+              fontSize={MARKER_TYPE.fontSize}
+              letterSpacing={MARKER_TYPE.letterSpacing}
+              fill={INK}
+            >
+              {resource.label}
+            </text>
+          </g>
+        ))}
+
+        {map.capitals.map((capital) => (
+          <g key={`capital|${capital.x},${capital.y}`}>
+            <path
+              d={capital.d}
+              fill={PAPER}
+              stroke={INK}
+              strokeWidth={MARKER.stroke}
+              strokeOpacity={MARKER.strokeOpacity}
+              strokeLinejoin="round"
+            />
+            <path
+              d={capital.rule}
+              fill="none"
+              stroke={INK}
+              strokeWidth={MARKER.stroke}
+              strokeOpacity={MARKER.strokeOpacity}
+              strokeLinejoin="round"
+            />
+            <path d={capital.star} fill={INK} />
+          </g>
+        ))}
       </g>
 
       {/* Hit areas above the ink, so a click always lands on a province. */}
@@ -224,7 +322,7 @@ export function MapView({ map, selectedId, onSelect, rough, className, style }: 
             }}
           >
             <title>
-              {p.kind === "sea"
+              {p.state === undefined
                 ? p.name
                 : `${p.name} — ${map.states.find((s) => s.id === p.state)?.name}`}
             </title>
@@ -232,36 +330,11 @@ export function MapView({ map, selectedId, onSelect, rough, className, style }: 
         ))}
       </g>
 
-      <g>
-        {
-          /* Province names sit below their own centre; the state name takes the
-            centre itself, so the two tiers do not fight for the same spot. */
-        }
-        {map.provinces.filter((p) => showProvinceLabel(map, p)).map((p) => (
-          <g key={p.id}>
-            <text x={p.label.x} y={p.label.y + 42} className={`${halo} ${provinceLabel}`}>
-              {p.name}
-            </text>
-            <text x={p.label.x} y={p.label.y + 42} className={provinceLabel}>
-              {p.name}
-            </text>
-          </g>
-        ))}
-
-        {map.states.map((state) => {
-          const style = state.kind === "sea" ? seaLabel : stateLabel
-          return (
-            <g key={state.id}>
-              <text x={state.label.x} y={state.label.y} className={`${halo} ${style}`}>
-                {state.name}
-              </text>
-              <text x={state.label.x} y={state.label.y} className={style}>
-                {state.name}
-              </text>
-            </g>
-          )
-        })}
-      </g>
+      {
+        /* No type on the board at all. Both tiers still carry a `label` anchor in
+          `map.json`, so a printed key or a later pass can place names without
+          recomputing anything — nothing draws them here. */
+      }
     </svg>
   )
 }

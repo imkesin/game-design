@@ -6,6 +6,9 @@ import { css } from "~/generated/styled-system/css"
  * upper-left disc rides on top of the darker lower-right one and carries the
  * `amount`, sized to seat a two-digit number comfortably inside its face.
  *
+ * Shared rather than Graft's own: Numina's payoff table pays in the same coin,
+ * and two drawings of one currency would drift apart.
+ *
  * Drawn as an inline SVG (like WorkerZone) so it stays crisp at print and
  * scales with `--u`: the outer size uses the card-unit `10` token, and every
  * interior coordinate lives in the matching 0..10 viewBox, so the number scales

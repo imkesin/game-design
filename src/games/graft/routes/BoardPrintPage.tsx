@@ -5,7 +5,7 @@ import { WorkerZone } from "~/games/graft/components/WorkerZone"
 import { laborSupply } from "~/games/graft/domain/LaborSupplyDefinitions"
 import { marketStalls } from "~/games/graft/domain/MarketDefinitions"
 import { css } from "~/generated/styled-system/css"
-import { CARD_TRIM_H_MM, CARD_TRIM_W_MM } from "~/shared/print/cardSize"
+import { CardOutline } from "~/shared/print/CardOutline"
 
 /**
  * Full board sheet for an 18x24in print-shop sheet, printed landscape (24in wide
@@ -66,9 +66,6 @@ const RADIUS_X = 164
 const RADIUS_Y = 105
 const OFFSET_Y = 5
 const STALL_COUNT = 7
-
-const CARD_TRIM_W = CARD_TRIM_W_MM
-const CARD_TRIM_H = CARD_TRIM_H_MM
 
 const printCss = `
   :root { --u: 1mm; }
@@ -177,20 +174,6 @@ const harvestArea = css({
 
 const supplyRow = css({ display: "flex", justifyContent: "center", gap: "8mm" })
 
-const cardOutline = css({
-  flexShrink: 0,
-  border: "0.3mm dashed",
-  borderColor: "stone.400",
-  borderRadius: "card",
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-  color: "stone.400",
-  fontSize: "micro"
-})
-
-const cardOutlineSize = { width: `${CARD_TRIM_W}mm`, height: `${CARD_TRIM_H}mm` }
-
 // The bottom-corner zone cells just centre a labelled WorkerZone. No outline of
 // their own — they sit inside the workers column, which frames them.
 const zoneCell = css({
@@ -243,11 +226,7 @@ export function BoardPrintPage() {
             </div>
             <div className={cardsRArea}>
               <div className={supplyRow}>
-                {Array.from({ length: 3 }, (_, i) => (
-                  <div key={i} className={cardOutline} style={cardOutlineSize}>
-                    Expansion
-                  </div>
-                ))}
+                {Array.from({ length: 3 }, (_, i) => <CardOutline key={i} label="Expansion" />)}
               </div>
               <WorkerZone label="Expand" />
             </div>

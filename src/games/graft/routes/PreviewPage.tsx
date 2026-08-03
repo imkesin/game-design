@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react"
 import { fieldDeck } from "~/games/graft/cards/fieldDeck"
 import { Card } from "~/games/graft/components/Card"
-import { GoldCost } from "~/games/graft/components/icons/GoldCost"
 import { InducedDemand } from "~/games/graft/components/icons/InducedDemand"
 import { WorkerCost } from "~/games/graft/components/icons/WorkerCost"
 import { MarketStall } from "~/games/graft/components/MarketStall"
@@ -10,6 +9,7 @@ import { FRUIT_LIST_WITH_METADATA, type FruitName } from "~/games/graft/domain/C
 import { marketStalls } from "~/games/graft/domain/MarketDefinitions"
 import { css } from "~/generated/styled-system/css"
 import { previewCard } from "~/shared/cards/deckUtils"
+import { GoldCost } from "~/shared/components/icons/GoldCost"
 import { WorkerSlot } from "~/shared/components/slots/WorkerSlot"
 import { ZoomControl } from "~/shared/components/ZoomControl"
 

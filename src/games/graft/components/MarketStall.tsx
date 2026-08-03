@@ -1,6 +1,6 @@
-import { GoldCost } from "~/games/graft/components/icons/GoldCost"
 import { InducedDemand } from "~/games/graft/components/icons/InducedDemand"
 import { FruitCrateSlot } from "~/games/graft/components/slots/FruitCrateSlot"
+import { GoldCost } from "~/shared/components/icons/GoldCost"
 import { darkBand, panelTint, paperFrame } from "~/shared/components/paperFrame"
 import { value } from "~/shared/components/trackSlot"
 // A crate slot is tinted by its fruit's own colour, independent of the stall

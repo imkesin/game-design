@@ -1,0 +1,2839 @@
+{
+  "width": 1700,
+  "height": 2300,
+  "unitsPerInch": 100,
+  "hexes": [
+    {
+      "col": 0,
+      "row": 0,
+      "kind": "land",
+      "province": "west-a"
+    },
+    {
+      "col": 1,
+      "row": 0,
+      "kind": "land",
+      "province": "west-a"
+    },
+    {
+      "col": 2,
+      "row": 0,
+      "kind": "land",
+      "province": "west-a"
+    },
+    {
+      "col": 3,
+      "row": 0,
+      "kind": "mountain"
+    },
+    {
+      "col": 4,
+      "row": 0,
+      "kind": "mountain"
+    },
+    {
+      "col": 5,
+      "row": 0,
+      "kind": "mountain"
+    },
+    {
+      "col": 6,
+      "row": 0,
+      "kind": "mountain"
+    },
+    {
+      "col": 7,
+      "row": 0,
+      "kind": "mountain"
+    },
+    {
+      "col": 8,
+      "row": 0,
+      "kind": "mountain"
+    },
+    {
+      "col": 9,
+      "row": 0,
+      "kind": "land",
+      "province": "north-a"
+    },
+    {
+      "col": 10,
+      "row": 0,
+      "kind": "land",
+      "province": "north-a"
+    },
+    {
+      "col": 11,
+      "row": 0,
+      "kind": "mountain"
+    },
+    {
+      "col": 12,
+      "row": 0,
+      "kind": "mountain"
+    },
+    {
+      "col": 13,
+      "row": 0,
+      "kind": "mountain"
+    },
+    {
+      "col": 14,
+      "row": 0,
+      "kind": "mountain"
+    },
+    {
+      "col": 15,
+      "row": 0,
+      "kind": "mountain"
+    },
+    {
+      "col": 16,
+      "row": 0,
+      "kind": "mountain"
+    },
+    {
+      "col": 17,
+      "row": 0,
+      "kind": "mountain"
+    },
+    {
+      "col": 18,
+      "row": 0,
+      "kind": "mountain"
+    },
+    {
+      "col": 19,
+      "row": 0,
+      "kind": "mountain"
+    },
+    {
+      "col": 0,
+      "row": 1,
+      "kind": "land",
+      "province": "west-a"
+    },
+    {
+      "col": 1,
+      "row": 1,
+      "kind": "land",
+      "province": "west-a"
+    },
+    {
+      "col": 2,
+      "row": 1,
+      "kind": "land",
+      "province": "west-c"
+    },
+    {
+      "col": 3,
+      "row": 1,
+      "kind": "land",
+      "province": "west-c"
+    },
+    {
+      "col": 4,
+      "row": 1,
+      "kind": "land",
+      "province": "west-c"
+    },
+    {
+      "col": 5,
+      "row": 1,
+      "kind": "mountain"
+    },
+    {
+      "col": 6,
+      "row": 1,
+      "kind": "land",
+      "province": "west-c"
+    },
+    {
+      "col": 7,
+      "row": 1,
+      "kind": "mountain"
+    },
+    {
+      "col": 8,
+      "row": 1,
+      "kind": "land",
+      "province": "north-a"
+    },
+    {
+      "col": 9,
+      "row": 1,
+      "kind": "land",
+      "province": "north-a"
+    },
+    {
+      "col": 10,
+      "row": 1,
+      "kind": "land",
+      "province": "north-a"
+    },
+    {
+      "col": 11,
+      "row": 1,
+      "kind": "mountain"
+    },
+    {
+      "col": 12,
+      "row": 1,
+      "kind": "land",
+      "province": "north-b"
+    },
+    {
+      "col": 13,
+      "row": 1,
+      "kind": "mountain"
+    },
+    {
+      "col": 14,
+      "row": 1,
+      "kind": "mountain"
+    },
+    {
+      "col": 15,
+      "row": 1,
+      "kind": "mountain"
+    },
+    {
+      "col": 16,
+      "row": 1,
+      "kind": "mountain"
+    },
+    {
+      "col": 17,
+      "row": 1,
+      "kind": "mountain"
+    },
+    {
+      "col": 18,
+      "row": 1,
+      "kind": "mountain"
+    },
+    {
+      "col": 19,
+      "row": 1,
+      "kind": "mountain"
+    },
+    {
+      "col": 0,
+      "row": 2,
+      "kind": "land",
+      "province": "west-a"
+    },
+    {
+      "col": 1,
+      "row": 2,
+      "kind": "land",
+      "province": "west-a"
+    },
+    {
+      "col": 2,
+      "row": 2,
+      "kind": "land",
+      "province": "west-b"
+    },
+    {
+      "col": 3,
+      "row": 2,
+      "kind": "land",
+      "province": "west-c"
+    },
+    {
+      "col": 4,
+      "row": 2,
+      "kind": "land",
+      "province": "west-c"
+    },
+    {
+      "col": 5,
+      "row": 2,
+      "kind": "land",
+      "province": "west-c"
+    },
+    {
+      "col": 6,
+      "row": 2,
+      "kind": "land",
+      "province": "north-e"
+    },
+    {
+      "col": 7,
+      "row": 2,
+      "kind": "mountain"
+    },
+    {
+      "col": 8,
+      "row": 2,
+      "kind": "mountain"
+    },
+    {
+      "col": 9,
+      "row": 2,
+      "kind": "land",
+      "province": "north-a"
+    },
+    {
+      "col": 10,
+      "row": 2,
+      "kind": "land",
+      "province": "north-a"
+    },
+    {
+      "col": 11,
+      "row": 2,
+      "kind": "land",
+      "province": "north-b"
+    },
+    {
+      "col": 12,
+      "row": 2,
+      "kind": "land",
+      "province": "north-b"
+    },
+    {
+      "col": 13,
+      "row": 2,
+      "kind": "land",
+      "province": "north-b"
+    },
+    {
+      "col": 14,
+      "row": 2,
+      "kind": "mountain"
+    },
+    {
+      "col": 15,
+      "row": 2,
+      "kind": "mountain"
+    },
+    {
+      "col": 16,
+      "row": 2,
+      "kind": "mountain"
+    },
+    {
+      "col": 17,
+      "row": 2,
+      "kind": "mountain"
+    },
+    {
+      "col": 18,
+      "row": 2,
+      "kind": "mountain"
+    },
+    {
+      "col": 19,
+      "row": 2,
+      "kind": "mountain"
+    },
+    {
+      "col": 0,
+      "row": 3,
+      "kind": "mountain"
+    },
+    {
+      "col": 1,
+      "row": 3,
+      "kind": "land",
+      "province": "west-a"
+    },
+    {
+      "col": 2,
+      "row": 3,
+      "kind": "land",
+      "province": "west-b"
+    },
+    {
+      "col": 3,
+      "row": 3,
+      "kind": "land",
+      "province": "west-b"
+    },
+    {
+      "col": 4,
+      "row": 3,
+      "kind": "land",
+      "province": "west-c"
+    },
+    {
+      "col": 5,
+      "row": 3,
+      "kind": "land",
+      "province": "north-f"
+    },
+    {
+      "col": 6,
+      "row": 3,
+      "kind": "land",
+      "province": "north-f"
+    },
+    {
+      "col": 7,
+      "row": 3,
+      "kind": "land",
+      "province": "north-e"
+    },
+    {
+      "col": 8,
+      "row": 3,
+      "kind": "land",
+      "province": "north-e",
+      "resource": "indigo"
+    },
+    {
+      "col": 9,
+      "row": 3,
+      "kind": "land",
+      "province": "north-a"
+    },
+    {
+      "col": 10,
+      "row": 3,
+      "kind": "land",
+      "province": "north-e"
+    },
+    {
+      "col": 11,
+      "row": 3,
+      "kind": "land",
+      "province": "north-b"
+    },
+    {
+      "col": 12,
+      "row": 3,
+      "kind": "land",
+      "province": "north-b"
+    },
+    {
+      "col": 13,
+      "row": 3,
+      "kind": "land",
+      "province": "north-b"
+    },
+    {
+      "col": 14,
+      "row": 3,
+      "kind": "land",
+      "province": "north-d"
+    },
+    {
+      "col": 15,
+      "row": 3,
+      "kind": "mountain"
+    },
+    {
+      "col": 16,
+      "row": 3,
+      "kind": "mountain"
+    },
+    {
+      "col": 17,
+      "row": 3,
+      "kind": "mountain"
+    },
+    {
+      "col": 18,
+      "row": 3,
+      "kind": "mountain"
+    },
+    {
+      "col": 19,
+      "row": 3,
+      "kind": "mountain"
+    },
+    {
+      "col": 0,
+      "row": 4,
+      "kind": "mountain"
+    },
+    {
+      "col": 1,
+      "row": 4,
+      "kind": "land",
+      "province": "west-b",
+      "resource": "indigo"
+    },
+    {
+      "col": 2,
+      "row": 4,
+      "kind": "mountain"
+    },
+    {
+      "col": 3,
+      "row": 4,
+      "kind": "land",
+      "province": "west-b"
+    },
+    {
+      "col": 4,
+      "row": 4,
+      "kind": "land",
+      "province": "west-b"
+    },
+    {
+      "col": 5,
+      "row": 4,
+      "kind": "land",
+      "province": "north-f"
+    },
+    {
+      "col": 6,
+      "row": 4,
+      "kind": "land",
+      "province": "north-f"
+    },
+    {
+      "col": 7,
+      "row": 4,
+      "kind": "land",
+      "province": "north-e"
+    },
+    {
+      "col": 8,
+      "row": 4,
+      "kind": "land",
+      "province": "north-e"
+    },
+    {
+      "col": 9,
+      "row": 4,
+      "kind": "land",
+      "province": "north-e"
+    },
+    {
+      "col": 10,
+      "row": 4,
+      "kind": "land",
+      "province": "north-e"
+    },
+    {
+      "col": 11,
+      "row": 4,
+      "kind": "land",
+      "province": "north-b"
+    },
+    {
+      "col": 12,
+      "row": 4,
+      "kind": "land",
+      "province": "north-b"
+    },
+    {
+      "col": 13,
+      "row": 4,
+      "kind": "land",
+      "province": "north-b"
+    },
+    {
+      "col": 14,
+      "row": 4,
+      "kind": "land",
+      "province": "north-d"
+    },
+    {
+      "col": 15,
+      "row": 4,
+      "kind": "land",
+      "province": "north-d"
+    },
+    {
+      "col": 16,
+      "row": 4,
+      "kind": "land",
+      "province": "north-d"
+    },
+    {
+      "col": 17,
+      "row": 4,
+      "kind": "mountain"
+    },
+    {
+      "col": 18,
+      "row": 4,
+      "kind": "land",
+      "province": "north-d",
+      "resource": "tea"
+    },
+    {
+      "col": 19,
+      "row": 4,
+      "kind": "mountain"
+    },
+    {
+      "col": 0,
+      "row": 5,
+      "kind": "mountain"
+    },
+    {
+      "col": 1,
+      "row": 5,
+      "kind": "mountain"
+    },
+    {
+      "col": 2,
+      "row": 5,
+      "kind": "land",
+      "province": "west-b"
+    },
+    {
+      "col": 3,
+      "row": 5,
+      "kind": "land",
+      "province": "west-b"
+    },
+    {
+      "col": 4,
+      "row": 5,
+      "kind": "land",
+      "province": "central-b"
+    },
+    {
+      "col": 5,
+      "row": 5,
+      "kind": "land",
+      "province": "north-f"
+    },
+    {
+      "col": 6,
+      "row": 5,
+      "kind": "land",
+      "province": "north-f"
+    },
+    {
+      "col": 7,
+      "row": 5,
+      "kind": "land",
+      "province": "north-f"
+    },
+    {
+      "col": 8,
+      "row": 5,
+      "kind": "land",
+      "province": "north-g"
+    },
+    {
+      "col": 9,
+      "row": 5,
+      "kind": "land",
+      "province": "north-g"
+    },
+    {
+      "col": 10,
+      "row": 5,
+      "kind": "land",
+      "province": "north-g"
+    },
+    {
+      "col": 11,
+      "row": 5,
+      "kind": "mountain"
+    },
+    {
+      "col": 12,
+      "row": 5,
+      "kind": "land",
+      "province": "east-c"
+    },
+    {
+      "col": 13,
+      "row": 5,
+      "kind": "mountain"
+    },
+    {
+      "col": 14,
+      "row": 5,
+      "kind": "mountain"
+    },
+    {
+      "col": 15,
+      "row": 5,
+      "kind": "mountain"
+    },
+    {
+      "col": 16,
+      "row": 5,
+      "kind": "land",
+      "province": "north-d"
+    },
+    {
+      "col": 17,
+      "row": 5,
+      "kind": "land",
+      "province": "north-d"
+    },
+    {
+      "col": 18,
+      "row": 5,
+      "kind": "land",
+      "province": "north-d"
+    },
+    {
+      "col": 19,
+      "row": 5,
+      "kind": "land",
+      "province": "north-d"
+    },
+    {
+      "col": 0,
+      "row": 6,
+      "kind": "mountain"
+    },
+    {
+      "col": 1,
+      "row": 6,
+      "kind": "mountain"
+    },
+    {
+      "col": 2,
+      "row": 6,
+      "kind": "land",
+      "province": "west-d"
+    },
+    {
+      "col": 3,
+      "row": 6,
+      "kind": "land",
+      "province": "west-d"
+    },
+    {
+      "col": 4,
+      "row": 6,
+      "kind": "land",
+      "province": "central-b"
+    },
+    {
+      "col": 5,
+      "row": 6,
+      "kind": "land",
+      "province": "central-b"
+    },
+    {
+      "col": 6,
+      "row": 6,
+      "kind": "land",
+      "province": "central-b"
+    },
+    {
+      "col": 7,
+      "row": 6,
+      "kind": "land",
+      "province": "north-f"
+    },
+    {
+      "col": 8,
+      "row": 6,
+      "kind": "land",
+      "province": "north-g"
+    },
+    {
+      "col": 9,
+      "row": 6,
+      "kind": "land",
+      "province": "north-g"
+    },
+    {
+      "col": 10,
+      "row": 6,
+      "kind": "land",
+      "province": "north-g"
+    },
+    {
+      "col": 11,
+      "row": 6,
+      "kind": "land",
+      "province": "east-c"
+    },
+    {
+      "col": 12,
+      "row": 6,
+      "kind": "land",
+      "province": "east-c"
+    },
+    {
+      "col": 13,
+      "row": 6,
+      "kind": "land",
+      "province": "east-c"
+    },
+    {
+      "col": 14,
+      "row": 6,
+      "kind": "land",
+      "province": "east-c"
+    },
+    {
+      "col": 15,
+      "row": 6,
+      "kind": "mountain"
+    },
+    {
+      "col": 16,
+      "row": 6,
+      "kind": "land",
+      "province": "north-c"
+    },
+    {
+      "col": 17,
+      "row": 6,
+      "kind": "mountain"
+    },
+    {
+      "col": 18,
+      "row": 6,
+      "kind": "mountain"
+    },
+    {
+      "col": 19,
+      "row": 6,
+      "kind": "land",
+      "province": "north-d"
+    },
+    {
+      "col": 0,
+      "row": 7,
+      "kind": "land",
+      "province": "west-d"
+    },
+    {
+      "col": 1,
+      "row": 7,
+      "kind": "land",
+      "province": "west-d"
+    },
+    {
+      "col": 2,
+      "row": 7,
+      "kind": "land",
+      "province": "west-d"
+    },
+    {
+      "col": 3,
+      "row": 7,
+      "kind": "land",
+      "province": "central-b"
+    },
+    {
+      "col": 4,
+      "row": 7,
+      "kind": "land",
+      "province": "central-b"
+    },
+    {
+      "col": 5,
+      "row": 7,
+      "kind": "land",
+      "province": "central-b"
+    },
+    {
+      "col": 6,
+      "row": 7,
+      "kind": "land",
+      "province": "central-c"
+    },
+    {
+      "col": 7,
+      "row": 7,
+      "kind": "land",
+      "province": "central-a"
+    },
+    {
+      "col": 8,
+      "row": 7,
+      "kind": "land",
+      "province": "central-a"
+    },
+    {
+      "col": 9,
+      "row": 7,
+      "kind": "land",
+      "province": "north-g"
+    },
+    {
+      "col": 10,
+      "row": 7,
+      "kind": "land",
+      "province": "central-a"
+    },
+    {
+      "col": 11,
+      "row": 7,
+      "kind": "land",
+      "province": "north-g"
+    },
+    {
+      "col": 12,
+      "row": 7,
+      "kind": "land",
+      "province": "east-f"
+    },
+    {
+      "col": 13,
+      "row": 7,
+      "kind": "land",
+      "province": "east-f"
+    },
+    {
+      "col": 14,
+      "row": 7,
+      "kind": "land",
+      "province": "east-c"
+    },
+    {
+      "col": 15,
+      "row": 7,
+      "kind": "land",
+      "province": "east-c"
+    },
+    {
+      "col": 16,
+      "row": 7,
+      "kind": "land",
+      "province": "east-c"
+    },
+    {
+      "col": 17,
+      "row": 7,
+      "kind": "land",
+      "province": "north-c"
+    },
+    {
+      "col": 18,
+      "row": 7,
+      "kind": "land",
+      "province": "north-c"
+    },
+    {
+      "col": 19,
+      "row": 7,
+      "kind": "mountain"
+    },
+    {
+      "col": 0,
+      "row": 8,
+      "kind": "land",
+      "province": "west-d"
+    },
+    {
+      "col": 1,
+      "row": 8,
+      "kind": "land",
+      "province": "west-d"
+    },
+    {
+      "col": 2,
+      "row": 8,
+      "kind": "land",
+      "province": "west-g",
+      "resource": "cotton"
+    },
+    {
+      "col": 3,
+      "row": 8,
+      "kind": "land",
+      "province": "west-g"
+    },
+    {
+      "col": 4,
+      "row": 8,
+      "kind": "land",
+      "province": "central-b"
+    },
+    {
+      "col": 5,
+      "row": 8,
+      "kind": "land",
+      "province": "central-c"
+    },
+    {
+      "col": 6,
+      "row": 8,
+      "kind": "land",
+      "province": "central-c"
+    },
+    {
+      "col": 7,
+      "row": 8,
+      "kind": "land",
+      "province": "central-c"
+    },
+    {
+      "col": 8,
+      "row": 8,
+      "kind": "land",
+      "province": "central-a"
+    },
+    {
+      "col": 9,
+      "row": 8,
+      "kind": "land",
+      "province": "central-a"
+    },
+    {
+      "col": 10,
+      "row": 8,
+      "kind": "land",
+      "province": "central-a"
+    },
+    {
+      "col": 11,
+      "row": 8,
+      "kind": "land",
+      "province": "central-a"
+    },
+    {
+      "col": 12,
+      "row": 8,
+      "kind": "land",
+      "province": "east-f"
+    },
+    {
+      "col": 13,
+      "row": 8,
+      "kind": "land",
+      "province": "east-f"
+    },
+    {
+      "col": 14,
+      "row": 8,
+      "kind": "land",
+      "province": "east-f"
+    },
+    {
+      "col": 15,
+      "row": 8,
+      "kind": "land",
+      "province": "east-e"
+    },
+    {
+      "col": 16,
+      "row": 8,
+      "kind": "land",
+      "province": "east-e"
+    },
+    {
+      "col": 17,
+      "row": 8,
+      "kind": "land",
+      "province": "north-c"
+    },
+    {
+      "col": 18,
+      "row": 8,
+      "kind": "land",
+      "province": "north-c"
+    },
+    {
+      "col": 19,
+      "row": 8,
+      "kind": "land",
+      "province": "north-c"
+    },
+    {
+      "col": 0,
+      "row": 9,
+      "kind": "land",
+      "province": "west-d"
+    },
+    {
+      "col": 1,
+      "row": 9,
+      "kind": "land",
+      "province": "west-e"
+    },
+    {
+      "col": 2,
+      "row": 9,
+      "kind": "land",
+      "province": "west-e"
+    },
+    {
+      "col": 3,
+      "row": 9,
+      "kind": "land",
+      "province": "west-g"
+    },
+    {
+      "col": 4,
+      "row": 9,
+      "kind": "land",
+      "province": "west-g"
+    },
+    {
+      "col": 5,
+      "row": 9,
+      "kind": "land",
+      "province": "central-c"
+    },
+    {
+      "col": 6,
+      "row": 9,
+      "kind": "land",
+      "province": "central-c"
+    },
+    {
+      "col": 7,
+      "row": 9,
+      "kind": "land",
+      "province": "central-c"
+    },
+    {
+      "col": 8,
+      "row": 9,
+      "kind": "land",
+      "province": "central-f"
+    },
+    {
+      "col": 9,
+      "row": 9,
+      "kind": "land",
+      "province": "central-f"
+    },
+    {
+      "col": 10,
+      "row": 9,
+      "kind": "land",
+      "province": "central-a"
+    },
+    {
+      "col": 11,
+      "row": 9,
+      "kind": "land",
+      "province": "central-a"
+    },
+    {
+      "col": 12,
+      "row": 9,
+      "kind": "land",
+      "province": "east-f"
+    },
+    {
+      "col": 13,
+      "row": 9,
+      "kind": "land",
+      "province": "east-f"
+    },
+    {
+      "col": 14,
+      "row": 9,
+      "kind": "sea"
+    },
+    {
+      "col": 15,
+      "row": 9,
+      "kind": "land",
+      "province": "east-e"
+    },
+    {
+      "col": 16,
+      "row": 9,
+      "kind": "land",
+      "province": "east-e"
+    },
+    {
+      "col": 17,
+      "row": 9,
+      "kind": "land",
+      "province": "east-d"
+    },
+    {
+      "col": 18,
+      "row": 9,
+      "kind": "land",
+      "province": "north-c"
+    },
+    {
+      "col": 19,
+      "row": 9,
+      "kind": "land",
+      "province": "north-c"
+    },
+    {
+      "col": 0,
+      "row": 10,
+      "kind": "land",
+      "province": "west-e"
+    },
+    {
+      "col": 1,
+      "row": 10,
+      "kind": "land",
+      "province": "west-e"
+    },
+    {
+      "col": 2,
+      "row": 10,
+      "kind": "land",
+      "province": "west-e"
+    },
+    {
+      "col": 3,
+      "row": 10,
+      "kind": "land",
+      "province": "west-g"
+    },
+    {
+      "col": 4,
+      "row": 10,
+      "kind": "land",
+      "province": "west-g"
+    },
+    {
+      "col": 5,
+      "row": 10,
+      "kind": "land",
+      "province": "west-g"
+    },
+    {
+      "col": 6,
+      "row": 10,
+      "kind": "land",
+      "province": "central-c"
+    },
+    {
+      "col": 7,
+      "row": 10,
+      "kind": "land",
+      "province": "central-f"
+    },
+    {
+      "col": 8,
+      "row": 10,
+      "kind": "land",
+      "province": "central-f"
+    },
+    {
+      "col": 9,
+      "row": 10,
+      "kind": "land",
+      "province": "central-f"
+    },
+    {
+      "col": 10,
+      "row": 10,
+      "kind": "land",
+      "province": "east-g"
+    },
+    {
+      "col": 11,
+      "row": 10,
+      "kind": "land",
+      "province": "east-f"
+    },
+    {
+      "col": 12,
+      "row": 10,
+      "kind": "sea"
+    },
+    {
+      "col": 13,
+      "row": 10,
+      "kind": "sea"
+    },
+    {
+      "col": 14,
+      "row": 10,
+      "kind": "sea"
+    },
+    {
+      "col": 15,
+      "row": 10,
+      "kind": "land",
+      "province": "east-e",
+      "resource": "spices"
+    },
+    {
+      "col": 16,
+      "row": 10,
+      "kind": "land",
+      "province": "east-e"
+    },
+    {
+      "col": 17,
+      "row": 10,
+      "kind": "land",
+      "province": "east-d"
+    },
+    {
+      "col": 18,
+      "row": 10,
+      "kind": "land",
+      "province": "east-d"
+    },
+    {
+      "col": 19,
+      "row": 10,
+      "kind": "mountain"
+    },
+    {
+      "col": 0,
+      "row": 11,
+      "kind": "sea"
+    },
+    {
+      "col": 1,
+      "row": 11,
+      "kind": "land",
+      "province": "west-e"
+    },
+    {
+      "col": 2,
+      "row": 11,
+      "kind": "land",
+      "province": "west-e"
+    },
+    {
+      "col": 3,
+      "row": 11,
+      "kind": "land",
+      "province": "west-e"
+    },
+    {
+      "col": 4,
+      "row": 11,
+      "kind": "land",
+      "province": "west-f"
+    },
+    {
+      "col": 5,
+      "row": 11,
+      "kind": "land",
+      "province": "west-g"
+    },
+    {
+      "col": 6,
+      "row": 11,
+      "kind": "land",
+      "province": "central-f"
+    },
+    {
+      "col": 7,
+      "row": 11,
+      "kind": "land",
+      "province": "central-f"
+    },
+    {
+      "col": 8,
+      "row": 11,
+      "kind": "land",
+      "province": "central-e"
+    },
+    {
+      "col": 9,
+      "row": 11,
+      "kind": "land",
+      "province": "central-e"
+    },
+    {
+      "col": 10,
+      "row": 11,
+      "kind": "land",
+      "province": "east-g"
+    },
+    {
+      "col": 11,
+      "row": 11,
+      "kind": "sea"
+    },
+    {
+      "col": 12,
+      "row": 11,
+      "kind": "sea"
+    },
+    {
+      "col": 13,
+      "row": 11,
+      "kind": "sea"
+    },
+    {
+      "col": 14,
+      "row": 11,
+      "kind": "land",
+      "province": "east-e"
+    },
+    {
+      "col": 15,
+      "row": 11,
+      "kind": "land",
+      "province": "east-e"
+    },
+    {
+      "col": 16,
+      "row": 11,
+      "kind": "land",
+      "province": "east-d"
+    },
+    {
+      "col": 17,
+      "row": 11,
+      "kind": "land",
+      "province": "east-d"
+    },
+    {
+      "col": 18,
+      "row": 11,
+      "kind": "land",
+      "province": "east-d"
+    },
+    {
+      "col": 19,
+      "row": 11,
+      "kind": "land",
+      "province": "east-a"
+    },
+    {
+      "col": 0,
+      "row": 12,
+      "kind": "sea"
+    },
+    {
+      "col": 1,
+      "row": 12,
+      "kind": "sea"
+    },
+    {
+      "col": 2,
+      "row": 12,
+      "kind": "sea"
+    },
+    {
+      "col": 3,
+      "row": 12,
+      "kind": "land",
+      "province": "west-f"
+    },
+    {
+      "col": 4,
+      "row": 12,
+      "kind": "land",
+      "province": "west-f"
+    },
+    {
+      "col": 5,
+      "row": 12,
+      "kind": "land",
+      "province": "central-f"
+    },
+    {
+      "col": 6,
+      "row": 12,
+      "kind": "land",
+      "province": "central-f"
+    },
+    {
+      "col": 7,
+      "row": 12,
+      "kind": "land",
+      "province": "central-f"
+    },
+    {
+      "col": 8,
+      "row": 12,
+      "kind": "land",
+      "province": "central-e"
+    },
+    {
+      "col": 9,
+      "row": 12,
+      "kind": "land",
+      "province": "central-e"
+    },
+    {
+      "col": 10,
+      "row": 12,
+      "kind": "land",
+      "province": "east-g"
+    },
+    {
+      "col": 11,
+      "row": 12,
+      "kind": "land",
+      "province": "east-g"
+    },
+    {
+      "col": 12,
+      "row": 12,
+      "kind": "sea"
+    },
+    {
+      "col": 13,
+      "row": 12,
+      "kind": "sea"
+    },
+    {
+      "col": 14,
+      "row": 12,
+      "kind": "land",
+      "province": "east-b"
+    },
+    {
+      "col": 15,
+      "row": 12,
+      "kind": "land",
+      "province": "east-b"
+    },
+    {
+      "col": 16,
+      "row": 12,
+      "kind": "land",
+      "province": "east-b"
+    },
+    {
+      "col": 17,
+      "row": 12,
+      "kind": "land",
+      "province": "east-d"
+    },
+    {
+      "col": 18,
+      "row": 12,
+      "kind": "land",
+      "province": "east-d"
+    },
+    {
+      "col": 19,
+      "row": 12,
+      "kind": "land",
+      "province": "east-a"
+    },
+    {
+      "col": 0,
+      "row": 13,
+      "kind": "sea"
+    },
+    {
+      "col": 1,
+      "row": 13,
+      "kind": "sea"
+    },
+    {
+      "col": 2,
+      "row": 13,
+      "kind": "sea"
+    },
+    {
+      "col": 3,
+      "row": 13,
+      "kind": "land",
+      "province": "west-f"
+    },
+    {
+      "col": 4,
+      "row": 13,
+      "kind": "land",
+      "province": "west-f"
+    },
+    {
+      "col": 5,
+      "row": 13,
+      "kind": "land",
+      "province": "central-d"
+    },
+    {
+      "col": 6,
+      "row": 13,
+      "kind": "land",
+      "province": "central-d"
+    },
+    {
+      "col": 7,
+      "row": 13,
+      "kind": "land",
+      "province": "central-e"
+    },
+    {
+      "col": 8,
+      "row": 13,
+      "kind": "land",
+      "province": "central-e",
+      "capital": true
+    },
+    {
+      "col": 9,
+      "row": 13,
+      "kind": "land",
+      "province": "central-e"
+    },
+    {
+      "col": 10,
+      "row": 13,
+      "kind": "land",
+      "province": "east-g"
+    },
+    {
+      "col": 11,
+      "row": 13,
+      "kind": "land",
+      "province": "east-g"
+    },
+    {
+      "col": 12,
+      "row": 13,
+      "kind": "land",
+      "province": "east-g"
+    },
+    {
+      "col": 13,
+      "row": 13,
+      "kind": "sea"
+    },
+    {
+      "col": 14,
+      "row": 13,
+      "kind": "sea"
+    },
+    {
+      "col": 15,
+      "row": 13,
+      "kind": "land",
+      "province": "east-b"
+    },
+    {
+      "col": 16,
+      "row": 13,
+      "kind": "land",
+      "province": "east-b"
+    },
+    {
+      "col": 17,
+      "row": 13,
+      "kind": "land",
+      "province": "east-b"
+    },
+    {
+      "col": 18,
+      "row": 13,
+      "kind": "land",
+      "province": "east-a"
+    },
+    {
+      "col": 19,
+      "row": 13,
+      "kind": "land",
+      "province": "east-a"
+    },
+    {
+      "col": 0,
+      "row": 14,
+      "kind": "sea"
+    },
+    {
+      "col": 1,
+      "row": 14,
+      "kind": "sea"
+    },
+    {
+      "col": 2,
+      "row": 14,
+      "kind": "land",
+      "province": "south-f"
+    },
+    {
+      "col": 3,
+      "row": 14,
+      "kind": "land",
+      "province": "west-f"
+    },
+    {
+      "col": 4,
+      "row": 14,
+      "kind": "land",
+      "province": "west-f"
+    },
+    {
+      "col": 5,
+      "row": 14,
+      "kind": "land",
+      "province": "central-d"
+    },
+    {
+      "col": 6,
+      "row": 14,
+      "kind": "land",
+      "province": "central-d"
+    },
+    {
+      "col": 7,
+      "row": 14,
+      "kind": "land",
+      "province": "central-d"
+    },
+    {
+      "col": 8,
+      "row": 14,
+      "kind": "land",
+      "province": "central-e"
+    },
+    {
+      "col": 9,
+      "row": 14,
+      "kind": "sea"
+    },
+    {
+      "col": 10,
+      "row": 14,
+      "kind": "sea"
+    },
+    {
+      "col": 11,
+      "row": 14,
+      "kind": "land",
+      "province": "east-g"
+    },
+    {
+      "col": 12,
+      "row": 14,
+      "kind": "sea"
+    },
+    {
+      "col": 13,
+      "row": 14,
+      "kind": "sea"
+    },
+    {
+      "col": 14,
+      "row": 14,
+      "kind": "sea"
+    },
+    {
+      "col": 15,
+      "row": 14,
+      "kind": "sea"
+    },
+    {
+      "col": 16,
+      "row": 14,
+      "kind": "land",
+      "province": "east-b"
+    },
+    {
+      "col": 17,
+      "row": 14,
+      "kind": "land",
+      "province": "east-b"
+    },
+    {
+      "col": 18,
+      "row": 14,
+      "kind": "land",
+      "province": "east-a"
+    },
+    {
+      "col": 19,
+      "row": 14,
+      "kind": "land",
+      "province": "east-a"
+    },
+    {
+      "col": 0,
+      "row": 15,
+      "kind": "sea"
+    },
+    {
+      "col": 1,
+      "row": 15,
+      "kind": "land",
+      "province": "south-f"
+    },
+    {
+      "col": 2,
+      "row": 15,
+      "kind": "land",
+      "province": "south-f"
+    },
+    {
+      "col": 3,
+      "row": 15,
+      "kind": "land",
+      "province": "west-f"
+    },
+    {
+      "col": 4,
+      "row": 15,
+      "kind": "land",
+      "province": "south-g"
+    },
+    {
+      "col": 5,
+      "row": 15,
+      "kind": "land",
+      "province": "south-g"
+    },
+    {
+      "col": 6,
+      "row": 15,
+      "kind": "land",
+      "province": "central-d"
+    },
+    {
+      "col": 7,
+      "row": 15,
+      "kind": "land",
+      "province": "central-d"
+    },
+    {
+      "col": 8,
+      "row": 15,
+      "kind": "land",
+      "province": "south-d"
+    },
+    {
+      "col": 9,
+      "row": 15,
+      "kind": "sea"
+    },
+    {
+      "col": 10,
+      "row": 15,
+      "kind": "land",
+      "province": "south-d"
+    },
+    {
+      "col": 11,
+      "row": 15,
+      "kind": "sea"
+    },
+    {
+      "col": 12,
+      "row": 15,
+      "kind": "sea"
+    },
+    {
+      "col": 13,
+      "row": 15,
+      "kind": "sea"
+    },
+    {
+      "col": 14,
+      "row": 15,
+      "kind": "sea"
+    },
+    {
+      "col": 15,
+      "row": 15,
+      "kind": "sea"
+    },
+    {
+      "col": 16,
+      "row": 15,
+      "kind": "sea"
+    },
+    {
+      "col": 17,
+      "row": 15,
+      "kind": "sea"
+    },
+    {
+      "col": 18,
+      "row": 15,
+      "kind": "sea"
+    },
+    {
+      "col": 19,
+      "row": 15,
+      "kind": "land",
+      "province": "east-a",
+      "resource": "tea"
+    },
+    {
+      "col": 0,
+      "row": 16,
+      "kind": "sea"
+    },
+    {
+      "col": 1,
+      "row": 16,
+      "kind": "sea"
+    },
+    {
+      "col": 2,
+      "row": 16,
+      "kind": "land",
+      "province": "south-f"
+    },
+    {
+      "col": 3,
+      "row": 16,
+      "kind": "land",
+      "province": "south-f"
+    },
+    {
+      "col": 4,
+      "row": 16,
+      "kind": "land",
+      "province": "south-g"
+    },
+    {
+      "col": 5,
+      "row": 16,
+      "kind": "land",
+      "province": "south-g",
+      "resource": "cotton"
+    },
+    {
+      "col": 6,
+      "row": 16,
+      "kind": "land",
+      "province": "south-g"
+    },
+    {
+      "col": 7,
+      "row": 16,
+      "kind": "land",
+      "province": "central-d"
+    },
+    {
+      "col": 8,
+      "row": 16,
+      "kind": "land",
+      "province": "south-d"
+    },
+    {
+      "col": 9,
+      "row": 16,
+      "kind": "land",
+      "province": "south-d"
+    },
+    {
+      "col": 10,
+      "row": 16,
+      "kind": "land",
+      "province": "south-d"
+    },
+    {
+      "col": 11,
+      "row": 16,
+      "kind": "land",
+      "province": "south-d"
+    },
+    {
+      "col": 12,
+      "row": 16,
+      "kind": "sea"
+    },
+    {
+      "col": 13,
+      "row": 16,
+      "kind": "sea"
+    },
+    {
+      "col": 14,
+      "row": 16,
+      "kind": "sea"
+    },
+    {
+      "col": 15,
+      "row": 16,
+      "kind": "sea"
+    },
+    {
+      "col": 16,
+      "row": 16,
+      "kind": "sea"
+    },
+    {
+      "col": 17,
+      "row": 16,
+      "kind": "sea"
+    },
+    {
+      "col": 18,
+      "row": 16,
+      "kind": "sea"
+    },
+    {
+      "col": 19,
+      "row": 16,
+      "kind": "land",
+      "province": "east-a"
+    },
+    {
+      "col": 0,
+      "row": 17,
+      "kind": "sea"
+    },
+    {
+      "col": 1,
+      "row": 17,
+      "kind": "land",
+      "province": "south-f"
+    },
+    {
+      "col": 2,
+      "row": 17,
+      "kind": "land",
+      "province": "south-f"
+    },
+    {
+      "col": 3,
+      "row": 17,
+      "kind": "land",
+      "province": "south-e"
+    },
+    {
+      "col": 4,
+      "row": 17,
+      "kind": "land",
+      "province": "south-e"
+    },
+    {
+      "col": 5,
+      "row": 17,
+      "kind": "land",
+      "province": "south-g"
+    },
+    {
+      "col": 6,
+      "row": 17,
+      "kind": "land",
+      "province": "south-g"
+    },
+    {
+      "col": 7,
+      "row": 17,
+      "kind": "land",
+      "province": "south-g"
+    },
+    {
+      "col": 8,
+      "row": 17,
+      "kind": "land",
+      "province": "south-d"
+    },
+    {
+      "col": 9,
+      "row": 17,
+      "kind": "land",
+      "province": "south-d"
+    },
+    {
+      "col": 10,
+      "row": 17,
+      "kind": "land",
+      "province": "south-c"
+    },
+    {
+      "col": 11,
+      "row": 17,
+      "kind": "sea"
+    },
+    {
+      "col": 12,
+      "row": 17,
+      "kind": "sea"
+    },
+    {
+      "col": 13,
+      "row": 17,
+      "kind": "sea"
+    },
+    {
+      "col": 14,
+      "row": 17,
+      "kind": "sea"
+    },
+    {
+      "col": 15,
+      "row": 17,
+      "kind": "sea"
+    },
+    {
+      "col": 16,
+      "row": 17,
+      "kind": "sea"
+    },
+    {
+      "col": 17,
+      "row": 17,
+      "kind": "sea"
+    },
+    {
+      "col": 18,
+      "row": 17,
+      "kind": "sea"
+    },
+    {
+      "col": 19,
+      "row": 17,
+      "kind": "sea"
+    },
+    {
+      "col": 0,
+      "row": 18,
+      "kind": "sea"
+    },
+    {
+      "col": 1,
+      "row": 18,
+      "kind": "land",
+      "province": "south-f"
+    },
+    {
+      "col": 2,
+      "row": 18,
+      "kind": "sea"
+    },
+    {
+      "col": 3,
+      "row": 18,
+      "kind": "sea"
+    },
+    {
+      "col": 4,
+      "row": 18,
+      "kind": "land",
+      "province": "south-e"
+    },
+    {
+      "col": 5,
+      "row": 18,
+      "kind": "land",
+      "province": "south-e"
+    },
+    {
+      "col": 6,
+      "row": 18,
+      "kind": "land",
+      "province": "south-e"
+    },
+    {
+      "col": 7,
+      "row": 18,
+      "kind": "land",
+      "province": "south-e"
+    },
+    {
+      "col": 8,
+      "row": 18,
+      "kind": "land",
+      "province": "south-b"
+    },
+    {
+      "col": 9,
+      "row": 18,
+      "kind": "land",
+      "province": "south-c"
+    },
+    {
+      "col": 10,
+      "row": 18,
+      "kind": "land",
+      "province": "south-c"
+    },
+    {
+      "col": 11,
+      "row": 18,
+      "kind": "sea"
+    },
+    {
+      "col": 12,
+      "row": 18,
+      "kind": "sea"
+    },
+    {
+      "col": 13,
+      "row": 18,
+      "kind": "sea"
+    },
+    {
+      "col": 14,
+      "row": 18,
+      "kind": "sea"
+    },
+    {
+      "col": 15,
+      "row": 18,
+      "kind": "sea"
+    },
+    {
+      "col": 16,
+      "row": 18,
+      "kind": "sea"
+    },
+    {
+      "col": 17,
+      "row": 18,
+      "kind": "sea"
+    },
+    {
+      "col": 18,
+      "row": 18,
+      "kind": "sea"
+    },
+    {
+      "col": 19,
+      "row": 18,
+      "kind": "sea"
+    },
+    {
+      "col": 0,
+      "row": 19,
+      "kind": "sea"
+    },
+    {
+      "col": 1,
+      "row": 19,
+      "kind": "sea"
+    },
+    {
+      "col": 2,
+      "row": 19,
+      "kind": "sea"
+    },
+    {
+      "col": 3,
+      "row": 19,
+      "kind": "sea"
+    },
+    {
+      "col": 4,
+      "row": 19,
+      "kind": "land",
+      "province": "south-e"
+    },
+    {
+      "col": 5,
+      "row": 19,
+      "kind": "land",
+      "province": "south-e"
+    },
+    {
+      "col": 6,
+      "row": 19,
+      "kind": "land",
+      "province": "south-b"
+    },
+    {
+      "col": 7,
+      "row": 19,
+      "kind": "land",
+      "province": "south-b"
+    },
+    {
+      "col": 8,
+      "row": 19,
+      "kind": "land",
+      "province": "south-b"
+    },
+    {
+      "col": 9,
+      "row": 19,
+      "kind": "land",
+      "province": "south-c"
+    },
+    {
+      "col": 10,
+      "row": 19,
+      "kind": "land",
+      "province": "south-c"
+    },
+    {
+      "col": 11,
+      "row": 19,
+      "kind": "land",
+      "province": "south-c"
+    },
+    {
+      "col": 12,
+      "row": 19,
+      "kind": "land",
+      "province": "south-c"
+    },
+    {
+      "col": 13,
+      "row": 19,
+      "kind": "sea"
+    },
+    {
+      "col": 14,
+      "row": 19,
+      "kind": "sea"
+    },
+    {
+      "col": 15,
+      "row": 19,
+      "kind": "sea"
+    },
+    {
+      "col": 16,
+      "row": 19,
+      "kind": "sea"
+    },
+    {
+      "col": 17,
+      "row": 19,
+      "kind": "sea"
+    },
+    {
+      "col": 18,
+      "row": 19,
+      "kind": "sea"
+    },
+    {
+      "col": 19,
+      "row": 19,
+      "kind": "sea"
+    },
+    {
+      "col": 0,
+      "row": 20,
+      "kind": "sea"
+    },
+    {
+      "col": 1,
+      "row": 20,
+      "kind": "sea"
+    },
+    {
+      "col": 2,
+      "row": 20,
+      "kind": "sea"
+    },
+    {
+      "col": 3,
+      "row": 20,
+      "kind": "sea"
+    },
+    {
+      "col": 4,
+      "row": 20,
+      "kind": "sea"
+    },
+    {
+      "col": 5,
+      "row": 20,
+      "kind": "land",
+      "province": "south-a"
+    },
+    {
+      "col": 6,
+      "row": 20,
+      "kind": "land",
+      "province": "south-a"
+    },
+    {
+      "col": 7,
+      "row": 20,
+      "kind": "land",
+      "province": "south-b"
+    },
+    {
+      "col": 8,
+      "row": 20,
+      "kind": "land",
+      "province": "south-b"
+    },
+    {
+      "col": 9,
+      "row": 20,
+      "kind": "land",
+      "province": "south-b"
+    },
+    {
+      "col": 10,
+      "row": 20,
+      "kind": "sea"
+    },
+    {
+      "col": 11,
+      "row": 20,
+      "kind": "land",
+      "province": "south-c"
+    },
+    {
+      "col": 12,
+      "row": 20,
+      "kind": "sea"
+    },
+    {
+      "col": 13,
+      "row": 20,
+      "kind": "sea"
+    },
+    {
+      "col": 14,
+      "row": 20,
+      "kind": "sea"
+    },
+    {
+      "col": 15,
+      "row": 20,
+      "kind": "sea"
+    },
+    {
+      "col": 16,
+      "row": 20,
+      "kind": "sea"
+    },
+    {
+      "col": 17,
+      "row": 20,
+      "kind": "sea"
+    },
+    {
+      "col": 18,
+      "row": 20,
+      "kind": "sea"
+    },
+    {
+      "col": 19,
+      "row": 20,
+      "kind": "sea"
+    },
+    {
+      "col": 0,
+      "row": 21,
+      "kind": "sea"
+    },
+    {
+      "col": 1,
+      "row": 21,
+      "kind": "sea"
+    },
+    {
+      "col": 2,
+      "row": 21,
+      "kind": "sea"
+    },
+    {
+      "col": 3,
+      "row": 21,
+      "kind": "sea"
+    },
+    {
+      "col": 4,
+      "row": 21,
+      "kind": "sea"
+    },
+    {
+      "col": 5,
+      "row": 21,
+      "kind": "land",
+      "province": "south-a"
+    },
+    {
+      "col": 6,
+      "row": 21,
+      "kind": "land",
+      "province": "south-a"
+    },
+    {
+      "col": 7,
+      "row": 21,
+      "kind": "land",
+      "province": "south-a"
+    },
+    {
+      "col": 8,
+      "row": 21,
+      "kind": "land",
+      "province": "south-b"
+    },
+    {
+      "col": 9,
+      "row": 21,
+      "kind": "sea"
+    },
+    {
+      "col": 10,
+      "row": 21,
+      "kind": "sea"
+    },
+    {
+      "col": 11,
+      "row": 21,
+      "kind": "sea"
+    },
+    {
+      "col": 12,
+      "row": 21,
+      "kind": "sea"
+    },
+    {
+      "col": 13,
+      "row": 21,
+      "kind": "sea"
+    },
+    {
+      "col": 14,
+      "row": 21,
+      "kind": "sea"
+    },
+    {
+      "col": 15,
+      "row": 21,
+      "kind": "sea"
+    },
+    {
+      "col": 16,
+      "row": 21,
+      "kind": "sea"
+    },
+    {
+      "col": 17,
+      "row": 21,
+      "kind": "sea"
+    },
+    {
+      "col": 18,
+      "row": 21,
+      "kind": "sea"
+    },
+    {
+      "col": 19,
+      "row": 21,
+      "kind": "sea"
+    },
+    {
+      "col": 0,
+      "row": 22,
+      "kind": "sea"
+    },
+    {
+      "col": 1,
+      "row": 22,
+      "kind": "sea"
+    },
+    {
+      "col": 2,
+      "row": 22,
+      "kind": "sea"
+    },
+    {
+      "col": 3,
+      "row": 22,
+      "kind": "sea"
+    },
+    {
+      "col": 4,
+      "row": 22,
+      "kind": "sea"
+    },
+    {
+      "col": 5,
+      "row": 22,
+      "kind": "sea"
+    },
+    {
+      "col": 6,
+      "row": 22,
+      "kind": "land",
+      "province": "south-a",
+      "resource": "spices"
+    },
+    {
+      "col": 7,
+      "row": 22,
+      "kind": "land",
+      "province": "south-a"
+    },
+    {
+      "col": 8,
+      "row": 22,
+      "kind": "sea"
+    },
+    {
+      "col": 9,
+      "row": 22,
+      "kind": "sea"
+    },
+    {
+      "col": 10,
+      "row": 22,
+      "kind": "sea"
+    },
+    {
+      "col": 11,
+      "row": 22,
+      "kind": "sea"
+    },
+    {
+      "col": 12,
+      "row": 22,
+      "kind": "sea"
+    },
+    {
+      "col": 13,
+      "row": 22,
+      "kind": "sea"
+    },
+    {
+      "col": 14,
+      "row": 22,
+      "kind": "sea"
+    },
+    {
+      "col": 15,
+      "row": 22,
+      "kind": "sea"
+    },
+    {
+      "col": 16,
+      "row": 22,
+      "kind": "sea"
+    },
+    {
+      "col": 17,
+      "row": 22,
+      "kind": "sea"
+    },
+    {
+      "col": 18,
+      "row": 22,
+      "kind": "sea"
+    },
+    {
+      "col": 19,
+      "row": 22,
+      "kind": "sea"
+    },
+    {
+      "col": 1,
+      "row": 23,
+      "kind": "sea"
+    },
+    {
+      "col": 3,
+      "row": 23,
+      "kind": "sea"
+    },
+    {
+      "col": 5,
+      "row": 23,
+      "kind": "sea"
+    },
+    {
+      "col": 7,
+      "row": 23,
+      "kind": "land",
+      "province": "south-a"
+    },
+    {
+      "col": 9,
+      "row": 23,
+      "kind": "sea"
+    },
+    {
+      "col": 11,
+      "row": 23,
+      "kind": "sea"
+    },
+    {
+      "col": 13,
+      "row": 23,
+      "kind": "sea"
+    },
+    {
+      "col": 15,
+      "row": 23,
+      "kind": "sea"
+    },
+    {
+      "col": 17,
+      "row": 23,
+      "kind": "sea"
+    },
+    {
+      "col": 19,
+      "row": 23,
+      "kind": "sea"
+    }
+  ],
+  "provinces": [
+    {
+      "id": "central-a",
+      "name": "Central - A",
+      "state": "central"
+    },
+    {
+      "id": "central-b",
+      "name": "Central - B",
+      "state": "central"
+    },
+    {
+      "id": "central-c",
+      "name": "Central - C",
+      "state": "central"
+    },
+    {
+      "id": "central-d",
+      "name": "Central - D",
+      "state": "central"
+    },
+    {
+      "id": "central-e",
+      "name": "Central - E",
+      "state": "central"
+    },
+    {
+      "id": "central-f",
+      "name": "Central - F",
+      "state": "central"
+    },
+    {
+      "id": "east-a",
+      "name": "East - A",
+      "state": "east"
+    },
+    {
+      "id": "east-b",
+      "name": "East - B",
+      "state": "east"
+    },
+    {
+      "id": "east-c",
+      "name": "East - C",
+      "state": "east"
+    },
+    {
+      "id": "east-d",
+      "name": "East - D",
+      "state": "east"
+    },
+    {
+      "id": "east-e",
+      "name": "East - E",
+      "state": "east"
+    },
+    {
+      "id": "east-f",
+      "name": "East - F",
+      "state": "east"
+    },
+    {
+      "id": "east-g",
+      "name": "East - G",
+      "state": "east"
+    },
+    {
+      "id": "north-a",
+      "name": "North - A",
+      "state": "north"
+    },
+    {
+      "id": "north-b",
+      "name": "North - B",
+      "state": "north"
+    },
+    {
+      "id": "north-c",
+      "name": "North - C",
+      "state": "north"
+    },
+    {
+      "id": "north-d",
+      "name": "North - D",
+      "state": "north"
+    },
+    {
+      "id": "north-e",
+      "name": "North - E",
+      "state": "north"
+    },
+    {
+      "id": "north-f",
+      "name": "North - F",
+      "state": "north"
+    },
+    {
+      "id": "north-g",
+      "name": "North - G",
+      "state": "north"
+    },
+    {
+      "id": "south-a",
+      "name": "South - A",
+      "state": "south"
+    },
+    {
+      "id": "south-b",
+      "name": "South - B",
+      "state": "south"
+    },
+    {
+      "id": "south-c",
+      "name": "South - C",
+      "state": "south"
+    },
+    {
+      "id": "south-d",
+      "name": "South - D",
+      "state": "south"
+    },
+    {
+      "id": "south-e",
+      "name": "South - E",
+      "state": "south"
+    },
+    {
+      "id": "south-f",
+      "name": "South - F",
+      "state": "south"
+    },
+    {
+      "id": "south-g",
+      "name": "South - G",
+      "state": "south"
+    },
+    {
+      "id": "west-a",
+      "name": "West - A",
+      "state": "west"
+    },
+    {
+      "id": "west-b",
+      "name": "West - B",
+      "state": "west"
+    },
+    {
+      "id": "west-c",
+      "name": "West - C",
+      "state": "west"
+    },
+    {
+      "id": "west-d",
+      "name": "West - D",
+      "state": "west"
+    },
+    {
+      "id": "west-e",
+      "name": "West - E",
+      "state": "west"
+    },
+    {
+      "id": "west-f",
+      "name": "West - F",
+      "state": "west"
+    },
+    {
+      "id": "west-g",
+      "name": "West - G",
+      "state": "west"
+    }
+  ],
+  "states": [
+    {
+      "id": "central",
+      "name": "Central"
+    },
+    {
+      "id": "east",
+      "name": "East"
+    },
+    {
+      "id": "north",
+      "name": "North"
+    },
+    {
+      "id": "south",
+      "name": "South"
+    },
+    {
+      "id": "west",
+      "name": "West"
+    }
+  ]
+}

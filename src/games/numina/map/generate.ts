@@ -1,97 +1,33 @@
-import { hintedAnchors, layoutAnchors } from "./layout.ts"
-import { chainToPath, pairKey, pointKey, type Pt, stitch } from "./mesh.ts"
-import {
-  type Assignment,
-  buildMesh,
-  contactEdges,
-  diffAdjacency,
-  type Mesh,
-  partitionCells,
-  repairPartition
-} from "./partition.ts"
+import { chainToPath, type Mesh, pairKey, pointKey, type Pt, round, stitch } from "./geometry.ts"
+import { buildHexGrid, buildHexMesh } from "./hex.ts"
+import type { HexCell, HexKind, HexMapSpec } from "./hexSpec.ts"
+import { CAPITAL_RULE_SCALE, markerPath, starPath } from "./markers.ts"
+import { isResource, type Resource, RESOURCE_LABEL } from "./resources.ts"
 
 /**
  * Build-time map generator.
  *
- * Adjacency is the input and the invariant: the spec declares which provinces
- * border which, and geometry is derived to satisfy it. If it cannot be
- * satisfied, the build fails rather than emitting a board whose picture
- * contradicts its rules.
+ * Unlike the old Voronoi pipeline, there is nothing to solve here: a hex's
+ * neighbors are fixed by its position, and the authored `HexMapSpec` already
+ * says exactly which hex belongs to which province and state. This function is
+ * a straight-line build — mesh, then lookups, then assemble the output — not a
+ * search.
  *
- * Imported only by `build.ts` — the browser receives the generated `map.json`,
- * never turf or d3.
+ * Imported only by `build.ts` — the browser receives the generated `map.json`.
  */
 
-export type Point = readonly [number, number]
-
-export type ProvinceSpec = {
-  id: string
-  name: string
-  /** Ids this province shares a border with. Exhaustive: anything absent must NOT touch. */
-  borders: readonly string[]
-  /**
-   * Roughly where this province should sit, in map units. Purely advisory: it
-   * seeds the partition and gives you art direction over the board, but it can
-   * never make the build accept a border the graph did not declare. Provide it
-   * for every province or none — a partial set is rejected, since one hinted
-   * province among solved ones is almost always a mistake.
-   */
-  at?: Point
-  /**
-   * Relative size, default 1. The partition grows provinces outward at a rate
-   * proportional to this, so a weight of 3 claims roughly three times the
-   * ground. Without it every region comes out the same size, which makes the
-   * land/sea split a function of how many provinces each happens to have.
-   */
-  weight?: number
-}
-
-/**
- * A presentational grouping of provinces. States carry no adjacency of their
- * own — theirs is derived from their provinces', because the province graph is
- * the single source of truth about what touches what.
- *
- * A sea is just a state with `kind: "sea"`. Nothing else about it is special:
- * its provinces are meshed, partitioned, and validated by the same code, and a
- * shoreline is an ordinary border between two provinces that happen to sit in
- * different media. A one-province sea is the common case, but nothing stops a
- * large ocean being split into several.
- */
-export type StateSpec = {
-  id: string
-  name: string
-  /** Defaults to land. Provinces inherit it; a province never spans both. */
-  kind?: "land" | "sea"
-  /** Must form a connected subgraph of the province adjacency, or it cannot be drawn as one region. */
-  provinces: readonly ProvinceSpec[]
-}
-
-export type MapSpec = {
-  /** Canvas width in authoring units. */
-  width: number
-  /** Canvas height in authoring units. */
-  height: number
-  /**
-   * How many authoring units make one printed inch. At the default 100 the spec
-   * is written in hundredths of an inch, so `1700 x 2300` is literally 17 x 23
-   * inches and every coordinate reads as a position on the finished sheet.
-   * Nothing in the pipeline is tied to it — it only fixes the physical size the
-   * print page renders at, so the spec and the paper can never disagree.
-   */
-  unitsPerInch?: number
-  states: readonly StateSpec[]
-  /** Number of atomic cells the landmass is diced into. More = finer borders, slower build. */
-  cells?: number
-  /** Changes the layout and dicing without changing the declared adjacency. */
-  seed?: number
-}
-
+/** Always land: water carries no provinces. */
 export type MapProvince = {
   id: string
   name: string
-  kind: "land" | "sea"
-  /** Id of the owning state. */
-  state: string
+  /**
+   * True when this province is one ungrouped hex standing alone. Synthesised by
+   * the build rather than authored, so it is drawn but never labelled — a name
+   * on every loose hex would bury the map.
+   */
+  solo: boolean
+  /** Id of the owning state, absent when the province joins none. */
+  state?: string
   /** SVG path data for the province outline. */
   d: string
   /** Where to anchor the province name. */
@@ -102,7 +38,6 @@ export type MapProvince = {
 export type MapState = {
   id: string
   name: string
-  kind: "land" | "sea"
   provinces: string[]
   /** SVG path data for the outline of the whole state. */
   d: string
@@ -112,9 +47,12 @@ export type MapState = {
 }
 
 /**
- * One interior border, emitted once for the pair that shares it. Stroking the
- * province outlines instead would paint every shared edge twice; two dashed
- * strokes at different phases interleave and the border reads as a solid line.
+ * One interior border between two land provinces, emitted once for the pair
+ * that shares it. Stroking the province outlines instead would paint every
+ * shared edge twice; two dashed strokes at different phases interleave and the
+ * border reads as a solid line.
+ *
+ * Coastlines are not here — that line is the landmass outline, drawn once.
  */
 export type MapBorder = {
   a: string
@@ -123,36 +61,65 @@ export type MapBorder = {
   d: string
   /** True when the two provinces sit in different states — drawn as a state line. */
   interstate: boolean
-  /**
-   * What the border runs between. `shore` has land on one side and water on the
-   * other; `sea` is open water either side, which is drawn faintly because a
-   * boundary at sea is a convention rather than a feature.
-   */
-  medium: "land" | "sea" | "shore"
+}
+
+/**
+ * A good, and the slot on the board where its chip goes. The province owns the
+ * good; the hex only says where to draw it, so nothing downstream needs the
+ * authored coordinates — the marker arrives as finished geometry like every
+ * other line on the sheet.
+ */
+export type MapResource = {
+  /** Id of the province that produces it. */
+  province: string
+  kind: Resource
+  /** What the marker prints. */
+  label: string
+  /** SVG path data for the marker hexagon, concentric with its hex. */
+  d: string
+  /** Centre of the marker — where the caption is anchored. */
+  x: number
+  y: number
+}
+
+/**
+ * A province's seat. Carries its own rings rather than a scale for the renderer
+ * to apply, so nothing downstream has to know how a hex is built.
+ */
+export type MapCapital = {
+  /** Id of the province it is the seat of. */
+  province: string
+  /** SVG path data for the marker hexagon, concentric with its hex. */
+  d: string
+  /** The second rule just inside `d`. */
+  rule: string
+  /** The star at the centre, filled. */
+  star: string
+  x: number
+  y: number
 }
 
 export type GeneratedMap = {
   width: number
   height: number
   /**
-   * SVG path data for the landmass: the union of every land province. Derived,
-   * not authored — the coastline is wherever land provinces stop.
+   * SVG path data for the landmass: the union of every non-sea (land or
+   * mountain) hex. Derived, not authored — the coastline is wherever land
+   * hexes stop.
    */
   land: string
+  /** SVG path data for the union of mountain hexes, a texture-only overlay. */
+  mountain: string
   states: MapState[]
   provinces: MapProvince[]
   borders: MapBorder[]
+  resources: MapResource[]
+  capitals: MapCapital[]
   /** Printed size in inches, derived from `unitsPerInch`. */
   inches: { width: number; height: number }
-  /** The attempt that satisfied the adjacency. Recorded so a build is reproducible. */
-  seed: number
 }
 
 const DEFAULT_UNITS_PER_INCH = 100
-const DEFAULT_CELLS = 700
-const DEFAULT_SEED = 1
-/** Consecutive seeds tried before declaring a graph unrealisable. */
-const ATTEMPTS = 6
 
 /** Closed rings come back from `stitch` with their first point repeated. */
 function ringPath(chain: readonly Pt[]): string {
@@ -160,86 +127,17 @@ function ringPath(chain: readonly Pt[]): string {
   return chainToPath(closed ? chain.slice(0, -1) : chain, true)
 }
 
-type Unit = {
-  id: string
-  name: string
-  kind: "land" | "sea"
-  borders: readonly string[]
-  at?: Point
-  weight?: number
-}
-
-function requiredPairs(provinces: readonly Unit[]): Set<string> {
-  const ids = new Set(provinces.map((p) => p.id))
-  const declared = new Map(provinces.map((p) => [p.id, new Set(p.borders)]))
-  const pairs = new Set<string>()
-
-  for (const province of provinces) {
-    for (const other of province.borders) {
-      if (!ids.has(other)) {
-        throw new Error(`Province "${province.id}" borders unknown province "${other}"`)
-      }
-      if (other === province.id) {
-        throw new Error(`Province "${province.id}" borders itself`)
-      }
-      // Adjacency is symmetric by definition; a one-sided declaration is a typo,
-      // and silently symmetrising it would hide the real intent.
-      if (!declared.get(other)!.has(province.id)) {
-        throw new Error(
-          `Adjacency is not symmetric: "${province.id}" lists "${other}", but not the reverse`
-        )
-      }
-      pairs.add(pairKey(province.id, other))
-    }
-  }
-  return pairs
-}
-
 /**
- * A state is drawn as one region, so its provinces have to be reachable from
- * each other without leaving the state. That is a property of the declared
- * graph, not of the geometry — no layout or partition can rescue a state whose
- * provinces are not connected — so it is caught here, before any solving.
- */
-function assertStatesConnected(
-  states: readonly StateSpec[],
-  adjacency: ReadonlyMap<string, ReadonlySet<string>>
-): void {
-  for (const state of states) {
-    const members = new Set(state.provinces.map((p) => p.id))
-    if (members.size === 0) throw new Error(`State "${state.id}" has no provinces`)
-
-    const first = state.provinces[0]!.id
-    const seen = new Set([first])
-    const queue = [first]
-    while (queue.length > 0) {
-      for (const next of adjacency.get(queue.pop()!) ?? []) {
-        if (seen.has(next) || !members.has(next)) continue
-        seen.add(next)
-        queue.push(next)
-      }
-    }
-
-    if (seen.size !== members.size) {
-      const stranded = [...members].filter((id) => !seen.has(id)).sort()
-      throw new Error(
-        `State "${state.id}" is not connected: ${stranded.join(", ")} cannot be reached from `
-          + `"${first}" without leaving the state. Add a border, or split the state.`
-      )
-    }
-  }
-}
-
-/**
- * Assembles group outlines and the borders between groups, straight from the
- * cell assignment.
+ * Assembles group outlines and the borders between groups, straight from a
+ * cell -> group labeling.
  *
- * Grouping is a parameter so the same pass serves both tiers: label a cell by
- * its province to get province outlines, or by its province's state to get
- * state outlines. Two tiers built by one function cannot disagree with each
- * other about where a shared line runs.
+ * Grouping is a parameter so the same pass serves every tier this map needs:
+ * label a cell by its province to get province outlines, by its province's
+ * state to get state outlines, or by its kind to get the coastline/texture
+ * masks. Every tier built by one function cannot disagree with another about
+ * where a shared line runs.
  */
-function assemble(
+export function assemble(
   mesh: Mesh,
   groupOf: (cell: number) => string,
   keys: readonly string[]
@@ -249,7 +147,7 @@ function assemble(
 
   for (const { segment, cells } of mesh.edges.values()) {
     if (cells.length === 1) {
-      // Owned by one cell: this edge is on the coast, so it bounds its group.
+      // Owned by one cell: this edge is on the rim, so it bounds its group.
       outlines.get(groupOf(cells[0]!))!.push(segment)
       continue
     }
@@ -283,237 +181,326 @@ function assemble(
 }
 
 /**
- * Places a label at the deepest interior point of a region.
+ * Places a label at the middle of a region: the area-weighted mean of the hexes
+ * it owns, which is what "where does this region sit" means to the eye.
  *
- * A centroid is no good here: a sea wraps around the continent, so its
- * area-weighted centre lands on the coast or on dry land entirely. Instead the
- * region is flooded inward from its own boundary and the cell that takes
- * longest to reach wins — an approximate pole of inaccessibility, which is the
- * point furthest from any edge. The map rim counts as boundary too, or a sea
- * would happily label itself in the corner of the canvas.
+ * The mean alone is not safe, because a crescent or a horseshoe puts its own
+ * average outside itself. So the mean is checked: on a hex grid the tile
+ * containing a point is simply the tile whose centre is nearest — a hex grid is
+ * the Voronoi diagram of its own centres — which makes the containment test a
+ * nearest-centre search over every cell. If the mean lands on a hex the region
+ * does not own, the label retreats to the owned hex nearest the mean, so it is
+ * always on the region and always as close to its middle as the shape allows.
  */
-function labelFor(
-  mesh: Mesh,
-  rim: ReadonlySet<number>,
-  belongs: (cell: number) => boolean
-): { x: number; y: number } {
-  const members = mesh.cells.filter((cell) => belongs(cell.index)).map((cell) => cell.index)
+function labelFor(mesh: Mesh, belongs: (cell: number) => boolean): { x: number; y: number } {
+  const members = mesh.cells.filter((cell) => belongs(cell.index))
+  if (members.length === 0) return { x: 0, y: 0 }
 
-  const depth = new Map<number, number>()
-  const queue: number[] = []
+  let sumX = 0
+  let sumY = 0
+  let area = 0
   for (const cell of members) {
-    const onEdge = rim.has(cell)
-      || [...(mesh.neighbors.get(cell) ?? [])].some((n) => !belongs(n))
-    if (onEdge) {
-      depth.set(cell, 0)
-      queue.push(cell)
-    }
+    sumX += cell.centroid[0] * cell.area
+    sumY += cell.centroid[1] * cell.area
+    area += cell.area
   }
-  // A region touching nothing at all (the whole map) has no boundary to flood from.
-  if (queue.length === 0) { for (const cell of members) depth.set(cell, 0) }
+  const meanX = sumX / area
+  const meanY = sumY / area
 
-  let head = 0
-  while (head < queue.length) {
-    const cell = queue[head++]!
-    for (const next of mesh.neighbors.get(cell) ?? []) {
-      if (!belongs(next) || depth.has(next)) continue
-      depth.set(next, depth.get(cell)! + 1)
-      queue.push(next)
+  const nearestIn = (cells: readonly Mesh["cells"][number][]) => {
+    let best = cells[0]!
+    let bestDistance = Infinity
+    for (const cell of cells) {
+      const distance = Math.hypot(cell.centroid[0] - meanX, cell.centroid[1] - meanY)
+      // Ties break on index, so the choice is stable across builds.
+      if (distance < bestDistance) {
+        bestDistance = distance
+        best = cell
+      }
     }
+    return best
   }
 
-  let best = members[0]!
-  let bestDepth = -1
-  for (const cell of members) {
-    const d = depth.get(cell) ?? 0
-    // Ties break on area, then index, so the choice is stable across builds.
-    if (d > bestDepth || (d === bestDepth && mesh.cells[cell]!.area > mesh.cells[best]!.area)) {
-      bestDepth = d
-      best = cell
-    }
-  }
-  const [x, y] = mesh.cells[best]!.centroid
-  return { x, y }
+  const holder = nearestIn(mesh.cells)
+  if (belongs(holder.index)) return { x: round(meanX), y: round(meanY) }
+
+  const fallback = nearestIn(members)
+  return { x: fallback.centroid[0], y: fallback.centroid[1] }
 }
 
-export function generateMap(spec: MapSpec): GeneratedMap {
-  const provinces: Unit[] = spec.states.flatMap((state) =>
-    state.provinces.map((p) => ({ ...p, kind: state.kind ?? ("land" as const) }))
-  )
+/**
+ * A state is drawn as one region, so its provinces have to be reachable from
+ * each other without leaving the state. That is a property of the actual hex
+ * grouping, not of the geometry pipeline — a disconnected state means two
+ * separate blobs were both given the same state id — so it is caught here,
+ * before rendering.
+ */
+function assertStatesConnected(
+  stateMembers: ReadonlyMap<string, ReadonlySet<string>>,
+  adjacency: ReadonlyMap<string, ReadonlySet<string>>
+): void {
+  for (const [stateId, members] of stateMembers) {
+    if (members.size === 0) throw new Error(`State "${stateId}" has no provinces`)
 
-  const ids = provinces.map((p) => p.id)
-  if (new Set(ids).size !== ids.length) throw new Error("Duplicate province or sea id")
+    const first = [...members][0]!
+    const seen = new Set([first])
+    const queue = [first]
+    while (queue.length > 0) {
+      for (const next of adjacency.get(queue.pop()!) ?? []) {
+        if (seen.has(next) || !members.has(next)) continue
+        seen.add(next)
+        queue.push(next)
+      }
+    }
 
-  const stateIds = spec.states.map((s) => s.id)
-  if (new Set(stateIds).size !== stateIds.length) throw new Error("Duplicate state id")
-
-  const kindOf = new Map(provinces.map((p) => [p.id, p.kind]))
-  const isShore = (pair: string) => {
-    const [a, b] = pair.split("|") as [string, string]
-    return kindOf.get(a) !== kindOf.get(b)
+    if (seen.size !== members.size) {
+      const stranded = [...members].filter((id) => !seen.has(id)).sort()
+      throw new Error(
+        `State "${stateId}" is not connected: ${stranded.join(", ")} cannot be reached from `
+          + `"${first}" without leaving the state.`
+      )
+    }
   }
+}
 
-  // Shorelines are declared and validated exactly like inland borders: a sea is
-  // not a special case, so which coast meets which water is authored rather than
-  // discovered. Naval reach is a rule of the game, not a by-product of drawing.
-  const required = requiredPairs(provinces)
+/**
+ * Sea cells all share this group, which is filtered back out: water carries no
+ * provinces, so it contributes no outlines and no borders. The coastline comes
+ * from the medium tier instead, where it is drawn once.
+ */
+const SEA_GROUP = "__sea__"
+const MOUNTAIN_GROUP = "__mountain__"
+/** Group keys for terrain that carries no province. Underscores keep them clear of any slug. */
+const UNGROUPABLE = new Set<string>([SEA_GROUP, MOUNTAIN_GROUP])
 
-  const adjacency = new Map(provinces.map((p) => [p.id, new Set(p.borders)]))
-  const stateOfProvince = new Map(
-    spec.states.flatMap((state) => state.provinces.map((p) => [p.id, state.id] as const))
-  )
-  assertStatesConnected(spec.states, adjacency)
+/** Group key for a land hex that is in no named province — its own province. */
+const soloGroup = (col: number, row: number) => `hex-${col}-${row}`
 
-  // Hints are all-or-nothing: mixing a couple of placed provinces into an
-  // otherwise solved layout reads as an oversight far more often than intent.
-  const placed = provinces.filter((p) => p.at !== undefined)
-  if (placed.length > 0 && placed.length !== provinces.length) {
-    const missing = provinces.filter((p) => p.at === undefined).map((p) => p.id).sort()
+export function generateMap(spec: HexMapSpec): GeneratedMap {
+  const unitsPerInch = spec.unitsPerInch ?? DEFAULT_UNITS_PER_INCH
+  const tiles = buildHexGrid(spec.width, spec.height, unitsPerInch)
+  const mesh = buildHexMesh(tiles)
+
+  const tileIndexOf = new Map(tiles.map((t) => [`${t.col},${t.row}`, t.index]))
+  if (spec.hexes.length !== tiles.length) {
     throw new Error(
-      `Placement hints are partial. Give every province an \`at\`, or none. Missing: ${missing.join(", ")}`
+      `hexSpec has ${spec.hexes.length} hexes but the ${spec.width}x${spec.height} canvas at `
+        + `${unitsPerInch} units/inch tiles to ${tiles.length}. Regenerate the hex spec.`
     )
   }
-  const hints = placed.length === provinces.length
-    ? hintedAnchors(provinces.map((p) => ({ id: p.id, at: p.at! })))
-    : null
 
-  const baseSeed = spec.seed ?? DEFAULT_SEED
+  const namedIds = spec.provinces.map((p) => p.id)
+  const stateIds = spec.states.map((s) => s.id)
+  if (new Set(namedIds).size !== namedIds.length) throw new Error("Duplicate province id")
+  if (new Set(stateIds).size !== stateIds.length) throw new Error("Duplicate state id")
 
-  // A layout is a heuristic, so one unlucky embedding should not condemn a graph
-  // that is perfectly realisable. Each attempt is fully deterministic, and the
-  // winning seed is recorded in the output.
-  let solved: { assignment: Assignment; seed: number } | null = null
-  let closest:
-    | { diff: ReturnType<typeof diffAdjacency>; assignment: Assignment; seed: number }
-    | null = null
-
-  // The mesh depends only on the canvas, so it is built once and every attempt
-  // re-partitions it — retries cost a layout, not a re-dice.
-  const mesh = buildMesh(spec.width, spec.height, spec.cells ?? DEFAULT_CELLS, baseSeed)
-  const growth = provinces.map((p) => ({ id: p.id, weight: p.weight ?? 1 }))
-
-  for (let attempt = 0; attempt < ATTEMPTS && solved === null; attempt++) {
-    const seed = baseSeed + attempt
-    const anchors = hints ?? layoutAnchors(spec.width, spec.height, ids, adjacency, stateOfProvince, seed)
-    const initial = partitionCells(mesh, growth, anchors)
-    const { assignment, diff } = repairPartition(mesh, initial, ids, required, seed)
-
-    if (diff.missing.length === 0 && diff.spurious.length === 0) {
-      solved = { assignment, seed }
-    } else if (
-      closest === null
-      || diff.missing.length + diff.spurious.length
-        < closest.diff.missing.length + closest.diff.spurious.length
-    ) {
-      closest = { diff, assignment, seed }
+  const namedIdSet = new Set(namedIds)
+  const stateIdSet = new Set(stateIds)
+  for (const province of spec.provinces) {
+    if (province.state !== undefined && !stateIdSet.has(province.state)) {
+      throw new Error(`Province "${province.id}" belongs to unknown state "${province.state}"`)
     }
   }
 
-  if (solved === null) {
-    const { diff, assignment, seed } = closest!
-    const contacts = contactEdges(mesh, assignment)
-    const show = (pairs: string[], withSize: boolean) =>
-      pairs
-        .map((p) => `${p.replace("|", " <-> ")}${withSize ? ` (${contacts.get(p) ?? 0} edges)` : ""}`)
-        .join(", ") || "none"
+  // Every land hex ends up in a province: the one it was grouped into, or a
+  // singleton standing in for "not grouped yet". Singletons are never authored,
+  // so they are minted here and marked `solo` for the renderer to leave unlabelled.
+  const groupOfCell = new Array<string>(tiles.length)
+  const kindOf = new Array<HexKind>(tiles.length)
+  const solo = new Set<string>()
+  const soloNames = new Map<string, string>()
+  const seenTiles = new Set<number>()
+  const resources: MapResource[] = []
+  const capitals: MapCapital[] = []
 
-    throw new Error(
-      [
-        `Could not realise the declared adjacency in ${ATTEMPTS} attempts.`,
-        `  Closest (seed ${seed}):`,
-        `    Missing (declared, not touching):  ${show(diff.missing, false)}`,
-        `    Spurious (touching, not declared): ${show(diff.spurious, true)}`,
-        "",
-        "  Missing edges usually mean the graph is not planar, or that a province is",
-        "  boxed in by neighbours it is not allowed to reach.",
-        "  Spurious edges mean no third province could be walled between the two.",
-        "  Raising `cells` does not help either case — the limit is the graph, not the",
-        "  mesh resolution. Try a different `seed`, or add an intervening province."
-      ].join("\n")
-    )
+  /**
+   * Both markers hang off a province, so both need one: a marker is drawn on a
+   * hex, but what it means belongs to the whole region around it. The two are
+   * exclusive because they are the same shape on the same centre — drawn
+   * together they would simply obscure each other.
+   */
+  const markerProvince = (hex: HexCell, what: string): string => {
+    if (hex.resource !== undefined && hex.capital === true) {
+      throw new Error(
+        `Hex (${hex.col},${hex.row}) is both a capital and a "${hex.resource}" source. `
+          + "A hex can hold one marker."
+      )
+    }
+    if (hex.kind !== "land" || hex.province === undefined) {
+      throw new Error(
+        `Hex (${hex.col},${hex.row}) carries ${what} but is `
+          + `${hex.kind === "land" ? "in no named province" : hex.kind}. `
+          + "Only land in a named province can hold a marker."
+      )
+    }
+    return hex.province
   }
 
-  const { assignment, seed } = solved
+  for (const hex of spec.hexes) {
+    const index = tileIndexOf.get(`${hex.col},${hex.row}`)
+    if (index === undefined) throw new Error(`Hex (${hex.col},${hex.row}) is not on the canvas`)
+    if (seenTiles.has(index)) throw new Error(`Duplicate hex (${hex.col},${hex.row})`)
+    seenTiles.add(index)
+    kindOf[index] = hex.kind
 
-  // Belt and braces: assemble() reads the assignment independently of the repair
-  // loop, so re-checking here catches the two disagreeing.
-  const finalDiff = diffAdjacency(mesh, assignment, required)
-  if (finalDiff.missing.length > 0 || finalDiff.spurious.length > 0) {
-    throw new Error("Internal error: adjacency drifted after repair")
+    if (hex.resource !== undefined) {
+      if (!isResource(hex.resource)) {
+        throw new Error(`Hex (${hex.col},${hex.row}) has unknown resource "${hex.resource}"`)
+      }
+      const tile = tiles[index]!
+      resources.push({
+        province: markerProvince(hex, `resource "${hex.resource}"`),
+        kind: hex.resource,
+        label: RESOURCE_LABEL[hex.resource],
+        d: markerPath(tile),
+        x: round(tile.center[0]),
+        y: round(tile.center[1])
+      })
+    }
+
+    if (hex.capital === true) {
+      const tile = tiles[index]!
+      capitals.push({
+        province: markerProvince(hex, "a capital"),
+        d: markerPath(tile),
+        rule: markerPath(tile, CAPITAL_RULE_SCALE),
+        star: starPath(tile),
+        x: round(tile.center[0]),
+        y: round(tile.center[1])
+      })
+    }
+
+    // Sea and mountain are both impassable ground: they hold no province and
+    // join no state, so they drop straight out of both tiers.
+    if (hex.kind !== "land") {
+      if (hex.province !== undefined) {
+        throw new Error(
+          `${hex.kind} hex (${hex.col},${hex.row}) is in province "${hex.province}". `
+            + "Only land hexes can be grouped."
+        )
+      }
+      groupOfCell[index] = hex.kind === "sea" ? SEA_GROUP : MOUNTAIN_GROUP
+      continue
+    }
+
+    if (hex.province === undefined) {
+      const id = soloGroup(hex.col, hex.row)
+      solo.add(id)
+      soloNames.set(id, `(${hex.col},${hex.row})`)
+      groupOfCell[index] = id
+      continue
+    }
+    if (!namedIdSet.has(hex.province)) {
+      throw new Error(`Hex (${hex.col},${hex.row}) belongs to unknown province "${hex.province}"`)
+    }
+    groupOfCell[index] = hex.province
   }
 
-  // A sea belongs to no state, so it groups under its own id and its outline
-  // comes out of the same pass as the states'.
-  // Cells on the outer edge of the canvas: an edge owned by a single cell has
-  // nothing on its far side.
-  const rim = new Set<number>()
-  for (const { cells } of mesh.edges.values()) if (cells.length === 1) rim.add(cells[0]!)
+  const provinceIds = [...namedIds, ...[...solo].sort()]
+  const hexesByProvince = new Map<string, number[]>(provinceIds.map((id) => [id, []]))
+  for (let index = 0; index < tiles.length; index++) {
+    const group = groupOfCell[index]!
+    if (UNGROUPABLE.has(group)) continue
+    hexesByProvince.get(group)!.push(index)
+  }
+  for (const [id, members] of hexesByProvince) {
+    if (members.length === 0) throw new Error(`Province "${id}" has no hexes`)
+  }
 
-  const groupOf = (cell: number) => stateOfProvince.get(assignment[cell]!)!
-  const provinceTier = assemble(mesh, (cell) => assignment[cell]!, ids)
-  const stateTier = assemble(mesh, groupOf, stateIds)
-  // Third grouping, by medium: its "land" outline is the coastline.
-  const mediumTier = assemble(mesh, (cell) => kindOf.get(assignment[cell]!)!, ["land", "sea"])
+  const nameOf = new Map(spec.provinces.map((p) => [p.id, p.name]))
+  const stateOfProvince = new Map(
+    spec.provinces.flatMap((p) => p.state === undefined ? [] : [[p.id, p.state] as const])
+  )
 
-  // `assemble` reports every pair of groups whose cells touch at all, including
-  // the hairline corner contacts that fall under the minimum-border threshold.
-  // Those are not adjacencies and must not be drawn as borders. Land borders are
-  // filtered against the declared graph; shorelines are kept when they clear the
-  // same threshold, since they are discovered rather than declared.
-  const borders = provinceTier.borders
-    .filter((border) => required.has(pairKey(border.a, border.b)))
+  const provincesByState = new Map<string, Set<string>>(stateIds.map((id) => [id, new Set()]))
+  for (const [province, state] of stateOfProvince) provincesByState.get(state)!.add(province)
+  for (const [id, members] of provincesByState) {
+    if (members.size === 0) throw new Error(`State "${id}" has no provinces`)
+  }
+
+  // A province outside any state groups under its own id, so the state tier
+  // never fuses two unrelated provinces into one silent blob.
+  const stateGroupOf = (cell: number) => {
+    const group = groupOfCell[cell]!
+    if (UNGROUPABLE.has(group)) return group
+    return stateOfProvince.get(group) ?? group
+  }
+  const stateTierKeys = [...stateIds, ...provinceIds.filter((id) => !stateOfProvince.has(id))]
+
+  const provinceTier = assemble(mesh, (cell) => groupOfCell[cell]!, [
+    ...provinceIds,
+    ...UNGROUPABLE
+  ])
+  const stateTier = assemble(mesh, stateGroupOf, [...stateTierKeys, ...UNGROUPABLE])
+  const mediumTier = assemble(
+    mesh,
+    (cell) => (kindOf[cell] === "sea" ? "sea" : "land"),
+    ["land", "sea"]
+  )
+  const mountainTier = assemble(
+    mesh,
+    (cell) => (kindOf[cell] === "mountain" ? "mountain" : "other"),
+    ["mountain", "other"]
+  )
+
+  // Edges onto water or mountain are dropped. The coast is drawn once by the
+  // landmass outline, and a mountain's limit is its own shading — neither is a
+  // border between provinces, because neither side is one.
+  const borders: MapBorder[] = provinceTier.borders
+    .filter((border) => !UNGROUPABLE.has(border.a) && !UNGROUPABLE.has(border.b))
     .map((border) => ({
       ...border,
-      medium: isShore(pairKey(border.a, border.b))
-        ? ("shore" as const)
-        : kindOf.get(border.a) === "sea"
-        ? ("sea" as const)
-        : ("land" as const),
       interstate: stateOfProvince.get(border.a) !== stateOfProvince.get(border.b)
     }))
 
+  // Derived province adjacency, straight from the mesh — feeds the state
+  // connectivity check below.
+  const provinceAdjacency = new Map<string, Set<string>>(provinceIds.map((id) => [id, new Set()]))
+  for (const border of borders) {
+    provinceAdjacency.get(border.a)!.add(border.b)
+    provinceAdjacency.get(border.b)!.add(border.a)
+  }
+  assertStatesConnected(provincesByState, provinceAdjacency)
+
+  // Only borders between two provinces that both belong to states count: a
+  // stateless province neighbours nothing at the state tier.
   const stateNeighbors = new Map(stateIds.map((id) => [id, new Set<string>()]))
   for (const border of borders) {
-    if (!border.interstate) continue
-    const a = stateOfProvince.get(border.a)!
-    const b = stateOfProvince.get(border.b)!
+    const a = stateOfProvince.get(border.a)
+    const b = stateOfProvince.get(border.b)
+    if (a === undefined || b === undefined || a === b) continue
     stateNeighbors.get(a)!.add(b)
     stateNeighbors.get(b)!.add(a)
-  }
-
-  const actualNeighbors = new Map(ids.map((id) => [id, new Set<string>()]))
-  for (const border of borders) {
-    actualNeighbors.get(border.a)!.add(border.b)
-    actualNeighbors.get(border.b)!.add(border.a)
   }
 
   return {
     width: spec.width,
     height: spec.height,
     land: mediumTier.outlines.get("land")!,
+    mountain: mountainTier.outlines.get("mountain")!,
     states: spec.states.map((state) => ({
       id: state.id,
       name: state.name,
-      kind: state.kind ?? ("land" as const),
-      provinces: state.provinces.map((p) => p.id),
+      provinces: [...provincesByState.get(state.id)!].sort(),
       d: stateTier.outlines.get(state.id)!,
-      label: labelFor(mesh, rim, (cell) => groupOf(cell) === state.id),
+      label: labelFor(mesh, (cell) => stateGroupOf(cell) === state.id),
       neighbors: [...stateNeighbors.get(state.id)!].sort()
     })),
-    provinces: provinces.map((province) => ({
-      id: province.id,
-      name: province.name,
-      kind: province.kind,
-      state: stateOfProvince.get(province.id)!,
-      d: provinceTier.outlines.get(province.id)!,
-      label: labelFor(mesh, rim, (cell) => assignment[cell] === province.id),
-      neighbors: [...actualNeighbors.get(province.id)!].sort()
-    })),
+    provinces: provinceIds.map((id) => {
+      const state = stateOfProvince.get(id)
+      return {
+        id,
+        name: nameOf.get(id) ?? soloNames.get(id) ?? id,
+        solo: solo.has(id),
+        ...(state === undefined ? {} : { state }),
+        d: provinceTier.outlines.get(id)!,
+        label: labelFor(mesh, (cell) => groupOfCell[cell] === id),
+        neighbors: [...provinceAdjacency.get(id)!].sort()
+      }
+    }),
     borders,
-    inches: {
-      width: spec.width / (spec.unitsPerInch ?? DEFAULT_UNITS_PER_INCH),
-      height: spec.height / (spec.unitsPerInch ?? DEFAULT_UNITS_PER_INCH)
-    },
-    seed
+    resources,
+    capitals,
+    inches: { width: spec.width / unitsPerInch, height: spec.height / unitsPerInch }
   }
 }

@@ -1,13 +1,13 @@
 import { ArrowRight } from "lucide-react"
 import { Fragment, type ReactNode } from "react"
 import type { Card, CardBase, Cost, FieldCardBase, FieldImprovementCardBase } from "~/games/graft/cards/domain"
-import { GoldCost } from "~/games/graft/components/icons/GoldCost"
 import { WorkerCost } from "~/games/graft/components/icons/WorkerCost"
 import { FruitCrateSlot } from "~/games/graft/components/slots/FruitCrateSlot"
 import { FRUIT_COLOR } from "~/games/graft/domain/CoreDefinitions"
 import type { PlayerCount } from "~/games/graft/domain/CoreDefinitions"
 import { css, cva, cx } from "~/generated/styled-system/css"
 import { Guides } from "~/shared/components/Guides"
+import { GoldCost } from "~/shared/components/icons/GoldCost"
 import { paperFrame } from "~/shared/components/paperFrame"
 
 /**

@@ -1,7 +1,7 @@
-import { GoldCost } from "~/games/graft/components/icons/GoldCost"
 import { PLAYER_COUNTS } from "~/games/graft/domain/CoreDefinitions"
 import type { LaborSupplyTier } from "~/games/graft/domain/LaborSupplyDefinitions"
 import { css, cx } from "~/generated/styled-system/css"
+import { GoldCost } from "~/shared/components/icons/GoldCost"
 import { paperFrame, softBand } from "~/shared/components/paperFrame"
 import { WorkerSlot } from "~/shared/components/slots/WorkerSlot"
 

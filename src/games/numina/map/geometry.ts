@@ -1,10 +1,10 @@
 /**
  * Planar geometry primitives shared by the map pipeline.
  *
- * Every polygon comes from one Voronoi diagram, so a shared edge is
- * vertex-identical on both sides. That lets adjacency be found by exact key
- * matching rather than geometric tolerance — the single assumption the rest of
- * this module rests on, and the reason nothing here needs a geometry library.
+ * Every polygon in this map (hex cells) shares vertices exactly with its
+ * neighbours, so adjacency can be found by exact key matching rather than
+ * geometric tolerance — the single assumption the rest of this module rests
+ * on, and the reason nothing here needs a geometry library.
  */
 
 export type Pt = readonly [number, number]
@@ -12,7 +12,7 @@ export type Pt = readonly [number, number]
 /** Path output precision. Adjacency keys use the same rounding so they compare exactly. */
 export const round = (n: number) => Math.round(n * 100) / 100
 
-/** Snaps a raw Voronoi vertex to path precision, so edge keys compare exactly. */
+/** Snaps a raw vertex to path precision, so edge keys compare exactly. */
 export function xy(point: readonly number[]): Pt {
   const [x, y] = point
   if (x === undefined || y === undefined) throw new Error("Malformed point")
@@ -101,7 +101,7 @@ export function ringArea(ring: readonly Pt[]): number {
   return Math.abs(sum) / 2
 }
 
-/** Area-weighted centroid. Voronoi cells are convex, so this always lands inside. */
+/** Area-weighted centroid. Hex cells are convex, so this always lands inside. */
 export function polygonCentroid(ring: readonly Pt[]): Pt {
   let twiceArea = 0
   let x = 0
@@ -118,13 +118,16 @@ export function polygonCentroid(ring: readonly Pt[]): Pt {
   return [round(x / (3 * twiceArea)), round(y / (3 * twiceArea))]
 }
 
-/** Deterministic PRNG (mulberry32): the same spec must always build the same map. */
-export function rng(seed: number): () => number {
-  let a = seed >>> 0
-  return () => {
-    a = (a + 0x6d2b79f5) >>> 0
-    let t = Math.imul(a ^ (a >>> 15), 1 | a)
-    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t
-    return ((t ^ (t >>> 14)) >>> 0) / 4294967296
-  }
+export type Cell = {
+  index: number
+  centroid: Pt
+  area: number
+}
+
+export type Mesh = {
+  cells: Cell[]
+  /** Cell index -> indices of cells sharing an edge with it. */
+  neighbors: Map<number, Set<number>>
+  /** Edge key -> the segment and the one or two cells owning it. */
+  edges: Map<string, { segment: [Pt, Pt]; cells: number[] }>
 }
