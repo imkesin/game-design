@@ -38,8 +38,8 @@ export const OFFICER_SUITS_WITH_METADATA = [
     band: "soft"
   },
   {
-    id: "tax-collector",
-    name: "Tax Collector",
+    id: "steward",
+    name: "Steward",
     color: "green",
     band: "strong"
   },

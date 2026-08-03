@@ -1,41 +1,64 @@
+import type { ReactNode } from "react"
 import { Fragment } from "react"
 import { legacyDeck } from "~/games/civil-service/cards/legacyDeck"
 import { officerDeck } from "~/games/civil-service/cards/officerDeck"
-import { GLOSSARY, SETUP, TURN, WINNING } from "~/games/civil-service/domain/ReferenceDefinitions"
+import {
+  CASCADE,
+  GLOSSARY,
+  RONDEL_SPACES,
+  TURN_ACTIONS,
+  type TurnAction,
+  WINNING
+} from "~/games/civil-service/domain/ReferenceDefinitions"
 import { css } from "~/generated/styled-system/css"
 import { sumCopies } from "~/shared/cards/playerCount"
 
 /**
- * Civil Service's single-page player reference — one sheet for the table, not one per
- * player, so it can afford setup and edge cases as well as the mid-turn essentials.
+ * Civil Service's player reference — two Letter sheets. Page 1 is the loud
+ * stuff; page 2 is the quiet stuff, meant to sit behind it.
  *
- * The old Powers matrix is gone along with the Powers/Permanents/Disaster mechanics it
- * described — the card structure moved to Officers and Legacies, and their own cards
- * (see cards/officerDeck, cards/legacyDeck) already carry each card's power/condition
- * text, so this sheet has no per-card rules to restate. What's left is prose, flowed
- * through two balanced columns the same way graft's FocusReferencePage does:
+ * Page 1 is nothing but the four things a turn can be, one big row apiece. Rows
+ * are auto-sized rather than forced to equal quarters — `space-between` spreads
+ * whatever whitespace is left between them — so a row can grow without warping
+ * its neighbours. This is the page a player actually checks mid-turn, so it
+ * gets the whole sheet and the largest type of either page — except Advance's
+ * own row, which nests the rondel's 7 spaces (`RONDEL_SPACES`) at a smaller,
+ * denser scale (`TYPE.rondelName`/`rondelBody`) than its siblings: there is
+ * exactly one sheet for everything a turn can do, so what `Advance` resolves
+ * has to fit under `Advance` rather than spend a page of its own.
  *
- *     ┌─────────────────────────────────────┐
- *     │ header                              │  title · kicker
- *     ├─────────────────────────────────────┤
- *     │ body     (2-col prose flow)         │  the asymmetric rules
- *     ├─────────────────────────────────────┤
- *     │ footer   (deck composition strip)   │  derived from the card catalog
- *     └─────────────────────────────────────┘
+ * Page 2 carries what page 1 doesn't need moment-to-moment: the glossary,
+ * Cascade's full mechanics (a cross-cutting check, not a fifth action — pointed
+ * at from Recruit's row and from the glossary, explained once here), and
+ * Winning. Same two-column prose flow the old single-page sheet used:
  *
- * The page is fitting-constrained: it must be exactly one Letter page, and the rules it
- * carries are still being written, so most of them will grow. `TYPE` holds the whole
- * scale in one object for that reason — absorbing a longer rule is a retune, not a
- * rewrite. `pnpm run dev` and the measurement in the commit notes show the current
- * slack; if a change overflows, the sheet silently clips on screen and fragments onto a
- * second page in print, so re-measure after editing prose.
+ *   Page 1                          Page 2
+ *   ┌─────────────────────────┐     ┌─────────────────────────┐
+ *   │ header                  │     │ header                  │
+ *   ├─────────────────────────┤     ├─────────────────────────┤
+ *   │ 4 turn-action rows      │     │ body (2-col prose)       │
+ *   │ (auto height, spread;   │     ├─────────────────────────┤
+ *   │ Advance nests a rondel  │     │ footer (deck strip)     │
+ *   │ table under it)         │     └─────────────────────────┘
+ *   └─────────────────────────┘
+ *
+ * Each page is independently fitting-constrained to one Letter sheet, and the
+ * rules both carry are still being written, so most of them will grow. `TYPE`
+ * holds the whole scale in one object for that reason — absorbing a longer
+ * rule is a retune, not a rewrite. `pnpm run dev` and the measurement in the
+ * commit notes show the current slack; if a change overflows, a sheet silently
+ * clips on screen and fragments onto a stray extra page in print, so
+ * re-measure after editing prose.
  *
  * The composition strip is derived from `officerDeck`/`legacyDeck` rather than
  * authored, so it cannot drift from what the print sheet actually produces.
  *
  * Print geometry mirrors the card sheet and graft's reference: Letter, zero @page
- * margin, the sheet supplies its own inner margin, screen backdrop stripped at print.
- * Typographic rather than card-unit based, so it uses pt/mm directly, not `--u`.
+ * margin, each sheet supplies its own inner margin, screen backdrop stripped at
+ * print. Typographic rather than card-unit based, so it uses pt/mm directly, not
+ * `--u`. `.sheet-break` forces a page break after page 1 in print, so page 2
+ * lands on its own physical page instead of running together when page 1's
+ * content is short of a full page.
  *
  * IMPORTANT for manual Cmd-P: Margins = None, Scale = 100%.
  */
@@ -72,7 +95,17 @@ const TYPE = {
   rule: "8.5pt",
   gloss: "8pt",
   aside: "7.5pt",
-  strip: "7.5pt"
+  strip: "7.5pt",
+  // Page 1 only: the whole page is 4 rows, so type can run much larger than
+  // page 2's dense two-column prose.
+  turnLetter: "17pt",
+  turnName: "16pt",
+  turnBody: "11pt",
+  // The rondel table nested under Advance's row: 7 spaces have to fit in
+  // whatever room is left there, so it runs closer to page 2's density than
+  // to turnBody.
+  rondelName: "8pt",
+  rondelBody: "7.5pt"
 } as const
 
 /**
@@ -96,6 +129,8 @@ const printCss = `
      * zero margin plus the sheet's own padding still supply the print margin.
      */
     .sheet { box-shadow: none !important; margin: 0 !important; height: auto !important; }
+    /* Forces page 2 onto its own physical page instead of flowing up under a short page 1. */
+    .sheet-break { break-after: page; page-break-after: always; }
   }
 `
 
@@ -182,6 +217,124 @@ const block = css({
   marginBottom: "3.8mm",
   paddingLeft: "4mm",
   borderLeft: "1.4mm solid"
+})
+
+/**
+ * Page 1's body: exactly 4 rows, auto-sized to their own content rather than
+ * forced into equal quarters — `space-between` spreads whatever page is left
+ * over between them instead. A row growing (the rondel under Advance still
+ * has none of its 7 spaces written) shrinks the gaps before it ever needs to
+ * shrink a neighbour.
+ */
+const turnBody = css({
+  gridArea: "body",
+  height: "100%",
+  display: "grid",
+  gridTemplateRows: "repeat(4, auto)",
+  alignContent: "space-between",
+  paddingTop: "4mm",
+  borderTop: `0.25mm solid #d6d3d1`
+})
+
+/**
+ * Row template carries a 3rd `rondel` area unconditionally — only Advance's
+ * row ever puts something there (see `RondelTable`), but a named area with no
+ * content collapses to zero height, so the other 3 rows pay nothing for it.
+ */
+const turnRow = css({
+  display: "grid",
+  gridTemplateAreas: `"badge name" "badge summary" "badge rondel"`,
+  gridTemplateColumns: "auto 1fr",
+  gridTemplateRows: "auto auto auto",
+  columnGap: "6mm",
+  rowGap: "2mm",
+  breakInside: "avoid",
+  paddingLeft: "5mm",
+  borderLeft: `1.6mm solid ${INK.rule}`
+})
+
+/** The letter badge, its own square rather than inline text, so "one of these
+ * four" reads at a glance before any prose is read at all. */
+const turnBadge = css({
+  gridArea: "badge",
+  alignSelf: "start",
+  width: "13mm",
+  height: "13mm",
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  borderRadius: "2mm",
+  background: INK.rule,
+  color: "#fff",
+  fontSize: TYPE.turnLetter,
+  fontWeight: 800
+})
+
+const turnName = css({
+  gridArea: "name",
+  alignSelf: "center",
+  fontSize: TYPE.turnName,
+  fontWeight: 800,
+  lineHeight: 1,
+  color: INK.strong
+})
+
+const turnSummary = css({
+  gridArea: "summary",
+  margin: 0,
+  fontSize: TYPE.turnBody,
+  lineHeight: 1.42,
+  color: INK.body
+})
+
+/**
+ * The rondel table nested under Advance's row: 7 spaces flowed through 2
+ * columns, the same masonry-of-blocks technique page 2's `body` uses, so a
+ * space's own text never splits across the column break.
+ */
+const rondelBox = css({
+  gridArea: "rondel",
+  marginTop: "2mm",
+  paddingTop: "2mm",
+  borderTop: "0.25mm solid #d6d3d1",
+  columnCount: 2,
+  columnGap: "6mm"
+})
+
+const rondelItem = css({
+  breakInside: "avoid",
+  marginBottom: "2mm"
+})
+
+const rondelHead = css({
+  display: "flex",
+  alignItems: "baseline",
+  gap: "1.5mm",
+  marginBottom: "0.3mm"
+})
+
+const rondelIndex = css({
+  fontSize: TYPE.rondelName,
+  fontWeight: 800,
+  color: INK.rule
+})
+
+const rondelName = css({
+  fontSize: TYPE.rondelName,
+  fontWeight: 800,
+  color: INK.strong
+})
+
+const rondelList = css({
+  margin: "0.3mm 0 0 0",
+  paddingLeft: "3.5mm"
+})
+
+const rondelListItem = css({
+  fontSize: TYPE.rondelBody,
+  lineHeight: 1.3,
+  marginBottom: "0.3mm",
+  color: INK.body
 })
 
 const blockHead = css({
@@ -310,13 +463,13 @@ type Section = {
 }
 
 /**
- * The prose blocks, in the order a game runs: the vocabulary, how to start, how a
- * turn goes, and how it is all won.
+ * Page 2's prose blocks: everything a turn's four actions (page 1) don't need
+ * moment-to-moment — the vocabulary, Cascade's full mechanics, and how it's won.
  *
- * `SETUP`/`TURN`/`WINNING` still narrate the old Action/Track/Disaster turn
- * structure (see ReferenceDefinitions) and are stale until the Officer/Legacy rules
- * are dictated — this page renders whatever those exports say, so editing the rules
- * means editing that file, not this one.
+ * There is no Setup block: the board's starting state and the rondel's own 7
+ * actions haven't been dictated yet (see ReferenceDefinitions), so a section here
+ * would have nothing true to say. These render whatever the matching export
+ * says, so editing a rule means editing that file, not this one.
  */
 const SECTIONS: readonly Section[] = [
   {
@@ -327,19 +480,11 @@ const SECTIONS: readonly Section[] = [
     terms: GLOSSARY
   },
   {
-    key: "setup",
-    title: "Setup",
-    kicker: "Before Play",
+    key: "cascade",
+    title: "Cascade",
+    kicker: "Every Officer Move",
     accent: INK.rule,
-    list: { ordered: true, items: SETUP.steps }
-  },
-  {
-    key: "turn",
-    title: "Your Turn",
-    kicker: "In Order",
-    accent: INK.rule,
-    list: { ordered: true, items: TURN.steps },
-    note: TURN.timing
+    paragraphs: [CASCADE]
   },
   {
     key: "winning",
@@ -394,6 +539,44 @@ function SectionBlock({ section }: { section: Section }) {
   )
 }
 
+/** One rondel space: its clauses as their own bullets, so a Tax or Infrastructure's
+ * several beats scan as separate steps rather than one run-on paragraph. */
+function RondelSpaceItem({ index, name, effect }: { index: number; name: string; effect: readonly string[] }) {
+  return (
+    <div className={rondelItem}>
+      <div className={rondelHead}>
+        <span className={rondelIndex}>{index}</span>
+        <span className={rondelName}>{name}</span>
+      </div>
+      <ul className={rondelList} style={{ listStyleType: "disc" }}>
+        {effect.map((clause, i) => <li key={i} className={rondelListItem}>{clause}</li>)}
+      </ul>
+    </div>
+  )
+}
+
+/** The rondel's 7 spaces, nested under Advance's own row — see `RONDEL_SPACES`. */
+function RondelTable() {
+  return (
+    <div className={rondelBox}>
+      {RONDEL_SPACES.map((space) => (
+        <RondelSpaceItem key={space.index} index={space.index} name={space.name} effect={space.effect} />
+      ))}
+    </div>
+  )
+}
+
+function TurnRow({ action, children }: { action: TurnAction; children?: ReactNode }) {
+  return (
+    <div className={turnRow}>
+      <div className={turnBadge}>{action.letter}</div>
+      <div className={turnName}>{action.name}</div>
+      <p className={turnSummary}>{action.summary}</p>
+      {children}
+    </div>
+  )
+}
+
 function CompositionStrip() {
   return (
     <div className={footer}>
@@ -411,15 +594,33 @@ export function ReferencePage() {
       <style>{printCss}</style>
       <div className={`print-root ${screen}`}>
         <div className={`${note} screen-only`}>
-          Print → Letter · Margins: None · Scale: 100%
+          Print → Letter · Margins: None · Scale: 100% · double-sided, 2 pages
         </div>
+
+        <div
+          className={`sheet sheet-break ${sheetStyle}`}
+          style={{ width: `${PAGE_W}mm`, height: `${PAGE_H}mm`, padding: `${MARGIN}mm` }}
+        >
+          <div className={header}>
+            <div className={title}>Civil Service</div>
+            <div className={subtitle}>Your Turn</div>
+          </div>
+          <div className={turnBody}>
+            {TURN_ACTIONS.map((action) => (
+              <TurnRow key={action.letter} action={action}>
+                {action.name === "Advance" && <RondelTable />}
+              </TurnRow>
+            ))}
+          </div>
+        </div>
+
         <div
           className={`sheet ${sheetStyle}`}
           style={{ width: `${PAGE_W}mm`, height: `${PAGE_H}mm`, padding: `${MARGIN}mm` }}
         >
           <div className={header}>
             <div className={title}>Civil Service</div>
-            <div className={subtitle}>Player Reference</div>
+            <div className={subtitle}>Reference Details</div>
           </div>
           <div className={body}>
             {SECTIONS.map((section) => <SectionBlock key={section.key} section={section} />)}

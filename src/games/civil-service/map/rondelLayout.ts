@@ -139,11 +139,11 @@ export const SPOKES = Array.from({ length: SPACES }, (_, i) => {
  */
 export const SPACE_LABELS: readonly string[] = [
   "BRIBE",
-  "ALLOCATE TAX COLL.",
+  "TRANSFER STEWARD",
   "TAX",
-  "ALLOCATE MAGISTRATE",
+  "TRANSFER MAGISTRATE",
   "ORDER",
-  "ALLOCATE ENGINEER",
+  "TRANSFER ENGINEER",
   "INFRA"
 ]
 

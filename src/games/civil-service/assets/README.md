@@ -5,7 +5,7 @@ Drop SVGs in here, named by lookup key:
 | File                             | Cards it lands on                          |
 | -------------------------------- | ------------------------------------------ |
 | `scribe.svg`                     | All 9 Scribe cards                         |
-| `tax-collector.svg`              | All 9 Tax Collector cards                  |
+| `steward.svg`                    | All 9 Steward cards                        |
 | `magistrate.svg`                 | All 9 Magistrate cards                     |
 | `engineer.svg`                   | All 9 Engineer cards                       |
 | `legacy-1.svg` … `legacy-36.svg` | That one Legacy card (no shared suit icon) |
