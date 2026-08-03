@@ -1,15 +1,14 @@
 # Civil Service card art
 
-Drop SVGs in here. The filename is the card's name, lowercased:
+Drop SVGs in here, named by lookup key:
 
-| File            | Cards it lands on                      |
-| --------------- | -------------------------------------- |
-| `abundance.svg` | Abundance Action + Abundance permanent |
-| `ingenuity.svg` | Ingenuity Action + Ingenuity permanent |
-| `devotion.svg`  | Devotion Action + Devotion permanent   |
-| `guidance.svg`  | Guidance Action + Guidance permanent   |
-| `impulse.svg`   | Impulse Action + Impulse permanent     |
-| `disaster.svg`  | Disaster                               |
+| File                             | Cards it lands on                          |
+| -------------------------------- | ------------------------------------------ |
+| `scribe.svg`                     | All 9 Scribe cards                         |
+| `tax-collector.svg`              | All 9 Tax Collector cards                  |
+| `magistrate.svg`                 | All 9 Magistrate cards                     |
+| `engineer.svg`                   | All 9 Engineer cards                       |
+| `legacy-1.svg` … `legacy-36.svg` | That one Legacy card (no shared suit icon) |
 
 No code change needed — `cardArt.ts` globs this directory. A missing file leaves that card's art
 area open, so the deck prints at any stage of illustration.
@@ -17,7 +16,7 @@ area open, so the deck prints at any stage of illustration.
 ## Colour is not yours to set
 
 The card recolours the art to its own palette: every fill becomes `currentColor`, which resolves to
-`artTint` — `{scale}.300`, a light tint of that Power's colour, sitting between the paper and the
+`artTint` — `{scale}.300`, a light tint of that card's colour, sitting between the paper and the
 name band. Whatever colours the file ships with are discarded, so export however your tool likes and
 in any colour you like.
 
@@ -41,8 +40,8 @@ To change the tint for every card at once, edit `artTint` in `~/shared/component
 
 - **Give every file a `viewBox`.** Without one there is nothing to scale.
 - **Nothing is cropped.** The mark is centred and scaled to fit whole, so any aspect ratio works —
-  but a very wide or very tall file leaves a lot of empty paper on the other axis. The area it fits
-  into is about 57 × 56mm, near square.
+  but a very wide or very tall file leaves a lot of empty paper on the other axis. The art area is
+  the card's top region, above the power/condition text band — wider than it is tall.
 - **Don't add your own `preserveAspectRatio`.** The default (`xMidYMid meet`) is what centres and
   fits it.
 - Trim the file's own padding. Empty space inside the `viewBox` shrinks the mark, since it is the

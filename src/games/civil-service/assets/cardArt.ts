@@ -1,14 +1,10 @@
-import { DISASTER, type PowerName } from "~/games/civil-service/domain/CoreDefinitions"
-
 /**
  * Card art, discovered from this directory rather than imported file by file: an
- * illustration lands on its cards by being dropped in here as its card's name,
- * lowercased — `abundance.svg`, `disaster.svg`. Nothing to register, and a card
- * whose file does not exist yet resolves to `undefined`, which the Card renders as
+ * illustration lands on its cards by being dropped in here under a lookup key —
+ * an Officer suit id (`scribe.svg`, shared by all 9 cards in that suit) or a
+ * Legacy card's own id (`legacy-1.svg`). Nothing to register, and a card whose
+ * file does not exist yet resolves to `undefined`, which the Card renders as
  * the open art area, so the deck prints at every stage of illustration.
- *
- * A Power's Action and its permanent share one file, because they are the same card
- * wearing one extra cue (see cards/permanentSupply).
  *
  * `query: "?raw"` gives the SVG's source, not a URL, because the Card inlines it (see
  * components/Card). That is what lets the art take the card's own tint: an SVG loaded
@@ -46,15 +42,13 @@ const COLOURED_FILL_ATTRIBUTE = /fill="(?!none")[^"]*"/g
 // `fill-rule` and `fill-opacity` are untouched: the colon has to follow `fill` directly.
 const COLOURED_FILL_STYLE = /fill:\s*(?!none\b)[^;}"']+/g
 
-/** Cards that can carry art: the five Powers, plus Disaster. */
-export type ArtName = PowerName | typeof DISASTER.name
-
 /**
- * The SVG source for a card's name with its fills handed over to the card's ink, or
- * `undefined` while no file exists for it.
+ * The SVG source for a lookup key (already lowercase — a suit id or card id),
+ * with its fills handed over to the card's ink, or `undefined` while no file
+ * exists for it.
  */
-export function artFor(name: ArtName): string | undefined {
-  return files[`./${name.toLowerCase()}.svg`]
+export function artFor(key: string): string | undefined {
+  return files[`./${key}.svg`]
     ?.replace(COLOURED_FILL_ATTRIBUTE, "fill=\"currentColor\"")
     .replace(COLOURED_FILL_STYLE, "fill:currentColor")
 }
@@ -64,7 +58,7 @@ export function artFor(name: ArtName): string | undefined {
  * is no file, which `exactOptionalPropertyTypes` requires — `art: undefined` is not
  * the same as absent.
  */
-export function artProps(name: ArtName): { art?: string } {
-  const art = artFor(name)
+export function artProps(key: string): { art?: string } {
+  const art = artFor(key)
   return art === undefined ? {} : { art }
 }

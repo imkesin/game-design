@@ -1,5 +1,5 @@
 import type { Card } from "~/games/civil-service/cards/domain"
-import { type Band, DISASTER, POWER_PALETTE } from "~/games/civil-service/domain/CoreDefinitions"
+import { type Band, LEGACY_PALETTE, OFFICER_PALETTE } from "~/games/civil-service/domain/CoreDefinitions"
 import { css, cx } from "~/generated/styled-system/css"
 import type { PlayerCount } from "~/shared/cards/playerCount"
 import { Guides } from "~/shared/components/Guides"
@@ -15,10 +15,9 @@ import {
 } from "~/shared/components/paperFrame"
 
 /**
- * A Civil Service card. Deliberately spare: the name at display size in a band across
- * the top, an open art area filling everything below it, and a footer band
- * carrying the player-count symbol. No cost rail, no rules text — each Action
- * recurs often enough that players learn what it does.
+ * A Civil Service card: the name at display size in a band across the top, an
+ * art area, a text band carrying the card's own power (Officer) or condition
+ * (Legacy), and a footer band carrying the player-count symbol.
  *
  * Same two render variants as graft's Card:
  *
@@ -32,8 +31,10 @@ import {
  *     ┌────────┬──────────┬────────┐
  *     │  full-width name band      │   bleeds across all 3 columns
  *     ├────────┴──────────┴────────┤
- *     │        art  (1fr)          │   full bleed: art may run to the edges
+ *     │        art  (3fr)          │   full bleed: art may run to the edges
  *     ├────────┬──────────┬────────┤
+ *     │ gutter │ text (2fr)│ gutter│   power/condition prose, safe-area only
+ *     ├────────┼──────────┼────────┤
  *     │ gutter │  footer  │ gutter │
  *     └────────┴──────────┴────────┘
  *
@@ -41,10 +42,6 @@ import {
  * *content* sits in the middle column via `grid-template-columns: subgrid`, so it
  * lines up. The art row spans edge to edge with no inset at all — art is expected
  * to bleed, and the trim/safe lines are what constrain it (toggle `showGuides`).
- *
- * Permanents are this same card with a thick dark rail inside the trim (see
- * `permanentRail`) — same size, same palette, same name, so they print on the deck's
- * own sheet and differ by one unmistakable cue.
  */
 export type CardVariant = "bleed" | "trim"
 
@@ -53,8 +50,8 @@ const frame = css({
   boxSizing: "border-box",
   display: "grid",
   gridTemplateColumns: "var(--gutter) 1fr var(--gutter)",
-  // name band (bleeds to top) · art (fills) · footer band (bleeds to bottom)
-  gridTemplateRows: "auto 1fr auto",
+  // name band (bleeds to top) · art (3fr) · text (2fr) · footer band (bleeds to bottom)
+  gridTemplateRows: "auto 3fr 2fr auto",
   overflow: "hidden"
 })
 
@@ -68,36 +65,6 @@ const trimFrame = css({
   width: "trimW",
   height: "trimH",
   "--gutter": "calc(3 * var(--u))"
-})
-
-/**
- * What marks a permanent: a thick dark rail running just inside the trim, on all
- * four edges.
- *
- * It is an overlay rather than a `border` on the frame so it costs the layout
- * nothing — the name, art and pip sit exactly where they do on an Action, which is
- * the point. A permanent is meant to read as the same card wearing one extra cue.
- *
- * Geometry: `inset: 0` runs the rail right out to the sheet edge, so it *bleeds* —
- * on a bleed card the outer 3u of it is trimmed away. The width therefore has to
- * carry that loss: `--gutter - 1u` is 5u on a bleed card (3u bleed + 2u visible) and
- * 2u on a trim card, leaving the same 2u of rail on the cut card either way. Cutting
- * to the edge is what makes it robust — drift eats into the bleed instead of exposing
- * a sliver of paper outside the rail — and it stops 1u clear of the safe line, so it
- * can never crowd the name or the pip.
- *
- * Colour comes from `RAIL_RECIPE`, one step darker than the card's own band, rather
- * than from `currentColor`. That matters twice over: the rail crosses the bands, so
- * matching a band's colour would erase it there; and on the sheet, where cards touch
- * and two rails abut, a rail at `currentColor` would swallow the `accentOutline` cut
- * line drawn in that same ink.
- */
-const permanentRail = css({
-  position: "absolute",
-  inset: 0,
-  borderWidth: "calc(var(--gutter) - 1 * var(--u))",
-  borderStyle: "solid",
-  pointerEvents: "none"
 })
 
 // Hairline cut line on the trim boundary. `outline` doesn't affect layout, so
@@ -132,25 +99,22 @@ const headerContent = css({
   minWidth: 0
 })
 
-// The whole point of the face. `hero` is the largest step in the scale; the
-// longest name ("Abundance"/"Ingenuity", 9 characters) still clears the 57mm safe
-// column at this size with the tracking applied.
+// Officer/Legacy names run longer than the old single-word Powers ("Tax
+// Collector 9" vs. "Abundance"), so this uses `name` rather than `hero` — the
+// display size the old spare Action cards could afford is too wide for the
+// 57mm safe column here. `ellipsis` is a safety net for whatever the real 36
+// names turn out to be, not the expected case.
 const nameText = css({
-  fontSize: "hero",
+  fontSize: "name",
   fontWeight: 700,
   textTransform: "uppercase",
   letterSpacing: "0.04em",
   lineHeight: 1.05,
   textAlign: "center",
   minWidth: 0,
+  overflow: "hidden",
+  textOverflow: "ellipsis",
   whiteSpace: "nowrap"
-})
-
-// Diagonal hazard striping, laid over a band's own background. Uses a translucent
-// white rather than a token so the same class reads correctly on any band colour.
-const hazardStripes = css({
-  backgroundImage:
-    "repeating-linear-gradient(45deg, rgba(255,255,255,0.22) 0 calc(1.4 * var(--u)), transparent calc(1.4 * var(--u)) calc(2.8 * var(--u)))"
 })
 
 // Open art area. Full bleed (`1 / -1`, no padding) so a future illustration can
@@ -174,8 +138,8 @@ const artRegion = css({
  *
  * `inset: var(--gutter)` holds it inside the safe area rather than letting it bleed.
  * Art here is a mark rather than a full-bleed illustration, and the safe area is the
- * one box nothing else claims: the bands stop at it, and a permanent's rail stops 1u
- * short of it, so the mark can never be crossed by the rail or crowd the name.
+ * one box nothing else claims: the bands stop at it, so the mark can never crowd
+ * the name.
  *
  * With no `preserveAspectRatio` of its own an SVG defaults to `xMidYMid meet`, so the
  * mark is centred and scaled to fit whole. Nothing is cropped — which is what a mark
@@ -208,6 +172,37 @@ const artPlaceholder = css({
   fontWeight: 700,
   letterSpacing: "0.18em",
   textTransform: "uppercase"
+})
+
+/**
+ * The power/condition text band: an Officer's power or a Legacy's condition,
+ * set in the safe column beneath the art. Unlike the art region this never
+ * bleeds — it's prose, so it stays clear of the trim on every edge.
+ *
+ * `gridTemplateColumns: subgrid` relays the parent's gutter tracks, same
+ * mechanism as `header`/`footer`, so the text lines up with the name above it.
+ * The divider's colour comes from `DIVIDER_RECIPE` (see below) rather than
+ * `currentColor`, since `border-color` isn't inherited from the frame's own
+ * `paperFrame` styling.
+ */
+const textRegion = css({
+  gridColumn: "1 / -1",
+  display: "grid",
+  gridTemplateColumns: "subgrid",
+  alignContent: "start",
+  minHeight: 0,
+  overflow: "hidden",
+  borderTopWidth: "0.3mm",
+  borderTopStyle: "solid"
+})
+
+const textRegionContent = css({
+  gridColumn: "2",
+  minWidth: 0,
+  paddingBlock: "2",
+  fontSize: "paragraph",
+  lineHeight: 1.35,
+  whiteSpace: "pre-line"
 })
 
 // Thin stripe mirroring the header: bleeds to the bottom edge, with
@@ -249,16 +244,17 @@ const playerPip = css({
 })
 
 // The paper surface is always the pale end of a card's scale; only the band
-// weight varies. See `Band` in the domain for why each Power picks the one it does.
+// weight varies. See `Band` in the domain for why each suit picks the one it does.
 const BAND_RECIPE = {
   strong: darkBand,
   vivid: vividBand,
   soft: softBand
 } as const satisfies Record<Band, unknown>
 
-// A permanent's rail, keyed by the same band weight so it always lands one step
-// darker than that card's band. See `permanentRail`.
-const RAIL_RECIPE = {
+// The text region's divider, keyed by the same band weight so it always lands
+// one step darker than that card's band — the same recipe a permanent's rail
+// once used.
+const DIVIDER_RECIPE = {
   strong: strongRail,
   vivid: vividRail,
   soft: softRail
@@ -271,7 +267,7 @@ const brightInk = css({ color: "white" })
 
 /** A card's palette: its Panda colour scale plus its band weight. */
 function paletteOf(card: Card) {
-  return card.kind === "disaster" ? DISASTER : POWER_PALETTE[card.power]
+  return card.kind === "officer" ? OFFICER_PALETTE[card.suit] : LEGACY_PALETTE
 }
 
 export function Card({
@@ -284,11 +280,7 @@ export function Card({
   showGuides?: boolean
 }) {
   const { color, band: weight } = paletteOf(card)
-  const band = cx(
-    BAND_RECIPE[weight]({ color }),
-    weight === "strong" && brightInk,
-    card.kind === "disaster" && hazardStripes
-  )
+  const band = cx(BAND_RECIPE[weight]({ color }), weight === "strong" && brightInk)
 
   return (
     <div
@@ -316,9 +308,10 @@ export function Card({
           )
           : showGuides && <span className={artPlaceholder}>Art</span>}
       </div>
+      <div className={cx(textRegion, DIVIDER_RECIPE[weight]({ color }))}>
+        <div className={textRegionContent}>{card.kind === "officer" ? card.power : card.condition}</div>
+      </div>
       <Footer minPlayerCount={card.minPlayerCount} band={band} />
-      {/* Last, so the rail sits over the bands and the art rather than under them. */}
-      {card.kind === "permanent" && <div className={cx(permanentRail, RAIL_RECIPE[weight]({ color }))} />}
       {showGuides && variant === "bleed" && <Guides />}
     </div>
   )

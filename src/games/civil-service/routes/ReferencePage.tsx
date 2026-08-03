@@ -1,43 +1,22 @@
 import { Fragment } from "react"
-import { actionDeck } from "~/games/civil-service/cards/actionDeck"
-import { permanentSupply } from "~/games/civil-service/cards/permanentSupply"
-import {
-  type Band,
-  DISASTER as DISASTER_CARD,
-  POWER_LIST_WITH_METADATA
-} from "~/games/civil-service/domain/CoreDefinitions"
-import {
-  AFTERMATH,
-  DISASTER as DISASTER_RULES,
-  GLOSSARY,
-  PERMANENTS,
-  POWER_REFERENCE,
-  SETUP,
-  TURN,
-  WINNING
-} from "~/games/civil-service/domain/ReferenceDefinitions"
-import { css, cx } from "~/generated/styled-system/css"
-import { PLAYER_COUNTS, type PlayerCount, sumCopies } from "~/shared/cards/playerCount"
-import { darkBand, softBand, vividBand } from "~/shared/components/paperFrame"
+import { legacyDeck } from "~/games/civil-service/cards/legacyDeck"
+import { officerDeck } from "~/games/civil-service/cards/officerDeck"
+import { GLOSSARY, SETUP, TURN, WINNING } from "~/games/civil-service/domain/ReferenceDefinitions"
+import { css } from "~/generated/styled-system/css"
+import { sumCopies } from "~/shared/cards/playerCount"
 
 /**
  * Civil Service's single-page player reference — one sheet for the table, not one per
  * player, so it can afford setup and edge cases as well as the mid-turn essentials.
  *
- * Structure differs from graft's FocusReferencePage on purpose. Graft's six sections
- * are all different shapes, so it flows them as prose blocks through two balanced
- * columns. Civil Service's five Powers are *symmetric* — one Action each — and a prose block
- * per Power would spend most of the page restating the same shape five times. So the
- * Powers become a five-row matrix keyed by the card's own colour, and the page's prose
- * is reserved for the rules that are genuinely asymmetric: the vocabulary, setup, the
- * turn spine, sets/permanents, Disaster, winning.
- *
- * That splits the page into three bands over a footer strip:
+ * The old Powers matrix is gone along with the Powers/Permanents/Disaster mechanics it
+ * described — the card structure moved to Officers and Legacies, and their own cards
+ * (see cards/officerDeck, cards/legacyDeck) already carry each card's power/condition
+ * text, so this sheet has no per-card rules to restate. What's left is prose, flowed
+ * through two balanced columns the same way graft's FocusReferencePage does:
  *
  *     ┌─────────────────────────────────────┐
  *     │ header                              │  title · kicker
- *     ├─────────────────────────────────────┤
- *     │ powers   (matrix, full width)       │  5 rows × chip/Action
  *     ├─────────────────────────────────────┤
  *     │ body     (2-col prose flow)         │  the asymmetric rules
  *     ├─────────────────────────────────────┤
@@ -51,14 +30,7 @@ import { darkBand, softBand, vividBand } from "~/shared/components/paperFrame"
  * slack; if a change overflows, the sheet silently clips on screen and fragments onto a
  * second page in print, so re-measure after editing prose.
  *
- * Colour discipline: on this sheet a colour *means a card identity*. The matrix chips
- * carry the five Power scales and the Disaster block carries Disaster's red, all drawn
- * with the same band recipes the cards use — so a chip is a miniature of the name band
- * on the card it stands for, and matching is by construction rather than by a second
- * hand-maintained hex map. Every other block stays in ink, so nothing competes with
- * the matrix.
- *
- * The composition strip is derived from `actionDeck`/`permanentSupply` rather than
+ * The composition strip is derived from `officerDeck`/`legacyDeck` rather than
  * authored, so it cannot drift from what the print sheet actually produces.
  *
  * Print geometry mirrors the card sheet and graft's reference: Letter, zero @page
@@ -72,19 +44,14 @@ const PAGE_W = 215.9 // US Letter, mm
 const PAGE_H = 279.4
 const MARGIN = 14
 
-// Ink tones. The prose blocks are deliberately colourless (see the colour-discipline
-// note above); `INK.rule` is the accent for a block that is not standing in for a card.
+// Ink tones. The prose blocks are deliberately colourless; `INK.rule` is every
+// block's accent now that no section stands in for a specific card's colour.
 const INK = {
   body: "#292524",
   strong: "#1c1917",
   muted: "#57534e",
   rule: "#475569" // slate.600 — a neutral block accent
 } as const
-
-// Disaster's block takes the card's own red so the one hazard on the sheet is the one
-// hazard in the deck. `red.700`, a step off the card's `.900` band, so it reads as an
-// accent rather than as near-black.
-const DISASTER_ACCENT = "#b91c1c"
 
 /**
  * The sheet's type scale, in one place because the page is fitting-constrained: the
@@ -102,50 +69,19 @@ const TYPE = {
   title: "23pt",
   subtitle: "9.5pt",
   section: "12.5pt",
-  columnHead: "8pt",
-  chip: "9pt",
   rule: "8.5pt",
   gloss: "8pt",
   aside: "7.5pt",
-  fork: "6.5pt",
   strip: "7.5pt"
 } as const
 
-// A chip is a miniature of the card's name band, so it uses the very same recipes
-// Card.tsx does — keyed by the Power's authored band weight. See `Band` in the domain
-// for why each Power picks the weight it does.
-const CHIP_RECIPE = {
-  strong: darkBand,
-  vivid: vividBand,
-  soft: softBand
-} as const satisfies Record<Band, unknown>
-
-// Mirrors Card.tsx's `brightInk`: a `strong` band's `{color}.50` ink is a tinted
-// off-white, and at chip size the name needs full strength.
-const brightInk = css({ color: "white" })
-
 /**
- * Deck composition, count by count, derived from the catalog rather than authored so it
- * cannot drift from what the print sheet actually produces.
- *
- * What you print and what you shuffle are two different numbers. Setup pulls 3 cards per
- * player out of the Actions before the Disaster goes back in, so the round-1 deck is
- * meaningfully smaller than the printed one — and the strip reports the number a player
- * is about to count out, with the printed total behind it for the person cutting cards.
- *
- * `actionDeck` carries the Disaster alongside the Actions, so the Actions are taken by
- * excluding that kind rather than by subtracting a hard-coded 1.
+ * Deck composition, derived from the catalog rather than authored so it cannot drift
+ * from what the print sheet actually produces. Both decks are fixed at 36 cards
+ * regardless of player count, so this is a flat total rather than one row per count.
  */
-const SETUP_REMOVED_PER_PLAYER = 3
-
-const ACTION_TOTALS = sumCopies(
-  actionDeck.filter((card) => card.kind !== "disaster").map((card) => card.copies)
-)
-const PRINTED_TOTALS = sumCopies(actionDeck.map((card) => card.copies))
-const PERMANENT_TOTALS = sumCopies(permanentSupply.map((card) => card.copies))
-
-/** Actions left after setup's cull, plus the Disaster put back. */
-const roundOneDeck = (players: PlayerCount) => ACTION_TOTALS[players] - SETUP_REMOVED_PER_PLAYER * players + 1
+const OFFICER_TOTAL = sumCopies(officerDeck.map((card) => card.copies))[5]
+const LEGACY_TOTAL = sumCopies(legacyDeck.map((card) => card.copies))[5]
 
 const printCss = `
   @page { size: letter; margin: 0; }
@@ -186,7 +122,7 @@ const note = css({
   borderRadius: "8px"
 })
 
-// The sheet's three bands plus the footer strip, as named areas.
+// The sheet's header/body bands plus the footer strip, as named areas.
 const sheetStyle = css({
   position: "relative",
   background: "#fff",
@@ -197,12 +133,11 @@ const sheetStyle = css({
   display: "grid",
   gridTemplateAreas: `
     "header"
-    "powers"
     "body"
     "footer"
   `,
   gridTemplateColumns: "1fr",
-  gridTemplateRows: "auto auto 1fr auto",
+  gridTemplateRows: "auto 1fr auto",
   fontFamily: "system-ui, -apple-system, sans-serif"
 })
 
@@ -228,98 +163,6 @@ const subtitle = css({
   fontSize: TYPE.subtitle,
   fontWeight: 600,
   letterSpacing: "0.18em",
-  textTransform: "uppercase",
-  color: INK.muted
-})
-
-/**
- * The Powers matrix. A single grid — chip · Action — rather than five two-cell rows, so
- * every Action shares one measure down the whole table and the chips stay in a column
- * a player's eye can run.
- *
- * `auto` on the chip column sizes it to the longest Power name ("Abundance"); the
- * Action takes the entire remaining measure, because the authored Actions run to two
- * and three lines and a lettered choice needs room to stay readable.
- *
- * There is no Permanent column: a permanent's effect is not yet decided, and a column
- * that says nothing is worse than no column. Adding one is a third track here plus a
- * third cell per row.
- *
- * `alignItems: start` rather than `baseline`: rows are now multi-line, and a chip
- * baseline-aligned to a three-line cell floats away from the text it labels.
- */
-const powers = css({
-  gridArea: "powers",
-  display: "grid",
-  gridTemplateColumns: "auto 1fr",
-  columnGap: "4mm",
-  rowGap: "2mm",
-  alignItems: "start",
-  paddingTop: "4mm",
-  paddingBottom: "3mm"
-})
-
-// Column heads for the matrix. The chip column's head is the section label itself, so
-// the table needs no separate title row above it.
-const matrixHead = css({
-  fontSize: TYPE.columnHead,
-  fontWeight: 700,
-  letterSpacing: "0.14em",
-  textTransform: "uppercase",
-  color: INK.muted,
-  paddingBottom: "0.8mm",
-  borderBottom: `0.25mm solid #d6d3d1`
-})
-
-const chip = css({
-  display: "block",
-  fontSize: TYPE.chip,
-  fontWeight: 800,
-  letterSpacing: "0.06em",
-  textTransform: "uppercase",
-  lineHeight: 1,
-  padding: "1.2mm 2mm",
-  borderRadius: "1mm",
-  whiteSpace: "nowrap",
-  textAlign: "center"
-})
-
-const cell = css({
-  fontSize: TYPE.rule,
-  lineHeight: 1.33,
-  color: INK.body
-})
-
-/**
- * A lettered choice within one Action (Devotion, Impulse). A two-column grid so the
- * markers form their own narrow column and the option prose hangs in a single block
- * rather than wrapping back under its own letter.
- */
-const choice = css({
-  display: "grid",
-  gridTemplateColumns: "auto 1fr",
-  columnGap: "2mm",
-  rowGap: "0.8mm",
-  alignItems: "start"
-})
-
-const optionMark = css({
-  fontSize: TYPE.gloss,
-  fontWeight: 800,
-  lineHeight: 1.45,
-  color: INK.muted,
-  fontVariantNumeric: "tabular-nums"
-})
-
-// The fork itself, spanning both tracks so it reads as a divider between the options
-// rather than as a third option. Mutual exclusivity is the rule here, so it is stated
-// in words and not left to the lettering alone.
-const orRule = css({
-  gridColumn: "1 / -1",
-  fontSize: TYPE.fork,
-  fontWeight: 700,
-  lineHeight: 1,
-  letterSpacing: "0.16em",
   textTransform: "uppercase",
   color: INK.muted
 })
@@ -441,19 +284,9 @@ const footerLabel = css({
   color: INK.muted
 })
 
-/**
- * One column per player count rather than a wrapping flex row: fixed columns keep the
- * strip to a single line and put the counts on shared tab stops, so they can be read
- * down as well as across.
- *
- * The column count is derived from `PLAYER_COUNTS` at the call site via an inline
- * style, not here. Panda extracts styles statically and cannot evaluate a member
- * access on an imported const, so a `repeat(${PLAYER_COUNTS.length}, 1fr)` template
- * inside `css()` is silently dropped — the strip then stacks into one column per row.
- */
+// Both decks are fixed at 36 cards regardless of player count, so this is one
+// line rather than a per-player-count grid.
 const footerCounts = css({
-  display: "grid",
-  gap: "3mm",
   fontSize: TYPE.strip,
   color: INK.body,
   fontVariantNumeric: "tabular-nums"
@@ -477,14 +310,13 @@ type Section = {
 }
 
 /**
- * The prose blocks, in the order a game runs: the vocabulary the matrix above already
- * spends, how to start, how a turn goes, the hazard that ends the round, what the round
- * end pays out, and how it is all won.
+ * The prose blocks, in the order a game runs: the vocabulary, how to start, how a
+ * turn goes, and how it is all won.
  *
- * Disaster and Aftermath are two blocks rather than one because only the first is the
- * card. The colour discipline at the top of this file makes red mean *the Disaster card
- * exists here*; the aftermath is round-end bookkeeping the card happens to trigger, so
- * it stays in ink and sits directly beneath.
+ * `SETUP`/`TURN`/`WINNING` still narrate the old Action/Track/Disaster turn
+ * structure (see ReferenceDefinitions) and are stale until the Officer/Legacy rules
+ * are dictated — this page renders whatever those exports say, so editing the rules
+ * means editing that file, not this one.
  */
 const SECTIONS: readonly Section[] = [
   {
@@ -510,29 +342,6 @@ const SECTIONS: readonly Section[] = [
     note: TURN.timing
   },
   {
-    key: "disaster",
-    title: DISASTER_CARD.name,
-    kicker: "Ends The Round",
-    accent: DISASTER_ACCENT,
-    paragraphs: [
-      ...paras(DISASTER_RULES.lead),
-      ...paras(DISASTER_RULES.restriction),
-      ...paras(DISASTER_RULES.after)
-    ]
-  },
-  {
-    key: "aftermath",
-    title: "After the Disaster",
-    accent: INK.rule,
-    list: { ordered: true, items: AFTERMATH.steps }
-  },
-  {
-    key: "permanents",
-    title: "Permanents",
-    accent: INK.rule,
-    paragraphs: [...paras(PERMANENTS.lead), ...paras(PERMANENTS.pace)]
-  },
-  {
     key: "winning",
     title: "Winning",
     accent: INK.rule,
@@ -540,51 +349,6 @@ const SECTIONS: readonly Section[] = [
     list: { items: WINNING.conditions }
   }
 ]
-
-/** One Action cell: a single instruction, or a lettered fork between options. */
-function ActionCell({ options }: { options: readonly string[] }) {
-  const [only] = options
-  if (options.length === 1 && only !== undefined) {
-    return <span className={cell}>{only}</span>
-  }
-
-  return (
-    <div className={choice}>
-      {options.map((option, index) => (
-        <Fragment key={option}>
-          {index > 0 && <span className={orRule}>or</span>}
-          <span className={optionMark}>{String.fromCharCode(65 + index)}</span>
-          <span className={cell}>{option}</span>
-        </Fragment>
-      ))}
-    </div>
-  )
-}
-
-function PowersMatrix() {
-  return (
-    <div className={powers}>
-      <div className={matrixHead}>Powers</div>
-      <div className={matrixHead}>Action</div>
-
-      {
-        /*
-         Each Power contributes two grid cells, so the row is a keyed Fragment rather
-         than a wrapper element — a wrapper would become the grid item and collapse the
-         two columns into one.
-        */
-      }
-      {POWER_LIST_WITH_METADATA.map(({ name, color, band }) => (
-        <Fragment key={name}>
-          <span className={cx(chip, CHIP_RECIPE[band]({ color }), band === "strong" && brightInk)}>
-            {name}
-          </span>
-          <ActionCell options={POWER_REFERENCE[name].options} />
-        </Fragment>
-      ))}
-    </div>
-  )
-}
 
 function SectionBlock({ section }: { section: Section }) {
   const { accent } = section
@@ -634,16 +398,8 @@ function CompositionStrip() {
   return (
     <div className={footer}>
       <div className={footerLabel}>Deck</div>
-      <div
-        className={footerCounts}
-        style={{ gridTemplateColumns: `repeat(${PLAYER_COUNTS.length}, 1fr)` }}
-      >
-        {PLAYER_COUNTS.map((players) => (
-          <span key={players}>
-            <strong>{players}p</strong> · {roundOneDeck(players)} of {PRINTED_TOTALS[players]} ·{" "}
-            {PERMANENT_TOTALS[players]} perm
-          </span>
-        ))}
+      <div className={footerCounts}>
+        <strong>{OFFICER_TOTAL} Officers</strong> · <strong>{LEGACY_TOTAL} Legacies</strong>
       </div>
     </div>
   )
@@ -665,7 +421,6 @@ export function ReferencePage() {
             <div className={title}>Civil Service</div>
             <div className={subtitle}>Player Reference</div>
           </div>
-          <PowersMatrix />
           <div className={body}>
             {SECTIONS.map((section) => <SectionBlock key={section.key} section={section} />)}
           </div>

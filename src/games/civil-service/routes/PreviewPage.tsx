@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
-import { actionDeck } from "~/games/civil-service/cards/actionDeck"
-import { permanentSupply } from "~/games/civil-service/cards/permanentSupply"
+import { legacyDeck } from "~/games/civil-service/cards/legacyDeck"
+import { officerDeck } from "~/games/civil-service/cards/officerDeck"
 import { Card } from "~/games/civil-service/components/Card"
 import { css } from "~/generated/styled-system/css"
 import { previewCard } from "~/shared/cards/deckUtils"
@@ -15,10 +15,8 @@ const page = css({
   padding: "24px"
 })
 
-// Every face at once — the deck is six cards, so the whole thing fits on screen
-// and the Powers can be compared side by side. The permanent supply follows in its
-// own row, directly under the Actions it mirrors, so the rail that separates them is
-// judged against the card it has to be told apart from.
+// Every face at once — Officers in one row, Legacies in the next, so each deck
+// can be scanned as a whole and the two are easy to compare side by side.
 const gallery = css({
   display: "flex",
   flexWrap: "wrap",
@@ -47,12 +45,12 @@ export function PreviewPage() {
         onToggleGuides={setShowGuides}
       />
       <div className={gallery}>
-        {actionDeck.map((definition) => (
+        {officerDeck.map((definition) => (
           <Card key={definition.id} card={previewCard(definition)} showGuides={showGuides} />
         ))}
       </div>
       <div className={gallery}>
-        {permanentSupply.map((definition) => (
+        {legacyDeck.map((definition) => (
           <Card key={definition.id} card={previewCard(definition)} showGuides={showGuides} />
         ))}
       </div>

@@ -19,65 +19,63 @@ export { PLAYER_COUNTS, type PlayerCount } from "~/shared/cards/playerCount"
 export type Band = "strong" | "vivid" | "soft"
 
 /**
- * The five Powers. Mirrors graft's `FRUIT_LIST_WITH_METADATA`: one authored list
- * is the single source for the name union, the palette, and every derived
- * lookup. `color` is a Panda colour scale (see ~/shared/components/paperFrame),
- * not a raw value, so a Power tints a whole surface consistently.
+ * The four Officer suits. One authored list is the single source for the id
+ * union, the palette, and every derived lookup. `color` is a Panda colour scale
+ * (see ~/shared/components/paperFrame), not a raw value, so a suit tints a
+ * whole surface consistently.
  *
- * Guidance is the only `soft` Power: it reads as light/neutral rather than as a
- * hue, so it stays in very light greys throughout instead of carrying the
- * near-black band the others do. Impulse is `vivid` because the dark end of amber
- * is a brown — indistinguishable from Disaster's dark red at a glance, and nothing
- * like the yellow the Power is meant to read as.
+ * Scribe is the only `soft` suit: "tan" is a lightness/neutral identity rather
+ * than a hue, so it stays in warm light greys instead of carrying the near-black
+ * band the others do — the same reasoning that made Guidance `soft` under the
+ * old Power palette. Engineer is `vivid` for the same reason Impulse was: the
+ * dark end of orange reads as brown, not the hue the suit is meant to read as.
  */
-export const POWER_LIST_WITH_METADATA = [
+export const OFFICER_SUITS_WITH_METADATA = [
   {
-    name: "Abundance",
-    color: "lime",
+    id: "scribe",
+    name: "Scribe",
+    color: "stone",
+    band: "soft"
+  },
+  {
+    id: "tax-collector",
+    name: "Tax Collector",
+    color: "green",
     band: "strong"
   },
   {
-    name: "Ingenuity",
-    color: "cyan",
-    band: "strong"
-  },
-  {
-    name: "Devotion",
+    id: "magistrate",
+    name: "Magistrate",
     color: "purple",
     band: "strong"
   },
   {
-    name: "Guidance",
-    color: "neutral",
-    band: "soft"
-  },
-  {
-    name: "Impulse",
-    color: "amber",
+    id: "engineer",
+    name: "Engineer",
+    color: "orange",
     band: "vivid"
   }
 ] as const
-export type PowerName = typeof POWER_LIST_WITH_METADATA[number]["name"]
-export type PowerColor = typeof POWER_LIST_WITH_METADATA[number]["color"]
+export type OfficerSuitId = typeof OFFICER_SUITS_WITH_METADATA[number]["id"]
+export type OfficerSuitColor = typeof OFFICER_SUITS_WITH_METADATA[number]["color"]
 
 /**
- * Disaster is not a Power: it has no place among the five and never appears where
- * a Power is asked for. Dark red sits next to Impulse's amber on the wheel, so the
- * hazard striping on its bands (see components/Card) is what actually sets it
- * apart — not the hue alone.
+ * Suit id → its scale and band weight, derived once from the metadata list. The
+ * lone cast is unavoidable: `Object.fromEntries` widens keys to `string`, but
+ * the entries come straight from the typed list so the map is total.
  */
-export const DISASTER = {
-  name: "Disaster",
-  color: "red",
+export const OFFICER_PALETTE: Record<OfficerSuitId, { color: OfficerSuitColor; band: Band }> = Object
+  .fromEntries(
+    OFFICER_SUITS_WITH_METADATA.map(({ id, color, band }) => [id, { color, band }])
+  ) as Record<OfficerSuitId, { color: OfficerSuitColor; band: Band }>
+
+/**
+ * The Legacy deck has no suits — every card is individually authored — so it
+ * carries one uniform identity instead of a per-card palette. `zinc` sits apart
+ * from every Officer suit's hue (stone/green/purple/orange), the same way
+ * Disaster's red once stood apart from the Powers.
+ */
+export const LEGACY_PALETTE = {
+  color: "zinc",
   band: "strong"
 } as const
-
-/**
- * Power → its scale and band weight, derived once from the metadata list. The lone
- * cast is unavoidable: `Object.fromEntries` widens keys to `string`, but the
- * entries come straight from the typed list so the map is total.
- */
-export const POWER_PALETTE: Record<PowerName, { color: PowerColor; band: Band }> = Object
-  .fromEntries(
-    POWER_LIST_WITH_METADATA.map(({ name, color, band }) => [name, { color, band }])
-  ) as Record<PowerName, { color: PowerColor; band: Band }>
