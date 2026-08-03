@@ -1,10 +1,10 @@
 import { useState } from "react"
-import type { GeneratedMap } from "~/games/numina/map/generate"
-import { HexPainter } from "~/games/numina/map/HexPainter"
-import type { HexMapSpec } from "~/games/numina/map/hexSpec"
-import hexSpecData from "~/games/numina/map/hexSpec.json"
-import mapData from "~/games/numina/map/map.json"
-import { MapView } from "~/games/numina/map/MapView"
+import type { GeneratedMap } from "~/games/civil-service/map/generate"
+import { HexPainter } from "~/games/civil-service/map/HexPainter"
+import type { HexMapSpec } from "~/games/civil-service/map/hexSpec"
+import hexSpecData from "~/games/civil-service/map/hexSpec.json"
+import mapData from "~/games/civil-service/map/map.json"
+import { MapView } from "~/games/civil-service/map/MapView"
 import { css } from "~/generated/styled-system/css"
 
 const map = mapData as GeneratedMap
@@ -66,7 +66,7 @@ type Mode = "view" | "edit"
 
 // Remembered so a refresh mid-paint puts you back in the painter rather than
 // in view mode.
-const MODE_KEY = "numina:map-mode"
+const MODE_KEY = "civil-service:map-mode"
 
 export function MapPage() {
   const [mode, setModeState] = useState<Mode>(
@@ -84,7 +84,7 @@ export function MapPage() {
   return (
     <div className={page}>
       <div className={header}>
-        <span>Numina — Map</span>
+        <span>Civil Service — Map</span>
         <label className={toggleLabel}>
           <input
             type="checkbox"

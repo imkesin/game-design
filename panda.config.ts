@@ -67,7 +67,7 @@ export default defineConfig({
           }
         },
         fontSizes: {
-          // Numina's action cards carry nothing but their name, so it is set at
+          // Civil Service's action cards carry nothing but their name, so it is set at
           // display size — the largest step in the scale.
           hero: u(6),
           title: u(5),

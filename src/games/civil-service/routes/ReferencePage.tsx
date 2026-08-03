@@ -1,7 +1,11 @@
 import { Fragment } from "react"
-import { actionDeck } from "~/games/numina/cards/actionDeck"
-import { permanentSupply } from "~/games/numina/cards/permanentSupply"
-import { type Band, DISASTER as DISASTER_CARD, POWER_LIST_WITH_METADATA } from "~/games/numina/domain/CoreDefinitions"
+import { actionDeck } from "~/games/civil-service/cards/actionDeck"
+import { permanentSupply } from "~/games/civil-service/cards/permanentSupply"
+import {
+  type Band,
+  DISASTER as DISASTER_CARD,
+  POWER_LIST_WITH_METADATA
+} from "~/games/civil-service/domain/CoreDefinitions"
 import {
   AFTERMATH,
   DISASTER as DISASTER_RULES,
@@ -11,18 +15,18 @@ import {
   SETUP,
   TURN,
   WINNING
-} from "~/games/numina/domain/ReferenceDefinitions"
+} from "~/games/civil-service/domain/ReferenceDefinitions"
 import { css, cx } from "~/generated/styled-system/css"
 import { PLAYER_COUNTS, type PlayerCount, sumCopies } from "~/shared/cards/playerCount"
 import { darkBand, softBand, vividBand } from "~/shared/components/paperFrame"
 
 /**
- * Numina's single-page player reference — one sheet for the table, not one per
+ * Civil Service's single-page player reference — one sheet for the table, not one per
  * player, so it can afford setup and edge cases as well as the mid-turn essentials.
  *
  * Structure differs from graft's FocusReferencePage on purpose. Graft's six sections
  * are all different shapes, so it flows them as prose blocks through two balanced
- * columns. Numina's five Powers are *symmetric* — one Action each — and a prose block
+ * columns. Civil Service's five Powers are *symmetric* — one Action each — and a prose block
  * per Power would spend most of the page restating the same shape five times. So the
  * Powers become a five-row matrix keyed by the card's own colour, and the page's prose
  * is reserved for the rules that are genuinely asymmetric: the vocabulary, setup, the
@@ -658,7 +662,7 @@ export function ReferencePage() {
           style={{ width: `${PAGE_W}mm`, height: `${PAGE_H}mm`, padding: `${MARGIN}mm` }}
         >
           <div className={header}>
-            <div className={title}>Numina</div>
+            <div className={title}>Civil Service</div>
             <div className={subtitle}>Player Reference</div>
           </div>
           <PowersMatrix />

@@ -6,7 +6,7 @@ import { css } from "~/generated/styled-system/css"
  * upper-left disc rides on top of the darker lower-right one and carries the
  * `amount`, sized to seat a two-digit number comfortably inside its face.
  *
- * Shared rather than Graft's own: Numina's payoff table pays in the same coin,
+ * Shared rather than Graft's own: Civil Service's payoff table pays in the same coin,
  * and two drawings of one currency would drift apart.
  *
  * Drawn as an inline SVG (like WorkerZone) so it stays crisp at print and

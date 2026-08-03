@@ -1,14 +1,14 @@
 import { useState } from "react"
-import { actionDeck } from "~/games/numina/cards/actionDeck"
-import { permanentSupply } from "~/games/numina/cards/permanentSupply"
-import { Card } from "~/games/numina/components/Card"
+import { actionDeck } from "~/games/civil-service/cards/actionDeck"
+import { permanentSupply } from "~/games/civil-service/cards/permanentSupply"
+import { Card } from "~/games/civil-service/components/Card"
 import { expandDeck } from "~/shared/cards/deckUtils"
 import type { PlayerCount } from "~/shared/cards/playerCount"
 import { PlayerCountSelect } from "~/shared/components/PlayerCountSelect"
 import { CardSheetPage } from "~/shared/print/CardSheetPage"
 
 /**
- * Numina's print-and-play sheet: the action deck followed by the permanent supply,
+ * Civil Service's print-and-play sheet: the action deck followed by the permanent supply,
  * both at the chosen player count. One sheet for the whole game.
  *
  * The permanents come last rather than interleaved so they land contiguously — they

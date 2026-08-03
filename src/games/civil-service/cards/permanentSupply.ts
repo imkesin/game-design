@@ -1,5 +1,5 @@
-import { artProps } from "~/games/numina/assets/cardArt"
-import { POWER_LIST_WITH_METADATA } from "~/games/numina/domain/CoreDefinitions"
+import { artProps } from "~/games/civil-service/assets/cardArt"
+import { POWER_LIST_WITH_METADATA } from "~/games/civil-service/domain/CoreDefinitions"
 import { flatCopies } from "~/shared/cards/playerCount"
 import type { Deck } from "./domain"
 

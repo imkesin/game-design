@@ -21,12 +21,12 @@ const run = promisify(execFile)
  */
 function hexSpecSave(): Plugin {
   const url = (path: string) => fileURLToPath(new URL(path, import.meta.url))
-  const specPath = url("./src/games/numina/map/hexSpec.json")
-  const buildScript = url("./src/games/numina/map/build.ts")
+  const specPath = url("./src/games/civil-service/map/hexSpec.json")
+  const buildScript = url("./src/games/civil-service/map/build.ts")
   const tsx = url("./node_modules/.bin/tsx")
 
   return {
-    name: "numina:hex-spec-save",
+    name: "civil-service:hex-spec-save",
     // Never ship it: the painter falls back to a plain download in a real build.
     apply: "serve",
     configureServer(server) {

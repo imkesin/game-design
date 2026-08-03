@@ -3,4 +3,4 @@
  * currently share one Panda token set, and `main.tsx` stamps this id onto
  * `<html>` so tokens can diverge later with no component changes.
  */
-export const NUMINA_THEME_ID = "numina"
+export const CIVIL_SERVICE_THEME_ID = "civil-service"

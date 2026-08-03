@@ -1,4 +1,4 @@
-# Numina card art
+# Civil Service card art
 
 Drop SVGs in here. The filename is the card's name, lowercased:
 

@@ -20,5 +20,5 @@ pnpm run dev
 ## Games
 
 - **Graft** (`/graft`) — interactive preview at `/graft`; print sheets under `/graft/print/*`.
-- **Numina** (`/numina`) — action-deck preview at `/numina`; print sheet at `/numina/print/cards`;
-  one-page player reference at `/numina/print/reference`.
+- **Civil Service** (`/civil-service`) — action-deck preview at `/civil-service`; print sheet at
+  `/civil-service/print/cards`; one-page player reference at `/civil-service/print/reference`.

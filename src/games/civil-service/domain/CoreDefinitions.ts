@@ -1,4 +1,4 @@
-// Player counts are common to every game; re-exported here so numina code keeps
+// Player counts are common to every game; re-exported here so civil-service code keeps
 // a single domain import.
 export { PLAYER_COUNTS, type PlayerCount } from "~/shared/cards/playerCount"
 

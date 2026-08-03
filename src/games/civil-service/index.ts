@@ -4,11 +4,11 @@ import { MapPrintPage } from "./routes/MapPrintPage"
 import { PreviewPage } from "./routes/PreviewPage"
 import { PrintPage } from "./routes/PrintPage"
 import { ReferencePage } from "./routes/ReferencePage"
-import { NUMINA_THEME_ID } from "./theme"
+import { CIVIL_SERVICE_THEME_ID } from "./theme"
 
-export const numina: Game = {
-  id: NUMINA_THEME_ID,
-  name: "Numina",
+export const civilService: Game = {
+  id: CIVIL_SERVICE_THEME_ID,
+  name: "Civil Service",
   routes: {
     "/": PreviewPage,
     "/map": MapPage,

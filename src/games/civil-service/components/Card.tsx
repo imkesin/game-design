@@ -1,5 +1,5 @@
-import type { Card } from "~/games/numina/cards/domain"
-import { type Band, DISASTER, POWER_PALETTE } from "~/games/numina/domain/CoreDefinitions"
+import type { Card } from "~/games/civil-service/cards/domain"
+import { type Band, DISASTER, POWER_PALETTE } from "~/games/civil-service/domain/CoreDefinitions"
 import { css, cx } from "~/generated/styled-system/css"
 import type { PlayerCount } from "~/shared/cards/playerCount"
 import { Guides } from "~/shared/components/Guides"
@@ -15,7 +15,7 @@ import {
 } from "~/shared/components/paperFrame"
 
 /**
- * A Numina card. Deliberately spare: the name at display size in a band across
+ * A Civil Service card. Deliberately spare: the name at display size in a band across
  * the top, an open art area filling everything below it, and a footer band
  * carrying the player-count symbol. No cost rail, no rules text — each Action
  * recurs often enough that players learn what it does.

@@ -1,4 +1,4 @@
-import { DISASTER, type PowerName } from "~/games/numina/domain/CoreDefinitions"
+import { DISASTER, type PowerName } from "~/games/civil-service/domain/CoreDefinitions"
 
 /**
  * Card art, discovered from this directory rather than imported file by file: an

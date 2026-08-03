@@ -170,7 +170,7 @@ type Tool = "kind" | "province" | "marker"
 /** What the in-flight drag is doing, captured on pointer-down so it cannot change mid-stroke. */
 type Stroke = "kind" | "select" | "deselect"
 
-const STATUS_KEY = "numina:hex-save-status"
+const STATUS_KEY = "civil-service:hex-save-status"
 
 /** Reads the save outcome left behind by a reload, and clears it. */
 function readStatus(): string | null {

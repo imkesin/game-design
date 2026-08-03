@@ -1,4 +1,4 @@
-import type { PowerName } from "~/games/numina/domain/CoreDefinitions"
+import type { PowerName } from "~/games/civil-service/domain/CoreDefinitions"
 import type { Copies, PlayerCount } from "~/shared/cards/playerCount"
 
 /**
