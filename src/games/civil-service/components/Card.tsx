@@ -1,10 +1,12 @@
+import { Cog, Flag, HandCoins, Scale, Signature } from "lucide-react"
 import type { CSSProperties } from "react"
 import type { Card } from "~/games/civil-service/cards/domain"
 import {
   type Band,
   LEGACY_PALETTE,
   OFFICER_PALETTE,
-  OFFICER_SUIT_NAMES
+  OFFICER_SUIT_NAMES,
+  type OfficerSuitId
 } from "~/games/civil-service/domain/CoreDefinitions"
 import { css, cx } from "~/generated/styled-system/css"
 import type { PlayerCount } from "~/shared/cards/playerCount"
@@ -13,6 +15,7 @@ import {
   artTint,
   darkBand,
   paperFrame,
+  paperShade,
   softBand,
   softRail,
   strongRail,
@@ -186,6 +189,17 @@ const artMark = css({
   }
 })
 
+// Until a suit has real illustrated art dropped into assets/cardArt, its Lucide
+// mark stands in for it — same box model as `artMark`, same `artTint` colour, so
+// swapping in a real illustration later is a drop-in with no layout change.
+const artIcon = css({
+  position: "absolute",
+  inset: "var(--gutter)",
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center"
+})
+
 // Screen-only marker for the empty art area, shown with the print guides. Never
 // printed: the sheet renders cards with guides off.
 const artPlaceholder = css({
@@ -305,9 +319,31 @@ const DIVIDER_RECIPE = {
 // bands get it — `vivid` and `soft` bands are light, so their ink must stay dark.
 const brightInk = css({ color: "white" })
 
+// Officer text sits on plain white rather than the card's paper tint, so the
+// power text reads at full contrast regardless of suit. Legacy cards keep the
+// tinted paper showing through.
+const whiteTextRegion = css({ background: "white" })
+
 /** A card's palette: its Panda colour scale plus its band weight. */
 function paletteOf(card: Card) {
   return card.kind === "officer" ? OFFICER_PALETTE[card.suit] : LEGACY_PALETTE
+}
+
+// Suit -> its Lucide mark, shown in the art region until the suit has real
+// illustrated art (see assets/cardArt).
+const OFFICER_SUIT_ICONS: Record<OfficerSuitId, typeof HandCoins> = {
+  steward: HandCoins,
+  magistrate: Scale,
+  engineer: Cog,
+  scribe: Signature
+}
+
+// Legacy cards have no suits — all 36 share this one mark until they get
+// individual art.
+const LEGACY_ICON = Flag
+
+function iconOf(card: Card) {
+  return card.kind === "officer" ? OFFICER_SUIT_ICONS[card.suit] : LEGACY_ICON
 }
 
 export function Card({
@@ -321,6 +357,7 @@ export function Card({
 }) {
   const { color, band: weight } = paletteOf(card)
   const band = cx(BAND_RECIPE[weight]({ color }), weight === "strong" && brightInk)
+  const Icon = iconOf(card)
 
   return (
     <div
@@ -335,7 +372,7 @@ export function Card({
           <span className={nameText}>{card.kind === "officer" ? OFFICER_SUIT_NAMES[card.suit] : card.name}</span>
         </div>
       </div>
-      <div className={artRegion}>
+      <div className={cx(artRegion, card.kind === "legacy" && paperShade({ color }))}>
         {card.art !== undefined
           ? (
             // The markup is our own asset, read off disk at build time (see
@@ -345,9 +382,21 @@ export function Card({
               dangerouslySetInnerHTML={{ __html: card.art }}
             />
           )
+          : Icon !== undefined
+          ? (
+            <div className={cx(artIcon, artTint({ color }))}>
+              <Icon size="55%" strokeWidth={1.5} />
+            </div>
+          )
           : showGuides && <span className={artPlaceholder}>Art</span>}
       </div>
-      <div className={cx(textRegion, DIVIDER_RECIPE[weight]({ color }))}>
+      <div
+        className={cx(
+          textRegion,
+          DIVIDER_RECIPE[weight]({ color }),
+          card.kind === "officer" && whiteTextRegion
+        )}
+      >
         <div className={textRegionContent}>
           {card.kind === "officer"
             ? (

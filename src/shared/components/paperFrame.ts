@@ -31,7 +31,34 @@ export const paperFrame = cva({
 })
 
 /**
- * One notch darker than the paper surface (`{color}.100` vs `.50`), on the same
+ * A half-step darker than the paper surface (`{color}.100`) — barely shaded,
+ * for a subregion that should read as a step apart from the paper without
+ * competing with `panelTint`'s heavier chrome.
+ */
+export const paperShade = cva({
+  variants: {
+    color: {
+      red: { background: "red.100" },
+      blue: { background: "blue.100" },
+      orange: { background: "orange.100" },
+      yellow: { background: "yellow.100" },
+      amber: { background: "amber.100" },
+      lime: { background: "lime.100" },
+      green: { background: "green.100" },
+      violet: { background: "violet.100" },
+      purple: { background: "purple.100" },
+      pink: { background: "pink.100" },
+      stone: { background: "stone.100" },
+      brown: { background: "brown.100" },
+      zinc: { background: "zinc.100" },
+      cyan: { background: "cyan.100" },
+      neutral: { background: "neutral.100" }
+    }
+  }
+})
+
+/**
+ * One notch darker than the paper surface (`{color}.200` vs `.50`), on the same
  * scale. For structural subregions that should read as chrome rather than
  * content — e.g. MarketStall's induces panel.
  */
