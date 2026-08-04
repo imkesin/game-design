@@ -1,5 +1,11 @@
+import type { CSSProperties } from "react"
 import type { Card } from "~/games/civil-service/cards/domain"
-import { type Band, LEGACY_PALETTE, OFFICER_PALETTE } from "~/games/civil-service/domain/CoreDefinitions"
+import {
+  type Band,
+  LEGACY_PALETTE,
+  OFFICER_PALETTE,
+  OFFICER_SUIT_NAMES
+} from "~/games/civil-service/domain/CoreDefinitions"
 import { css, cx } from "~/generated/styled-system/css"
 import type { PlayerCount } from "~/shared/cards/playerCount"
 import { Guides } from "~/shared/components/Guides"
@@ -18,6 +24,10 @@ import {
  * A Civil Service card: the name at display size in a band across the top, an
  * art area, a text band carrying the card's own power (Officer) or condition
  * (Legacy), and a footer band carrying the player-count symbol.
+ *
+ * For an Officer, the header band shows its suit (all 9 cards in a suit share
+ * it), not `card.name` — `name` is the card's own epithet (e.g.
+ * "Charismatic"), which instead leads its power text in bold.
  *
  * Same two render variants as graft's Card:
  *
@@ -67,14 +77,33 @@ const trimFrame = css({
   "--gutter": "calc(3 * var(--u))"
 })
 
-// Hairline cut line on the trim boundary. `outline` doesn't affect layout, so
-// adjacent cards' outlines coincide into a single shared cut line. `currentColor`
-// is the surface's own ink, so it tracks the card's palette with no second map.
-const accentOutline = css({
-  outlineWidth: "0.2mm",
-  outlineStyle: "solid",
-  outlineColor: "currentColor"
-})
+// Hairline cut line on the trim boundary, rendered as an absolutely-positioned
+// overlay rather than `border`/`outline` so it never affects layout: adjacent
+// cards' overlays land on the exact same pixels and coincide into a single
+// shared cut line. Dashes alternate black/white along each edge so the guide
+// stays visible against any card surface regardless of how light or dark it
+// is — the corners come out square rather than following the card's rounded
+// radius, since CSS has no way to phase-shift a background pattern around a
+// curve the way an SVG stroke can.
+const CUT_DASH_MM = 1
+const CUT_LINE_MM = 0.2
+const cutLineH = `repeating-linear-gradient(to right, #000 0 ${CUT_DASH_MM}mm, #fff ${CUT_DASH_MM}mm ${
+  CUT_DASH_MM * 2
+}mm)`
+const cutLineV = `repeating-linear-gradient(to bottom, #000 0 ${CUT_DASH_MM}mm, #fff ${CUT_DASH_MM}mm ${
+  CUT_DASH_MM * 2
+}mm)`
+
+const cutLineStyle: CSSProperties = {
+  position: "absolute",
+  inset: 0,
+  pointerEvents: "none",
+  backgroundImage: `${cutLineH}, ${cutLineH}, ${cutLineV}, ${cutLineV}`,
+  backgroundPosition: "top left, bottom left, top left, top right",
+  backgroundSize: `${CUT_DASH_MM * 2}mm ${CUT_LINE_MM}mm, ${CUT_DASH_MM * 2}mm ${CUT_LINE_MM}mm, ` +
+    `${CUT_LINE_MM}mm ${CUT_DASH_MM * 2}mm, ${CUT_LINE_MM}mm ${CUT_DASH_MM * 2}mm`,
+  backgroundRepeat: "repeat-x, repeat-x, repeat-y, repeat-y"
+}
 
 // Full-width band: spans all columns so its colour bleeds to both edges. Top
 // padding = gutter so the content starts at the safe line even though the band
@@ -205,6 +234,17 @@ const textRegionContent = css({
   whiteSpace: "pre-line"
 })
 
+// An Officer's epithet, on its own line above its power text — the header
+// carries the suit instead (see OFFICER_SUIT_NAMES), so this is the one place
+// the card's own name reads.
+const epithetText = css({
+  display: "block",
+  fontSize: "body",
+  fontWeight: 700,
+  lineHeight: 1.1,
+  marginBottom: "1"
+})
+
 // Thin stripe mirroring the header: bleeds to the bottom edge, with
 // paddingBottom = gutter dropping its content onto the safe line.
 const footer = css({
@@ -287,13 +327,12 @@ export function Card({
       className={cx(
         frame,
         paperFrame({ color }),
-        variant === "bleed" ? bleedFrame : trimFrame,
-        variant === "trim" && accentOutline
+        variant === "bleed" ? bleedFrame : trimFrame
       )}
     >
       <div className={cx(header, band)}>
         <div className={headerContent}>
-          <span className={nameText}>{card.name}</span>
+          <span className={nameText}>{card.kind === "officer" ? OFFICER_SUIT_NAMES[card.suit] : card.name}</span>
         </div>
       </div>
       <div className={artRegion}>
@@ -309,9 +348,19 @@ export function Card({
           : showGuides && <span className={artPlaceholder}>Art</span>}
       </div>
       <div className={cx(textRegion, DIVIDER_RECIPE[weight]({ color }))}>
-        <div className={textRegionContent}>{card.kind === "officer" ? card.power : card.condition}</div>
+        <div className={textRegionContent}>
+          {card.kind === "officer"
+            ? (
+              <>
+                <span className={epithetText}>{card.name}</span>
+                {card.power}
+              </>
+            )
+            : card.condition}
+        </div>
       </div>
       <Footer minPlayerCount={card.minPlayerCount} band={band} />
+      {variant === "trim" && <div style={cutLineStyle} />}
       {showGuides && variant === "bleed" && <Guides />}
     </div>
   )

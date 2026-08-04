@@ -12,6 +12,8 @@ import type { Copies, PlayerCount } from "~/shared/cards/playerCount"
 export type OfficerCardBase = {
   readonly kind: "officer"
   readonly id: string
+  /** The card's own epithet (e.g. "Charismatic") — not the suit. Rendered in
+   * bold leading `power`; the card's header shows the suit itself instead. */
   readonly name: string
   /** Which suit this Officer belongs to — drives the card's whole palette. */
   readonly suit: OfficerSuitId

@@ -70,6 +70,15 @@ export const OFFICER_PALETTE: Record<OfficerSuitId, { color: OfficerSuitColor; b
   ) as Record<OfficerSuitId, { color: OfficerSuitColor; band: Band }>
 
 /**
+ * Suit id → display name, derived once from the metadata list. An Officer
+ * card's own `name` is its epithet (e.g. "Charismatic"), not the suit — the
+ * card's header shows the suit name instead, looked up here.
+ */
+export const OFFICER_SUIT_NAMES: Record<OfficerSuitId, string> = Object.fromEntries(
+  OFFICER_SUITS_WITH_METADATA.map(({ id, name }) => [id, name])
+) as Record<OfficerSuitId, string>
+
+/**
  * The Legacy deck has no suits — every card is individually authored — so it
  * carries one uniform identity instead of a per-card palette. `zinc` sits apart
  * from every Officer suit's hue (stone/green/purple/orange), the same way
