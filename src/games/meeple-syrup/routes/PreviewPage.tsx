@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react"
 import { animalDeck } from "~/games/meeple-syrup/cards/animalDeck"
-import { resourceDeck } from "~/games/meeple-syrup/cards/resourceDeck"
+import { forageBag } from "~/games/meeple-syrup/cards/forageBag"
 import { RESOURCE_BY_ID } from "~/games/meeple-syrup/cards/resources"
 import { AnimalCard } from "~/games/meeple-syrup/components/AnimalCard"
+import { BlankCard } from "~/games/meeple-syrup/components/BlankCard"
 import { ResourceCard } from "~/games/meeple-syrup/components/ResourceCard"
 import { css } from "~/generated/styled-system/css"
 import { ZoomControl } from "~/shared/components/ZoomControl"
@@ -61,12 +62,28 @@ const options = [
     label: `${card.name} — ${RESOURCE_BY_ID[card.input].name} → ${RESOURCE_BY_ID[card.output].name}`,
     card
   })),
-  ...resourceDeck.map((card) => ({
+  ...forageBag.map((card) => ({
     id: card.id,
-    label: `${RESOURCE_BY_ID[card.resource].name} x${card.quantity}`,
+    label: card.kind === "blank"
+      ? "Empty Handed"
+      : `${RESOURCE_BY_ID[card.resource].name} x${card.quantity}`,
     card
   }))
 ]
+
+/** One card at whatever size the caller asked for, dispatched on `kind`. */
+function CardFace(
+  { card, ...props }: { card: (typeof options)[number]["card"]; variant?: "trim"; showGuides?: boolean }
+) {
+  switch (card.kind) {
+    case "animal":
+      return <AnimalCard card={card} {...props} />
+    case "resource":
+      return <ResourceCard card={card} {...props} />
+    case "blank":
+      return <BlankCard {...props} />
+  }
+}
 
 export function PreviewPage() {
   const [zoom, setZoom] = useState(2.5)
@@ -92,11 +109,7 @@ export function PreviewPage() {
       <select className={select} value={selectedId} onChange={(e) => setSelectedId(e.target.value)}>
         {options.map((o) => <option key={o.id} value={o.id}>{o.label}</option>)}
       </select>
-      {selected !== undefined && (
-        selected.kind === "animal"
-          ? <AnimalCard card={selected} showGuides={showGuides} />
-          : <ResourceCard card={selected} showGuides={showGuides} />
-      )}
+      {selected !== undefined && <CardFace card={selected} showGuides={showGuides} />}
 
       <span className={heading}>Animals — {animalDeck.length} cards</span>
       <div className={row}>
@@ -104,10 +117,10 @@ export function PreviewPage() {
       </div>
 
       <span className={heading}>
-        Resources — {resourceDeck.reduce((n, c) => n + c.copies, 0)} cards, {resourceDeck.length} distinct
+        Forage bag — {forageBag.reduce((n, c) => n + c.copies, 0)} cards, {forageBag.length} distinct
       </span>
       <div className={row}>
-        {resourceDeck.map((card) => <ResourceCard key={card.id} variant="trim" card={card} />)}
+        {forageBag.map((card) => <CardFace key={card.id} variant="trim" card={card} />)}
       </div>
 
       {

@@ -9,6 +9,14 @@ import type { TradeTrack } from "./domain"
  * Lengths grow left to right (5, 7, 7, 7, 9, 9, 9), so the strip of ladders
  * prints as a wedge: the syrup end of the chain is a tight market, the staples
  * end a loose one.
+ *
+ * The first track carries more weight than the rest and its numbers are load
+ * bearing. Opening at `2:4`, it converts a player's two starting syrup into
+ * exactly one topping-eater's hire (see `STARTING_SYRUP`), which is the game's
+ * intended first move. Five rungs makes it the shortest ladder on the board, so
+ * the rate a player is likeliest to want on turn one is also the one hardest to
+ * shove out from under them — and because Syrup's side stays pinned at 2 across
+ * all five, the worst that opening ever fetches is half a hire.
  */
 export const tradeTracks: readonly TradeTrack[] = [
   {

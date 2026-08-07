@@ -17,19 +17,21 @@ import { artTint, darkBand, paperFrame, paperShade, strongRail } from "~/shared/
  *     │       big numeral over     │   how much
  *     │      the resource's mark   │
  *     ├────────────────────────────┤
- *     │  market shift rider        │   what taking it costs the market
+ *     │  market shift rider        │   what drawing it costs the market
  *     └────────────────────────────┘
  *
  * The quantity is set enormous and the mark sits *behind* it as a watermark
  * rather than beside it: these are read fanned in a hand, where only a corner
- * shows, and colour plus numeral is what has to survive that.
+ * shows, and colour plus numeral is what has to survive that. The blank uses
+ * the same three bands and the same numeral slot, printing a `0` — see
+ * `BlankCard`.
  *
  * The footer prints even on the cards with no rider. A blank band would read as
- * an omission, and "no market shift" is itself worth stating — on this deck the
- * topping 2s are the only denomination it is true of (see `resourceDeck.ts`).
+ * an omission, and "no market shift" is itself worth stating — in this bag the
+ * topping 2s are the only denomination it is true of (see `forageBag.ts`).
  *
  * "Other" markets are the tracks that do not price this card's own resource, so
- * taking a good can never move its own price. The card does not have room to
+ * drawing a good can never move its own price. The card does not have room to
  * say which those are and does not need to — the board does, in the legend
  * under the ladders (see `BoardPrintPage`).
  *

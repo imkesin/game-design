@@ -6,11 +6,11 @@ import { CardOutline } from "~/shared/print/CardOutline"
  * The board's two card rows, as footprints — places a physical card gets laid,
  * not cards printed there.
  *
- * They are deliberately not the same thing. Animals are simply two cards on
- * offer, free to recruit at whatever hire they print. Resources are a market:
- * four slots priced `0 0 1 2` in syrup, with cards entering at the dear end and
- * shuffling toward the free one as they are taken, so anything unwanted gets
- * cheaper and waiting is a real play.
+ * They are deliberately not the same thing. Animals are a market: four slots
+ * priced `2 1 0 0` in syrup, with cards drifting toward the free end as they
+ * are taken, so anything unwanted gets cheaper and waiting is a real play. The
+ * bag is a single unpriced footprint — a place to set it down, since what comes
+ * out of it is drawn blind and costs nothing but the action.
  *
  * The board says all of that in marks alone — a price tag under a slot, an
  * arrow under the row that drifts. Nothing here explains itself in prose; the

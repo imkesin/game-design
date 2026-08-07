@@ -13,9 +13,11 @@ export type ResourceId = (typeof RESOURCE_IDS)[number]
 
 /**
  * The three tiers the resource chain divides into, and the only thing that
- * decides which denominations a resource prints at (see `resourceDeck.ts`).
+ * decides which denominations a resource prints at (see `forageBag.ts`).
  *
- *   - `syrup` — Maple Syrup alone. The scarce currency: it prints in 1s only.
+ *   - `syrup` — Maple Syrup alone. The scarce currency: it prints in 1s only,
+ *     and is scarce by how rarely the bag yields it (one draw in ten, falling)
+ *     rather than by how few of it the bag holds.
  *   - `topping` — the three that give a pancake its name.
  *   - `base` — the four staples every pancake needs, whatever its topping.
  */
@@ -62,40 +64,68 @@ export type Resource = {
  * denomination carries.
  *
  * The card is a collection instruction rather than a thing anyone holds — the
- * goods themselves are physical pieces, and taking this card moves `quantity`
+ * goods themselves are physical pieces, and drawing this card moves `quantity`
  * of them into your player zone. So a denomination shapes how goods arrive in
  * lumps, and nothing else: once they are pieces, any whole amount can be spent,
- * which is why the animal rates are free to ask for one of something the deck
+ * which is why the animal rates are free to ask for one of something the bag
  * only ever hands out two or three at a time.
  *
- * `shift` is how many rungs the taker must move, on any market *other* than the
- * ones that price the resource being taken — take Blueberries and neither the
+ * `shift` is how many rungs the drawer must move, on any market *other* than
+ * the ones that price the resource drawn — draw Blueberries and neither the
  * Chocolate/Blueberries nor the Blueberries/Bananas track may move. Direction
- * is the taker's to choose. It is mandatory, not a bonus: `0` is the only way a
- * card is inert. Which denominations carry it, and how hard, is authored in
- * `resourceDeck.ts`; the short version is that the small denominations shove
- * the market hardest, so taking a little of something is louder than taking a
- * lot.
+ * is the drawer's to choose. It is mandatory, not a bonus: `0` is the only way
+ * a card is inert. Which denominations carry it, and how hard, is authored in
+ * `forageBag.ts`; the short version is that the small denominations shove the
+ * market hardest, so a thin draw is a louder one.
+ *
+ * Since the bag is blind, nobody picks their denomination, and so nobody picks
+ * how loud they are. What is still chosen is the aim — which of the markets,
+ * and which direction. The card sets the size of the lever and the player
+ * decides where to put it.
  *
  * A resource sits between two tracks, or one if it is at an end of the chain
  * (Maple Syrup and Flour), so a shift always has at least five of the seven
- * markets to land on and can never be stranded. What the rule does buy is that
- * a player can never take a good and use the same action to move its own price.
+ * markets to land on and can never be stranded. What the rule buys is that a
+ * player can never take a good and use the same action to move its own price.
  *
- * *When* the shift resolves is the one rules question the deck itself can't
- * settle. It is written as on taking the card, which is what makes drafting
- * from the market a decision rather than a deferred cost.
+ * The shift resolves on drawing the card, not later — the draw and its
+ * consequence are one action, and a table full of deferred shifts would be
+ * unplayable.
  */
 export type ResourceCard = {
   readonly kind: "resource"
-  /** `<resource>-<quantity>`, e.g. `flour-4`. Unique per denomination. */
+  /** `<resource>-<quantity>`, e.g. `flour-3`. Unique per denomination. */
   readonly id: string
   readonly resource: ResourceId
   readonly quantity: number
   readonly shift: number
 }
 
+/**
+ * A blank: the draw that found nothing.
+ *
+ * It has no fields because it has no rules — it is not a resource, not a
+ * quantity, and carries no shift. Drawn, shown, and dropped straight back into
+ * the bag, which is what makes the bag sour as the goods run out (see
+ * `forageBag.ts` for the curve and for why there are seven).
+ *
+ * It is typed as a card rather than left out of the model because it is a
+ * physical printed card in the same trim as every other, and the print sheet
+ * has to lay it out.
+ */
+export type BlankCard = {
+  readonly kind: "blank"
+  readonly id: "empty-handed"
+}
+
+/** Anything the bag can hand you. */
+export type ForageCard = ResourceCard | BlankCard
+
 export type ResourceCardDefinition = ResourceCard & { readonly copies: number }
+
+export type BlankCardDefinition = BlankCard & { readonly copies: number }
+
+export type ForageCardDefinition = ResourceCardDefinition | BlankCardDefinition
 
 export const PANCAKE_IDS = ["plain", "banana", "blueberry", "choco-chip"] as const
 
@@ -161,12 +191,51 @@ export const TARGET_SCORE = 7
 /**
  * Each player opens with this much syrup in front of them.
  *
- * One, not two. Seven points is about three animals and the bonus is capped at
- * one syrup apiece, so three syrup is the entire scoring supply a winning run
- * needs — handing over two would be two-thirds of it before the first turn.
- * One is a head start; two is most of the race.
+ * Two, and two is not a round number picked for feel — it is the exact price of
+ * the opening the game most needs to exist. The Maple Syrup / Chocolate track
+ * opens at `2:4` (see `tradeTracks.ts`) and a topping-eater hires for 4 of its
+ * topping (see `animalDeck.ts`), so:
+ *
+ *     2 syrup --trade--> 4 chocolate --recruit--> Moose
+ *
+ * Two actions, from nothing, on turn one. That is the whole rationale. Starting
+ * syrup is not a scoring gift here, it is seed capital, and it is denominated
+ * in exactly one animal.
+ *
+ * Why that animal specifically. Topping-eaters are the hard hire — 4 of one
+ * named topping, which the bag hands out roughly one draw in eight and which
+ * cannot be substituted — and `TARGET_SCORE` says every three-animal win needs
+ * at least one of them. So the game asks for a topping-eater and then makes
+ * topping-eaters the thing foraging is worst at supplying. Seed syrup is the
+ * answer to that, and it is a targeted one: syrup sits at the end of the trade
+ * chain next to Chocolate, so it reaches the topping tier in a single trade and
+ * the staples end not at all. You cannot bootstrap a Beaver with it. The head
+ * start only points one direction, which is the direction that needed help.
+ *
+ * It is a real decision and not a scripted opening, because two syrup is also
+ * two points — the retire bonus is one syrup per animal, capped, so hoarding
+ * these two is two of the seven you need, banked before anyone has moved. Spend
+ * them and you are three or four turns ahead with nothing in the bank; keep
+ * them and you forage for your first animal like everyone else but need one
+ * fewer animal to win. The old note here argued one, on the grounds that three
+ * syrup is a winning run's entire scoring supply and handing over two gives
+ * away most of the race. That argument was right when syrup was purchasable
+ * from a resource market and wrong now: the bag yields syrup one draw in ten,
+ * so two in hand is not most of the race, it is most of what a player can
+ * expect to see unaided.
+ *
+ * The rate can move before anyone spends, and the ladder is what bounds the
+ * damage. The syrup/chocolate track runs 2:6 down to 2:2 across its five rungs,
+ * with Syrup's side pinned at 2 on every one of them, so these two syrup fetch
+ * at worst 2 chocolate — half a hire — and at best 6, a hire and a half. Syrup
+ * can never be devalued below a chocolate apiece. That floor is what makes it
+ * safe to hand out: a player whose opening gets shoved is delayed, not robbed.
+ *
+ * It is also the shortest ladder on the board at five rungs, which is the same
+ * point made in another way. The market a player is most likely to want on turn
+ * one is the market with the least room to move under them.
  */
-export const STARTING_SYRUP = 1
+export const STARTING_SYRUP = 2
 
 /**
  * A pancake an order names: one of the four by name, or `"topped"` — any
@@ -205,12 +274,22 @@ export type OrderedPancake = PancakeId | "topped"
  * 9 base-units of effort and a syrup only 4, so if you could pour syrup in
  * freely nothing else would ever be worth buying with it. Capped at one per
  * animal, the cheap conversion is bounded by how many animals you actually
- * retire, and every syrup past that goes to the things competing for it — the
- * recruit shortcut, and reaching past the free slot in either market.
+ * retire, and every syrup past that goes to the one thing competing for it —
+ * the animal row.
  *
- * Whether it is worth taking depends on what else syrup can buy, and it can buy
- * two other things: any animal, in place of the hire printed on it, and the
- * deeper slots of the card market. Both genuinely compete.
+ * That competition used to be three-way. The resource market was a priced row
+ * too, and its deep slots were a second syrup sink; the bag has no slots and no
+ * prices, so that sink is gone and syrup now buys exactly two things: reach
+ * along the animal row, and any animal outright in place of the hire printed on
+ * it. Losing a sink makes syrup cheaper in absolute terms, but the bag takes
+ * back more than the row gave — syrup can no longer be *bought*, only drawn or
+ * manufactured, so it is easier to spend and much harder to get.
+ *
+ * The animal row then widened to four slots priced `2 1 0 0`, which thins the
+ * remaining sink again: half that row is free, so syrup buys reach less often
+ * than it did. This is the one number to watch in play. If syrup piles up
+ * unspent, the row is where to reclaim it (see `BoardPrintPage`), not the cap
+ * here — the cap is what stops syrup from being the only thing worth having.
  *
  * Against recruiting, a syrup is worth whatever hire it skips, which sorts the
  * roster: 8 for a topping-eater, 4 for a mid base-eater, 2 for a Beaver. The
@@ -305,8 +384,9 @@ export function stepOfRatio({ left, right }: Ratio): number {
  * is always odd, and a track's reach above parity equals its reach below.
  * Tracks differ in length, which is the point: a short ladder is a tight market.
  *
- * What drives a marker up or down is the resource deck: every denomination but
- * a topping 2 and a Syrup 1 carries a mandatory `shift` (see `ResourceCard`).
+ * What drives a marker up or down is the forage bag: every denomination but the
+ * topping 2 carries a mandatory `shift` (see `ResourceCard`). Blanks carry
+ * none, so the markets also go quiet as the bag sours.
  */
 export type TradeTrack = {
   readonly id: string
@@ -330,12 +410,20 @@ export function startIndex(track: TradeTrack): number {
 }
 
 /**
+ * `Omit` over a union collapses it to the keys all members share, which would
+ * flatten `ForageCardDefinition` into a single shapeless card and cost the
+ * `kind` discriminant its narrowing. The `T extends unknown` clause makes the
+ * omit distribute over the union instead, so each member is stripped on its own.
+ */
+type WithoutCopies<T> = T extends unknown ? Omit<T, "copies"> : never
+
+/**
  * Expand a flat-copy catalog into the physical deck: one entry per printed
  * copy, in catalog order. The flat-copy counterpart to `~/shared/cards/
  * deckUtils`'s `expandDeck`, for decks with no player-count table.
  */
 export function expandFlatDeck<T extends { readonly copies: number }>(
   source: readonly T[]
-): ReadonlyArray<Omit<T, "copies">> {
-  return source.flatMap(({ copies, ...card }) => Array.from({ length: copies }, () => card))
+): ReadonlyArray<WithoutCopies<T>> {
+  return source.flatMap(({ copies, ...card }) => Array.from({ length: copies }, () => card as WithoutCopies<T>))
 }

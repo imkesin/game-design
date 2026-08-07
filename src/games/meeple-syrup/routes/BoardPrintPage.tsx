@@ -39,24 +39,42 @@ const CARD_H_IN = CARD_TRIM_H_MM / 25.4
 const BAND_IN = CARD_H_IN + 1.1
 
 /**
- * Three animals on offer. The slot price is charged *on top of* the hire the
- * card prints, so the dear slots are paying for reach rather than for the
- * animal — the free one is whatever happens to be there, and two syrup buys you
- * the one you actually want.
+/**
+ * Four animals on offer, the two oldest of them free. The slot price is charged
+ * *on top of* the hire the card prints, so the dear slots are paying for reach
+ * rather than for the animal — the free ones are whatever happens to be there,
+ * and two syrup buys you the one you actually want.
  *
- * The row drifts toward its free end, same as the resource market, which here
- * means rightward — so an animal nobody wants gets cheaper rather than sitting
- * at 2 syrup forever and blocking the slot.
+ * The row drifts rightward, toward its free end, so an animal nobody wants gets
+ * cheaper rather than sitting at 2 syrup forever and blocking the slot.
  *
- * The two ladders run opposite ways — animals dear-to-free left to right,
- * resources free-to-dear — which puts both free ends toward the middle of the
- * board, both expensive ends out at the edges, and the two arrows facing each
- * other.
+ * Two free slots rather than one, and four cards rather than three, because the
+ * animals now carry the whole reliable economy. The forage bag is deliberately
+ * a decaying action (see `forageBag.ts`), which only works as a design if the
+ * thing it pushes players toward is genuinely dependable — and a three-card row
+ * with a single free slot is not dependable, it is one free card that may well
+ * be the wrong species. Widening the row is what makes "stop foraging, go hire"
+ * an instruction a player can actually follow.
+ *
+ * The cost is paid in syrup demand, and it is not small. Half the row is free
+ * now instead of a third, so syrup buys reach less often. Syrup already lost a
+ * sink when the resource market became a bag, and this thins what remains:
+ * it is down to the dear end of this one row, the recruit shortcut, and the
+ * point per animal retired. If syrup ends up slack in play, this row is the
+ * first place to take it back — `[2, 1, 1, 0]` before touching anything else.
  */
-const ANIMAL_SLOTS = [2, 1, 0]
+const ANIMAL_SLOTS = [2, 1, 0, 0]
 
-/** Four resource slots, dearest last, with cards drifting toward the free end. */
-const RESOURCE_SLOTS = [0, 0, 1, 2]
+/**
+ * Where the bag sits. One footprint, no price and no drift — it is a resting
+ * place, not a market. It keeps the corner the resource row used to hold so the
+ * band still reads as two zones rather than one row adrift on a wide sheet, and
+ * so everyone at the table knows where to reach.
+ *
+ * The imbalance against the four-slot animal row is the point: the board should
+ * look like the animals are where the game is.
+ */
+const BAG_SLOT = [null]
 
 /** What the market strip is left with once the fixed rows are subtracted. */
 const STRIP_IN = PLAY_H_IN - BREATHE_IN - BAND_IN
@@ -117,9 +135,9 @@ const sheetRows = {
   gridTemplateRows: `${STRIP_IN}in ${BREATHE_IN}in ${BAND_IN}in`
 }
 
-// The band pins its two markets to opposite corners: the outer columns take
-// their content's width and the middle `1fr` swallows whatever slack the sheet
-// has left, which at eight card footprints is not much.
+// The band pins its two zones to opposite corners: the outer columns take their
+// content's width and the middle `1fr` swallows whatever slack the sheet has
+// left — five card footprints against a 23in play area, so a good deal.
 const bandArea = css({
   gridArea: "band",
   display: "grid",
@@ -144,7 +162,7 @@ export function BoardPrintPage() {
           <div className={bandArea}>
             <CardRow title="Animals" prices={ANIMAL_SLOTS} drift="right" />
             <span />
-            <CardRow title="Resources" prices={RESOURCE_SLOTS} drift="left" />
+            <CardRow title="Forage Bag" prices={BAG_SLOT} />
           </div>
         </div>
       </div>
