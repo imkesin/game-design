@@ -12,7 +12,7 @@ import type { Pancake, PancakeId, Resource, ResourceAmount, ResourceId } from ".
  * flour keeps a grey, and butter takes lime purely because nothing warm was
  * left unclaimed. Swap any of these freely; nothing but the banner depends on
  * them — except red, which is spoken for. The blank card takes it (see
- * `BlankCard`), and it is the only card in the bag that has to be identifiable
+ * `PineconeCard`), and it is the only card in the bag that has to be identifiable
  * before it is read.
  */
 export const resources: readonly Resource[] = [

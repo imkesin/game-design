@@ -14,20 +14,20 @@ import type { BlankCardDefinition, ForageCardDefinition, ResourceId } from "./do
  * a rule anywhere that says "stop foraging".
  *
  * A resource prints at the denominations its tier allows, and each
- * denomination carries a mandatory market shift — that many rungs, on any
- * market that does not price the resource being drawn, in either direction (see
- * `ResourceCard`):
+ * denomination carries a mandatory market shift — that many distinct markets,
+ * one rung each, chosen from those that do not price the resource being drawn,
+ * each in either direction (see `ResourceCard`):
  *
  *     Syrup    x1  shift 1
  *     Topping  x1  shift 1    x2      no shift
  *     Base     x2  shift 2    x3  shift 1
  *
- * Within a tier the *small* card is the disruptive one: base 2s move the market
- * twice as far as base 3s. Under the old face-up market that was a tradeoff —
+ * Within a tier the *small* card is the disruptive one: base 2s move twice as
+ * many markets as base 3s. Under the old face-up market that was a tradeoff —
  * a player who wanted a little flour had to shove the economy harder than one
  * who wanted a lot of it. Blind, nobody chooses their denomination, so the
  * spread is no longer a decision. It survives because the *aim* still is: the
- * card says how far you must move a marker, and you say which marker and which
+ * card says how many markers you must move, and you say which markers and which
  * way. A thin draw hands you a big lever, which is the closest thing to
  * compensation a bad reach into the bag gets.
  *
@@ -127,7 +127,7 @@ const COMPOSITION: ReadonlyArray<readonly [ResourceId, readonly Denomination[]]>
 ]
 
 /** The fourteen that go back in. See the note above for why there are this many. */
-const BLANKS: BlankCardDefinition = { kind: "blank", id: "empty-handed", copies: 14 }
+const BLANKS: BlankCardDefinition = { kind: "blank", id: "pinecone", copies: 14 }
 
 export const forageBag: readonly ForageCardDefinition[] = [
   ...COMPOSITION.flatMap(([resource, denominations]) =>

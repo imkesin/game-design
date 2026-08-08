@@ -24,7 +24,7 @@ import { artTint, darkBand, paperFrame, paperShade, strongRail } from "~/shared/
  * rather than beside it: these are read fanned in a hand, where only a corner
  * shows, and colour plus numeral is what has to survive that. The blank uses
  * the same three bands and the same numeral slot, printing a `0` — see
- * `BlankCard`.
+ * `PineconeCard`.
  *
  * The footer prints even on the cards with no rider. A blank band would read as
  * an omission, and "no market shift" is itself worth stating — in this bag the
@@ -212,13 +212,18 @@ export function ResourceCard({
 
       <div className={cx(footer, paperShade({ color }), strongRail({ color }))}>
         <div className={footerContent}>
-          {card.shift > 0
-            ? (
-              <>
-                Shift any other markets by <span className={shiftCount}>{card.shift}</span>
-              </>
-            )
-            : <span className={inertText}>No market shift</span>}
+          {card.shift === 0 && <span className={inertText}>No market shift</span>}
+          {card.shift === 1 && (
+            <>
+              Shift another market by <span className={shiftCount}>1</span>
+            </>
+          )}
+          {card.shift > 1 && (
+            <>
+              Shift <span className={shiftCount}>{card.shift}</span> other markets by{" "}
+              <span className={shiftCount}>1</span>
+            </>
+          )}
         </div>
       </div>
 

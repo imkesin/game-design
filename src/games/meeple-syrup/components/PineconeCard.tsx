@@ -1,11 +1,12 @@
-import { Footprints } from "lucide-react"
 import { css, cx } from "~/generated/styled-system/css"
 import { Guides } from "~/shared/components/Guides"
 import { artTint, darkBand, paperFrame, paperShade, strongRail } from "~/shared/components/paperFrame"
+import { PineconeMark } from "./PineconeMark"
 import type { CardVariant } from "./ResourceCard"
 
 /**
- * The blank: a forage that found nothing.
+ * The pinecone: a forage that found nothing. The blank of the bag (`kind:
+ * "blank"` in the card data), named for what you came back with.
  *
  * Built on `ResourceCard`'s three bands on purpose, down to the numeral over a
  * watermark — this card is drawn from the same bag, in the same trim, and if it
@@ -14,7 +15,7 @@ import type { CardVariant } from "./ResourceCard"
  * to the only question anyone asks of a drawn card.
  *
  *     ┌────────────────────────────┐
- *     │  EMPTY HANDED       FORAGE │
+ *     │  PINECONE           FORAGE │
  *     ├────────────────────────────┤
  *     │        0 over tracks       │
  *     ├────────────────────────────┤
@@ -38,10 +39,15 @@ import type { CardVariant } from "./ResourceCard"
  * has to announce itself immediately or a player will sit there looking for the
  * rule it carries. Red is the deck's only stop sign.
  *
- * Footprints rather than a slash or a cross: the fiction is that you went out
- * and walked around, not that something was forbidden. A negation mark on a red
- * card would also read as "this card cancels something", which it emphatically
- * does not.
+ * A pinecone rather than a slash or a cross: the fiction is that you went out
+ * and came back with something the kitchen has no use for, not that something
+ * was forbidden. A negation mark on a red card would also read as "this card
+ * cancels something", which it emphatically does not. Naming the card for what
+ * you found also gives the table a noun to say out loud — "another pinecone"
+ * lands better than announcing a state.
+ *
+ * Lucide has no pinecone, so the mark is hand-drawn in its idiom (see
+ * `PineconeMark`).
  *
  * The footer says the one rule the card has, and says it as an instruction
  * rather than a state, because returning it is a thing the player has to
@@ -163,7 +169,7 @@ const footerContent = css({
 
 const emphasis = css({ fontWeight: 700 })
 
-export function BlankCard({
+export function PineconeCard({
   variant = "bleed",
   showGuides = false
 }: {
@@ -184,14 +190,14 @@ export function BlankCard({
     >
       <div className={cx(header, darkBand({ color }))}>
         <div className={headerContent}>
-          <span className={nameText}>Empty Handed</span>
+          <span className={nameText}>Pinecone</span>
           <span className={categoryText}>forage</span>
         </div>
       </div>
 
       <div className={body}>
         <div className={cx(watermark, artTint({ color }))}>
-          <Footprints size="82%" strokeWidth={1.2} />
+          <PineconeMark size="82%" strokeWidth={1.2} />
         </div>
         <span className={quantityText}>0</span>
       </div>

@@ -3,7 +3,7 @@ import { animalDeck } from "~/games/meeple-syrup/cards/animalDeck"
 import { forageBag } from "~/games/meeple-syrup/cards/forageBag"
 import { RESOURCE_BY_ID } from "~/games/meeple-syrup/cards/resources"
 import { AnimalCard } from "~/games/meeple-syrup/components/AnimalCard"
-import { BlankCard } from "~/games/meeple-syrup/components/BlankCard"
+import { PineconeCard } from "~/games/meeple-syrup/components/PineconeCard"
 import { ResourceCard } from "~/games/meeple-syrup/components/ResourceCard"
 import { css } from "~/generated/styled-system/css"
 import { ZoomControl } from "~/shared/components/ZoomControl"
@@ -65,7 +65,7 @@ const options = [
   ...forageBag.map((card) => ({
     id: card.id,
     label: card.kind === "blank"
-      ? "Empty Handed"
+      ? "Pinecone"
       : `${RESOURCE_BY_ID[card.resource].name} x${card.quantity}`,
     card
   }))
@@ -81,7 +81,7 @@ function CardFace(
     case "resource":
       return <ResourceCard card={card} {...props} />
     case "blank":
-      return <BlankCard {...props} />
+      return <PineconeCard {...props} />
   }
 }
 

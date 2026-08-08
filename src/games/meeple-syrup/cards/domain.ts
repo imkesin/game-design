@@ -70,13 +70,14 @@ export type Resource = {
  * which is why the animal rates are free to ask for one of something the bag
  * only ever hands out two or three at a time.
  *
- * `shift` is how many rungs the drawer must move, on any market *other* than
- * the ones that price the resource drawn — draw Blueberries and neither the
- * Chocolate/Blueberries nor the Blueberries/Bananas track may move. Direction
- * is the drawer's to choose. It is mandatory, not a bonus: `0` is the only way
- * a card is inert. Which denominations carry it, and how hard, is authored in
- * `forageBag.ts`; the short version is that the small denominations shove the
- * market hardest, so a thin draw is a louder one.
+ * `shift` is how many *distinct* markets the drawer must move, one rung each,
+ * chosen from the markets *other* than the ones that price the resource drawn —
+ * draw Blueberries and neither the Chocolate/Blueberries nor the
+ * Blueberries/Bananas track may move. Each direction is the drawer's to choose.
+ * It is mandatory, not a bonus: `0` is the only way a card is inert. Which
+ * denominations carry it, and how hard, is authored in `forageBag.ts`; the short
+ * version is that the small denominations shove the market hardest, so a thin
+ * draw is a louder one.
  *
  * Since the bag is blind, nobody picks their denomination, and so nobody picks
  * how loud they are. What is still chosen is the aim — which of the markets,
@@ -85,7 +86,8 @@ export type Resource = {
  *
  * A resource sits between two tracks, or one if it is at an end of the chain
  * (Maple Syrup and Flour), so a shift always has at least five of the seven
- * markets to land on and can never be stranded. What the rule buys is that a
+ * markets to land on and can never be stranded — including a `2`, which needs
+ * two of them. What the rule buys is that a
  * player can never take a good and use the same action to move its own price.
  *
  * The shift resolves on drawing the card, not later — the draw and its
@@ -115,7 +117,7 @@ export type ResourceCard = {
  */
 export type BlankCard = {
   readonly kind: "blank"
-  readonly id: "empty-handed"
+  readonly id: "pinecone"
 }
 
 /** Anything the bag can hand you. */

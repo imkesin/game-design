@@ -3,7 +3,7 @@ import type { AnimalCard as AnimalCardData, ForageCard } from "~/games/meeple-sy
 import { expandFlatDeck } from "~/games/meeple-syrup/cards/domain"
 import { forageBag } from "~/games/meeple-syrup/cards/forageBag"
 import { AnimalCard } from "~/games/meeple-syrup/components/AnimalCard"
-import { BlankCard } from "~/games/meeple-syrup/components/BlankCard"
+import { PineconeCard } from "~/games/meeple-syrup/components/PineconeCard"
 import { ResourceCard } from "~/games/meeple-syrup/components/ResourceCard"
 import { CardSheetPage } from "~/shared/print/CardSheetPage"
 
@@ -30,7 +30,7 @@ function renderCard(card: PrintableCard, key: string) {
     case "resource":
       return <ResourceCard key={key} variant="trim" card={card} />
     case "blank":
-      return <BlankCard key={key} variant="trim" />
+      return <PineconeCard key={key} variant="trim" />
   }
 }
 
