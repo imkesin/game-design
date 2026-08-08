@@ -196,7 +196,7 @@ export const fieldDeck: Deck = [
     },
     copies: bImprovementCopies,
     additionalText:
-      "When harvesting this Field, you may move up to 2 Fruits onto the improvement card. If this results in the Field rows being empty, you may harvest from the Field again."
+      "When harvesting this Field, you may move up to 3 Fruits onto the improvement card. If this results in all Field rows being empty, you may harvest from the Field again."
   },
   {
     kind: "field-improvement",
