@@ -160,8 +160,9 @@ export type ResourceAmount = {
  *
  * Maple Syrup is the eighth resource and no animal's, which is why there are
  * seven species and not eight: syrup can only ever be *made*, never fed to
- * anything. The deck is still 7x8, because each species covers all eight
- * resources as outputs — the eighth being its own (see `animalDeck.ts`).
+ * anything. Each species covers all eight resources as outputs — the eighth
+ * being its own — and prints two layabouts besides, so the deck is 7x10 (see
+ * `animalDeck.ts`).
  */
 export const ANIMAL_SPECIES_IDS = [
   "moose",
@@ -227,15 +228,16 @@ export const TARGET_SCORE = 7
  * expect to see unaided.
  *
  * The rate can move before anyone spends, and the ladder is what bounds the
- * damage. The syrup/chocolate track runs 2:6 down to 2:2 across its five rungs,
- * with Syrup's side pinned at 2 on every one of them, so these two syrup fetch
- * at worst 2 chocolate — half a hire — and at best 6, a hire and a half. Syrup
- * can never be devalued below a chocolate apiece. That floor is what makes it
- * safe to hand out: a player whose opening gets shoved is delayed, not robbed.
+ * damage. The syrup/chocolate track runs 2:6 down to 2:2 across its five rungs
+ * (see `tradeTracks.ts`), with Syrup's side pinned at 2 on every one of them, so
+ * these two syrup fetch at worst 2 chocolate — half a hire — and at best 6, a
+ * hire and a half. Syrup can never be devalued below a chocolate apiece.
  *
- * It is also the shortest ladder on the board at five rungs, which is the same
- * point made in another way. The market a player is most likely to want on turn
- * one is the market with the least room to move under them.
+ * That floor is what makes it safe to hand out: a player whose opening gets
+ * shoved is delayed, not robbed. It is a property of the ladder's length rather
+ * than of anything printed here, and it does not survive a longer one — at seven
+ * rungs the same track reaches 3:2, where two syrup buys nothing at all. Any
+ * future change to `levels` on that track has to answer to this paragraph.
  */
 export const STARTING_SYRUP = 2
 
@@ -332,7 +334,8 @@ export type Rate = {
  *
  * Hire and order are both properties of the species, so the eight cards of one
  * animal differ in exactly one thing: the rate. See `Order` for why a heavier
- * order is not worth more.
+ * order is not worth more, and `LayaboutCard` for the two cards per species
+ * that inherit hire and order and print no converter at all.
  */
 export type AnimalCard = {
   readonly kind: "animal"
@@ -351,6 +354,90 @@ export type AnimalCard = {
 }
 
 export type AnimalCardDefinition = AnimalCard & { readonly copies: number }
+
+/**
+ * The two things a layabout can be good at, and the reason there is no third.
+ *
+ * The obvious third — running an extra converter — is deliberately absent, and
+ * not because it would be too strong. Foraging and trading both cost the rest
+ * of the table something: a forage drains the shared bag toward its sour end
+ * and resolves an extra market shift on the way, and a trade moves a shared
+ * rung. Ramp either one and everybody sees it happen. A second converter run
+ * touches nothing outside your own zone, so it is the one acceleration the
+ * table cannot watch, and a game of four players each quietly doubling their
+ * private engine is four solitaires. Interactivity is the filter, not power.
+ */
+export const PASSIVE_IDS = ["forage", "trade"] as const
+
+export type PassiveId = (typeof PASSIVE_IDS)[number]
+
+/**
+ * A layabout's standing bonus. Both are a flat `+1` to one action, and flat is
+ * the point — they stack additively, so a player who chases them can end up
+ * drawing eight from the bag or making eight trades in a single action. That
+ * outcome is intended rather than tolerated (see `LayaboutCard`).
+ */
+export type Passive = {
+  readonly id: PassiveId
+  /** The header chip — what this card is, standing where a converter prints its output. */
+  readonly name: string
+  /** The action it grants one more of. */
+  readonly action: string
+  /** Its own colour, so Foragers and Traders sort at a glance across all fourteen. */
+  readonly color: PaletteColor
+}
+
+/**
+ * A layabout: an animal that does not eat, and so does not convert. It prints
+ * the species' hire and the species' order, and in place of the converter band
+ * it carries one standing `+1` (see `Passive`).
+ *
+ * There is no `input`, and that absence is the card. The tempting version is a
+ * converter that *also* ramps, or one that offers the two as a choice, and both
+ * make every layabout a strict superset of a card already in the deck. Splitting
+ * them means hiring ramp costs you the animal you would otherwise have hired —
+ * the action, the goods, and the converter you did not get.
+ *
+ * Pricing is inherited and needs no authoring at all. Hire and order are
+ * species properties (see `AnimalCard`), so the same `+1` prints at seven
+ * prices, from Beaver's 2 Flour to a topping-eater's 4 of its own topping. What
+ * keeps the cheap end from dominating is the order: a layabout is the one card
+ * you would rather keep than retire, so retiring it trades the bonus away for
+ * the species' points, forever. Beaver's layabout is the cheapest ramp on the
+ * board and cashes out for 1; a Moose layabout costs four times as much and
+ * cashes out for 2. Cheap ramp or expensive ramp that is also two points late —
+ * that is the decision, and it is the whole reason seven copies of one ability
+ * are seven different cards.
+ *
+ * `copies` is 1, like everything else in the deck, and it is what makes
+ * stacking a project rather than a purchase: there is exactly one Beaver
+ * Forager in the game. A second `+1 Forage` has to be bought from a species
+ * that charges more.
+ *
+ * The two ramps do not age alike, which is the thing to watch in play. Forage
+ * ramp decays on its own — it doubles an action the bag is already souring, and
+ * drains the bag twice as fast doing it, which sours it faster for everyone
+ * including the owner (see `forageBag.ts`). Trade ramp never decays. If one of
+ * the two needs a hand it will be the Forager, and late.
+ */
+export type LayaboutCard = {
+  readonly kind: "layabout"
+  /** `<species>-<passive>`, e.g. `moose-forage`. */
+  readonly id: string
+  readonly species: AnimalSpeciesId
+  readonly name: string
+  readonly color: PaletteColor
+  readonly passive: PassiveId
+  readonly hire: readonly ResourceAmount[]
+  readonly order: Order
+}
+
+export type LayaboutCardDefinition = LayaboutCard & { readonly copies: number }
+
+/** Anything the animal deck holds — a converter or a layabout. */
+export type AnimalDeckCard = AnimalCard | LayaboutCard
+
+export type AnimalDeckCardDefinition = AnimalCardDefinition | LayaboutCardDefinition
 
 export type Ratio = { readonly left: number; readonly right: number }
 
@@ -383,8 +470,10 @@ export function stepOfRatio({ left, right }: Ratio): number {
  * `tradeTracks.ts` for the full chain, Maple Syrup through Flour).
  *
  * The printed ladder is `levels` rungs centred on `startingRatio` — so `levels`
- * is always odd, and a track's reach above parity equals its reach below.
- * Tracks differ in length, which is the point: a short ladder is a tight market.
+ * is always odd, and a track's reach in each direction from its own start is
+ * equal. Every track currently prints five; `levels` stays per-track because
+ * shortening one is the standing lever for tightening a single market (see
+ * `tradeTracks.ts`), not because the board uses it today.
  *
  * What drives a marker up or down is the forage bag: every denomination but the
  * topping 2 carries a mandatory `shift` (see `ResourceCard`). Blanks carry

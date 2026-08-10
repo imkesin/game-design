@@ -1,5 +1,18 @@
 import type { ResourceCard as ResourceCardData } from "~/games/meeple-syrup/cards/domain"
 import { RESOURCE_BY_ID } from "~/games/meeple-syrup/cards/resources"
+import {
+  accentOutline,
+  bleedFrame,
+  cardFrame,
+  type CardVariant,
+  categoryText,
+  dataBand,
+  footerBand,
+  headerBand,
+  headerContent,
+  threeBandRows,
+  trimFrame
+} from "~/games/meeple-syrup/components/cardFrame"
 import { RESOURCE_MARKS } from "~/games/meeple-syrup/components/resourceMarks"
 import { css, cx } from "~/generated/styled-system/css"
 import { Guides } from "~/shared/components/Guides"
@@ -35,65 +48,11 @@ import { artTint, darkBand, paperFrame, paperShade, strongRail } from "~/shared/
  * say which those are and does not need to — the board does, in the legend
  * under the ladders (see `BoardPrintPage`).
  *
- * Same two render variants as every other game's card:
- *
- *   - "bleed": full-bleed 69x94mm. Gutter is 6u (bleed + trim->safe).
- *   - "trim":  trim-only 63x88mm with a hairline cut outline. Gutter is 3u
- *     (trim->safe). For the home N-up grid sheet, where cards touch and the
- *     shared outlines form the cut grid.
+ * The three bands are the game's shared ones (see `cardFrame`), so this card's
+ * name band and rider band are the same height as an animal card's name band
+ * and order band, and the numeral region between them is exactly the animal's
+ * art plus the two bands a bag card does not have. Nothing here sizes itself.
  */
-export type CardVariant = "bleed" | "trim"
-
-const frame = css({
-  position: "relative",
-  boxSizing: "border-box",
-  display: "grid",
-  gridTemplateColumns: "var(--gutter) 1fr var(--gutter)",
-  // name band (bleeds to top) · quantity (all the slack) · rider band (bleeds to bottom)
-  gridTemplateRows: "auto 1fr auto",
-  overflow: "hidden"
-})
-
-const bleedFrame = css({
-  width: "cardW",
-  height: "cardH",
-  "--gutter": "calc(6 * var(--u))"
-})
-
-const trimFrame = css({
-  width: "trimW",
-  height: "trimH",
-  "--gutter": "calc(3 * var(--u))"
-})
-
-// Hairline cut line on the trim boundary; `outline` doesn't affect layout, so
-// adjacent cards' outlines coincide into a single shared cut line.
-const accentOutline = css({
-  outlineWidth: "0.2mm",
-  outlineStyle: "solid"
-})
-
-// Bands span every column so their colour goes wall to wall, but their content
-// lands in the middle column via subgrid, so it lines up with the body.
-const header = css({
-  gridColumn: "1 / -1",
-  display: "grid",
-  gridTemplateColumns: "subgrid",
-  alignItems: "center",
-  paddingTop: "var(--gutter)",
-  // Match the trimmed top inset (3u) so the name is centred within the band's
-  // visible (post-cut) area in both variants.
-  paddingBottom: "3"
-})
-
-const headerContent = css({
-  gridColumn: "2",
-  display: "flex",
-  alignItems: "baseline",
-  justifyContent: "space-between",
-  gap: "2",
-  minWidth: 0
-})
 
 const nameText = css({
   fontSize: "name",
@@ -104,15 +63,6 @@ const nameText = css({
   minWidth: 0,
   overflow: "hidden",
   textOverflow: "ellipsis",
-  whiteSpace: "nowrap"
-})
-
-const categoryText = css({
-  fontSize: "micro",
-  fontWeight: 700,
-  letterSpacing: "0.16em",
-  textTransform: "uppercase",
-  opacity: 0.75,
   whiteSpace: "nowrap"
 })
 
@@ -143,17 +93,6 @@ const quantityText = css({
   fontWeight: 700,
   lineHeight: 1,
   fontVariantNumeric: "tabular-nums"
-})
-
-const footer = css({
-  gridColumn: "1 / -1",
-  display: "grid",
-  gridTemplateColumns: "subgrid",
-  alignItems: "center",
-  borderTopWidth: "0.3mm",
-  borderTopStyle: "solid",
-  paddingTop: "2",
-  paddingBottom: "var(--gutter)"
 })
 
 const footerContent = css({
@@ -189,14 +128,15 @@ export function ResourceCard({
   return (
     <div
       className={cx(
-        frame,
+        cardFrame,
+        threeBandRows,
         paperFrame({ color }),
         variant === "bleed" ? bleedFrame : trimFrame,
         variant === "trim" && accentOutline,
         variant === "trim" && strongRail({ color })
       )}
     >
-      <div className={cx(header, darkBand({ color }))}>
+      <div className={cx(headerBand, darkBand({ color }))}>
         <div className={headerContent}>
           <span className={nameText}>{resource.name}</span>
           <span className={categoryText}>{resource.category}</span>
@@ -210,7 +150,7 @@ export function ResourceCard({
         <span className={quantityText}>{card.quantity}</span>
       </div>
 
-      <div className={cx(footer, paperShade({ color }), strongRail({ color }))}>
+      <div className={cx(dataBand, footerBand, paperShade({ color }), strongRail({ color }))}>
         <div className={footerContent}>
           {card.shift === 0 && <span className={inertText}>No market shift</span>}
           {card.shift === 1 && (

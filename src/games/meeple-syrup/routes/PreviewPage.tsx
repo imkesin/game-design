@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react"
 import { animalDeck } from "~/games/meeple-syrup/cards/animalDeck"
 import { forageBag } from "~/games/meeple-syrup/cards/forageBag"
-import { RESOURCE_BY_ID } from "~/games/meeple-syrup/cards/resources"
+import { PASSIVE_BY_ID, RESOURCE_BY_ID } from "~/games/meeple-syrup/cards/resources"
 import { AnimalCard } from "~/games/meeple-syrup/components/AnimalCard"
 import { PineconeCard } from "~/games/meeple-syrup/components/PineconeCard"
 import { ResourceCard } from "~/games/meeple-syrup/components/ResourceCard"
@@ -59,7 +59,9 @@ const select = css({
 const options = [
   ...animalDeck.map((card) => ({
     id: card.id,
-    label: `${card.name} — ${RESOURCE_BY_ID[card.input].name} → ${RESOURCE_BY_ID[card.output].name}`,
+    label: card.kind === "layabout"
+      ? `${card.name} — ${PASSIVE_BY_ID[card.passive].name}`
+      : `${card.name} — ${RESOURCE_BY_ID[card.input].name} → ${RESOURCE_BY_ID[card.output].name}`,
     card
   })),
   ...forageBag.map((card) => ({
@@ -77,6 +79,7 @@ function CardFace(
 ) {
   switch (card.kind) {
     case "animal":
+    case "layabout":
       return <AnimalCard card={card} {...props} />
     case "resource":
       return <ResourceCard card={card} {...props} />

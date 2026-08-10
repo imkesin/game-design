@@ -1,5 +1,5 @@
 import { animalDeck } from "~/games/meeple-syrup/cards/animalDeck"
-import type { AnimalCard as AnimalCardData, ForageCard } from "~/games/meeple-syrup/cards/domain"
+import type { AnimalDeckCard, ForageCard } from "~/games/meeple-syrup/cards/domain"
 import { expandFlatDeck } from "~/games/meeple-syrup/cards/domain"
 import { forageBag } from "~/games/meeple-syrup/cards/forageBag"
 import { AnimalCard } from "~/games/meeple-syrup/components/AnimalCard"
@@ -21,11 +21,12 @@ import { CardSheetPage } from "~/shared/print/CardSheetPage"
  * `TradeTrackBoard`) and prints from `/print/board`, not here.
  */
 
-type PrintableCard = AnimalCardData | ForageCard
+type PrintableCard = AnimalDeckCard | ForageCard
 
 function renderCard(card: PrintableCard, key: string) {
   switch (card.kind) {
     case "animal":
+    case "layabout":
       return <AnimalCard key={key} variant="trim" card={card} />
     case "resource":
       return <ResourceCard key={key} variant="trim" card={card} />

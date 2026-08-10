@@ -1,18 +1,22 @@
 import type {
   AnimalCardDefinition,
+  AnimalDeckCardDefinition,
   AnimalSpeciesId,
+  LayaboutCardDefinition,
   Order,
   PaletteColor,
+  PassiveId,
   Rate,
   Resource,
   ResourceAmount,
   ResourceId
 } from "./domain"
-import { RESOURCE_IDS } from "./domain"
+import { PASSIVE_IDS, RESOURCE_IDS } from "./domain"
 import { RESOURCE_BY_ID } from "./resources"
 
 /**
- * The animal deck: 56 cards, seven species by all eight resources.
+ * The animal deck: 70 cards, seven species by ten — all eight resources as
+ * outputs, plus two layabouts.
  *
  * Every species eats exactly one resource and eats it forever. That pairing is
  * the deck's mnemonic, and it is reinforced twice over — a species also takes
@@ -21,18 +25,30 @@ import { RESOURCE_BY_ID } from "./resources"
  *     Moose Chocolate · Bear Blueberries · Bighorn Bananas · Loon Eggs
  *     Lynx Milk · Fox Butter · Beaver Flour
  *
- * Maple Syrup belongs to nobody, and that asymmetry is why the matrix is 7 by 8
- * rather than square: there are only seven species because syrup can be made by
- * any of them and fed to none, but each species covers all eight resources as
- * outputs, because the eighth is its own (see `MULTIPLIER`).
+ * Maple Syrup belongs to nobody, and that asymmetry is why the output side of
+ * the matrix is 7 by 8 rather than square: there are only seven species because
+ * syrup can be made by any of them and fed to none, but each species covers all
+ * eight resources as outputs, because the eighth is its own (see `rateFor`).
  *
- * All 56 are generated. Only one thing varies card to card — the exchange rate
- * (`rateFor`). Hire is a property of the species and is identical across its
- * eight (`SPECIES`), and so is the order.
+ * All 70 are generated. Across a species' eight converters only one thing
+ * varies — the exchange rate (`rateFor`). Hire is a property of the species and
+ * is identical across all ten of its cards (`SPECIES`), and so is the order.
  *
  * Every species carries a `rates` table, and there are only two of them: the
  * four base-eaters share one, the three topping-eaters the other. So the whole
- * 56-card matrix is eight authored numbers plus who eats what.
+ * converter matrix is eight authored numbers plus who eats what.
+ *
+ * The last two of every ten are the layabouts — a Forager and a Trader, no
+ * converter between them (`layaboutFor`). They are the deck's ramp, and they
+ * are generated too: nothing about them is authored, because hire and order
+ * already belong to the species and the bonus is a flat `+1` (see
+ * `LayaboutCard` for why they carry no converter and why the `+1` is flat).
+ *
+ * Fourteen in seventy means one card in five ramps, which is deliberately more
+ * than the animal row will show any one player. They are single copies like
+ * everything else, so a player who wants to stack them has to keep taking them
+ * over the converters they could have had, and pay a different species' price
+ * each time.
  *
  * `OVERRIDES` is the escape hatch for a single card the rules get wrong. It is
  * currently empty.
@@ -252,10 +268,39 @@ function cardFor(species: Species, outputId: ResourceId): AnimalCardDefinition {
 }
 
 /**
- * Grouped by species, outputs in chain order — the order the deck prints in.
- * Nothing is filtered out: a species' own resource is its multiplier, and sits
- * at its own position in the chain within its eight.
+ * A layabout. It takes everything from the species except the one thing that
+ * makes a card an animal — there is no input, no output and no rate, because
+ * this one does not eat (see `LayaboutCard`).
+ *
+ * So the whole card is the species' hire, the species' order, and a `+1`. That
+ * is what makes the same two bonuses worth printing seven times: Beaver's cost
+ * 2 Flour and cash out for 1 point, a topping-eater's cost 4 of its topping and
+ * cash out for 2, and every other species sits between.
  */
-export const animalDeck: readonly AnimalCardDefinition[] = SPECIES.flatMap((species) =>
-  RESOURCE_IDS.map((outputId) => cardFor(species, outputId))
-)
+function layaboutFor(species: Species, passive: PassiveId): LayaboutCardDefinition {
+  return {
+    kind: "layabout",
+    id: `${species.id}-${passive}`,
+    species: species.id,
+    name: species.name,
+    color: species.color,
+    passive,
+    hire: species.hire,
+    order: species.order,
+    copies: 1
+  }
+}
+
+/**
+ * Grouped by species — eight converters in chain order, then the two layabouts.
+ * Nothing is filtered out of the eight: a species' own resource is its
+ * multiplier, and sits at its own position in the chain.
+ *
+ * The layabouts print last within each species so a fanned deck reads as its
+ * converters with the two odd ones out at the back, which is also how the two
+ * behave — a layabout is the card you keep rather than retire.
+ */
+export const animalDeck: readonly AnimalDeckCardDefinition[] = SPECIES.flatMap((species) => [
+  ...RESOURCE_IDS.map((outputId) => cardFor(species, outputId)),
+  ...PASSIVE_IDS.map((passive) => layaboutFor(species, passive))
+])

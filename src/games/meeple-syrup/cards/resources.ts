@@ -1,4 +1,4 @@
-import type { Pancake, PancakeId, Resource, ResourceAmount, ResourceId } from "./domain"
+import type { Pancake, PancakeId, Passive, PassiveId, Resource, ResourceAmount, ResourceId } from "./domain"
 
 /**
  * The eight resources, in trade-chain order (see `tradeTracks.ts`). These are
@@ -51,6 +51,25 @@ export const pancakes: readonly Pancake[] = [
 export const PANCAKE_BY_ID = Object.fromEntries(
   pancakes.map((p) => [p.id, p])
 ) as Record<PancakeId, Pancake>
+
+/**
+ * The two layabout bonuses (see `Passive`).
+ *
+ * Green and blue are the only two useful scales nothing else in the game had
+ * claimed — red is the blank's, purple is the any-topping wildcard's, and the
+ * rest belong to resources. They are the layabouts' own rather than borrowed
+ * from a resource on purpose: these cards are the ones that eat nothing, and
+ * the colour is the fastest way to see that a Moose in the row is not a Moose
+ * converter.
+ */
+export const passives: readonly Passive[] = [
+  { id: "forage", name: "Forager", action: "Forage", color: "green" },
+  { id: "trade", name: "Trader", action: "Trade", color: "blue" }
+]
+
+export const PASSIVE_BY_ID = Object.fromEntries(
+  passives.map((p) => [p.id, p])
+) as Record<PassiveId, Passive>
 
 /**
  * The batter under every pancake: one of each base resource, never more than

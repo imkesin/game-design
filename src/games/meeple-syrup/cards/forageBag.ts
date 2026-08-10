@@ -91,6 +91,24 @@ import type { BlankCardDefinition, ForageCardDefinition, ResourceId } from "./do
  * shown, and dropped back in. The temptation to give it a consolation rider is
  * worth resisting: the whole point is that the action can genuinely fail, and a
  * failure that pays out is not one.
+ *
+ * ---
+ *
+ * The Forager layabouts (see `LayaboutCard`) add cards to a forage draw, which
+ * looks like an argument with everything above and is not. It accelerates it.
+ *
+ * The curve is driven by goods leaving the bag, so drawing more per action
+ * empties it faster. A player who has stacked three Foragers draws four at a
+ * time and sours the bag at four times the rate — for themselves as much as for
+ * everyone else. The one action that looked like solitaire is the one that
+ * scales into a shared clock, and the player accelerating it is the one who
+ * most needs it to keep working. The bonus eats itself.
+ *
+ * Every card drawn brings its own `shift`, so a bigger draw is also a louder
+ * one, and nothing needs saying on the Forager for that — it falls out of
+ * resolving each card as it comes. A four-card forage can move up to six
+ * markets in a single action, which is most of the board, and that is the real
+ * reason ramping the bag is not a quiet way to play.
  */
 
 /** One printed denomination of a resource. Every resource has two; Syrup has one. */

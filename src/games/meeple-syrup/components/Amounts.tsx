@@ -45,8 +45,13 @@ const joiner = css({
   lineHeight: 1
 })
 
-/** Mark size, in card units — a touch above `body` so the glyph carries the pairing. */
-const MARK = "calc(4.4 * var(--u))"
+/**
+ * Mark size, in card units — a touch above `body` so the glyph carries the
+ * pairing. Exported because the animal card's rule band puts a layabout's `+1`
+ * where a converter puts its amounts, and two glyph sizes alternating in one
+ * slot is exactly the drift the fixed band heights are there to prevent.
+ */
+export const AMOUNT_MARK = "calc(4.4 * var(--u))"
 
 function Amount({ amount }: { amount: ResourceAmount }) {
   const resource = RESOURCE_BY_ID[amount.resource]
@@ -58,7 +63,7 @@ function Amount({ amount }: { amount: ResourceAmount }) {
       title={resource.name}
     >
       <span className={count}>{amount.count}</span>
-      <Mark size={MARK} strokeWidth={1.8} />
+      <Mark size={AMOUNT_MARK} strokeWidth={1.8} />
     </span>
   )
 }

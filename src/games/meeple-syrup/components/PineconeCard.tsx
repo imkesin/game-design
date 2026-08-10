@@ -1,8 +1,20 @@
+import {
+  accentOutline,
+  bleedFrame,
+  cardFrame,
+  type CardVariant,
+  categoryText,
+  dataBand,
+  footerBand,
+  headerBand,
+  headerContent,
+  threeBandRows,
+  trimFrame
+} from "~/games/meeple-syrup/components/cardFrame"
 import { css, cx } from "~/generated/styled-system/css"
 import { Guides } from "~/shared/components/Guides"
 import { artTint, darkBand, paperFrame, paperShade, strongRail } from "~/shared/components/paperFrame"
 import { PineconeMark } from "./PineconeMark"
-import type { CardVariant } from "./ResourceCard"
 
 /**
  * The pinecone: a forage that found nothing. The blank of the bag (`kind:
@@ -55,50 +67,6 @@ import type { CardVariant } from "./ResourceCard"
  * `forageBag.ts`).
  */
 
-const frame = css({
-  position: "relative",
-  boxSizing: "border-box",
-  display: "grid",
-  gridTemplateColumns: "var(--gutter) 1fr var(--gutter)",
-  gridTemplateRows: "auto 1fr auto",
-  overflow: "hidden"
-})
-
-const bleedFrame = css({
-  width: "cardW",
-  height: "cardH",
-  "--gutter": "calc(6 * var(--u))"
-})
-
-const trimFrame = css({
-  width: "trimW",
-  height: "trimH",
-  "--gutter": "calc(3 * var(--u))"
-})
-
-const accentOutline = css({
-  outlineWidth: "0.2mm",
-  outlineStyle: "solid"
-})
-
-const header = css({
-  gridColumn: "1 / -1",
-  display: "grid",
-  gridTemplateColumns: "subgrid",
-  alignItems: "center",
-  paddingTop: "var(--gutter)",
-  paddingBottom: "3"
-})
-
-const headerContent = css({
-  gridColumn: "2",
-  display: "flex",
-  alignItems: "baseline",
-  justifyContent: "space-between",
-  gap: "2",
-  minWidth: 0
-})
-
 const nameText = css({
   fontSize: "name",
   fontWeight: 700,
@@ -108,15 +76,6 @@ const nameText = css({
   minWidth: 0,
   overflow: "hidden",
   textOverflow: "ellipsis",
-  whiteSpace: "nowrap"
-})
-
-const categoryText = css({
-  fontSize: "micro",
-  fontWeight: 700,
-  letterSpacing: "0.16em",
-  textTransform: "uppercase",
-  opacity: 0.75,
   whiteSpace: "nowrap"
 })
 
@@ -148,17 +107,6 @@ const quantityText = css({
   opacity: 0.55
 })
 
-const footer = css({
-  gridColumn: "1 / -1",
-  display: "grid",
-  gridTemplateColumns: "subgrid",
-  alignItems: "center",
-  borderTopWidth: "0.3mm",
-  borderTopStyle: "solid",
-  paddingTop: "2",
-  paddingBottom: "var(--gutter)"
-})
-
 const footerContent = css({
   gridColumn: "2",
   minWidth: 0,
@@ -181,14 +129,15 @@ export function PineconeCard({
   return (
     <div
       className={cx(
-        frame,
+        cardFrame,
+        threeBandRows,
         paperFrame({ color }),
         variant === "bleed" ? bleedFrame : trimFrame,
         variant === "trim" && accentOutline,
         variant === "trim" && strongRail({ color })
       )}
     >
-      <div className={cx(header, darkBand({ color }))}>
+      <div className={cx(headerBand, darkBand({ color }))}>
         <div className={headerContent}>
           <span className={nameText}>Pinecone</span>
           <span className={categoryText}>forage</span>
@@ -202,7 +151,7 @@ export function PineconeCard({
         <span className={quantityText}>0</span>
       </div>
 
-      <div className={cx(footer, paperShade({ color }), strongRail({ color }))}>
+      <div className={cx(dataBand, footerBand, paperShade({ color }), strongRail({ color }))}>
         <div className={footerContent}>
           <span className={emphasis}>Return</span> this card to the bag.
         </div>
