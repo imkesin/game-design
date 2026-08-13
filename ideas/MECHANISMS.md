@@ -63,6 +63,8 @@ under a threshold. Now your 1 and 2 aren't dead weight; the same hand pulls in t
 #### Questions
 
 - Hand refresh cadence: full reset each round, or cards spent stay spent across rounds?
+  - This is probably the single largest issue with the mechanic. This can lead to a large and
+    cluttered pile on cards on every space.
 - With 1–7 and N players, how many zones before the math gets solvable/degenerate?
 
 ---

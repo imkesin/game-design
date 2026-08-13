@@ -178,8 +178,7 @@ const COLS_PER_TRACK = 6
 const strip = css({
   height: "100%",
   display: "grid",
-  gridTemplateColumns:
-    `${GAP_COL} repeat(${TRACK_COUNT}, 1fr 1fr ${DISC_COL} 1fr 1fr ${GAP_COL})`,
+  gridTemplateColumns: `${GAP_COL} repeat(${TRACK_COUNT}, 1fr 1fr ${DISC_COL} 1fr 1fr ${GAP_COL})`,
   columnGap: 0
 })
 
