@@ -1,0 +1,634 @@
+{
+  "width": 1008,
+  "height": 768,
+  "unitsPerInch": 96,
+  "cubeSize": 38,
+  "clearings": [
+    {
+      "id": "riverbend",
+      "name": "Riverbend",
+      "x": 121.28,
+      "y": 250.85,
+      "r": 54,
+      "slots": [
+        {
+          "shape": "circle",
+          "cost": 3
+        },
+        {
+          "shape": "square",
+          "cost": 3
+        }
+      ]
+    },
+    {
+      "id": "bamboo-grove",
+      "name": "Bamboo Grove",
+      "x": 449.31,
+      "y": 90.09,
+      "r": 54,
+      "slots": [
+        {
+          "shape": "circle",
+          "cost": 3
+        },
+        {
+          "shape": "triangle",
+          "cost": 3
+        }
+      ]
+    },
+    {
+      "id": "salt-lick",
+      "name": "Salt Lick",
+      "x": 722.16,
+      "y": 193.64,
+      "r": 54,
+      "slots": [
+        {
+          "shape": "circle",
+          "cost": 3
+        },
+        {
+          "shape": "triangle",
+          "cost": 3
+        }
+      ]
+    },
+    {
+      "id": "misty-hollow",
+      "name": "Misty Hollow",
+      "x": 903.85,
+      "y": 48,
+      "r": 44,
+      "slots": [
+        {
+          "shape": "triangle",
+          "cost": 3
+        }
+      ]
+    },
+    {
+      "id": "old-banyan",
+      "name": "Old Banyan",
+      "x": 383.15,
+      "y": 389.23,
+      "r": 63,
+      "slots": [
+        {
+          "shape": "circle",
+          "cost": 2
+        },
+        {
+          "shape": "triangle",
+          "cost": 2
+        },
+        {
+          "shape": "square",
+          "cost": 2
+        }
+      ]
+    },
+    {
+      "id": "mangrove-edge",
+      "name": "Mangrove Edge",
+      "x": 685.08,
+      "y": 412.99,
+      "r": 63,
+      "slots": [
+        {
+          "shape": "circle",
+          "cost": 3
+        },
+        {
+          "shape": "triangle",
+          "cost": 3
+        },
+        {
+          "shape": "pentagon",
+          "cost": 3
+        }
+      ]
+    },
+    {
+      "id": "termite-hill",
+      "name": "Termite Hill",
+      "x": 950,
+      "y": 380.39,
+      "r": 54,
+      "slots": [
+        {
+          "shape": "circle",
+          "cost": 3
+        },
+        {
+          "shape": "square",
+          "cost": 3
+        }
+      ]
+    },
+    {
+      "id": "sunning-rocks",
+      "name": "Sunning Rocks",
+      "x": 913.64,
+      "y": 679.95,
+      "r": 54,
+      "slots": [
+        {
+          "shape": "circle",
+          "cost": 2
+        },
+        {
+          "shape": "pentagon",
+          "cost": 2
+        }
+      ]
+    },
+    {
+      "id": "kapok-crown",
+      "name": "Kapok Crown",
+      "x": 616.2,
+      "y": 700.64,
+      "r": 54,
+      "slots": [
+        {
+          "shape": "circle",
+          "cost": 3
+        },
+        {
+          "shape": "triangle",
+          "cost": 3
+        }
+      ]
+    },
+    {
+      "id": "orchid-glade",
+      "name": "Orchid Glade",
+      "x": 82.78,
+      "y": 472.3,
+      "r": 54,
+      "slots": [
+        {
+          "shape": "circle",
+          "cost": 3
+        },
+        {
+          "shape": "square",
+          "cost": 3
+        }
+      ]
+    },
+    {
+      "id": "lotus-pool",
+      "name": "Lotus Pool",
+      "x": 279.96,
+      "y": 670.31,
+      "r": 54,
+      "slots": [
+        {
+          "shape": "circle",
+          "cost": 3
+        },
+        {
+          "shape": "triangle",
+          "cost": 3
+        }
+      ]
+    },
+    {
+      "id": "hidden-spring",
+      "name": "Hidden Spring",
+      "x": 48,
+      "y": 720,
+      "r": 44,
+      "slots": [
+        {
+          "shape": "triangle",
+          "cost": 3
+        }
+      ]
+    },
+    {
+      "id": "heron-reach",
+      "name": "Heron Reach",
+      "x": 48,
+      "y": 48,
+      "r": 44,
+      "slots": [
+        {
+          "shape": "triangle",
+          "cost": 3
+        }
+      ]
+    },
+    {
+      "id": "palm-shade",
+      "name": "Palm Shade",
+      "x": 492.07,
+      "y": 562.35,
+      "r": 44,
+      "slots": [
+        {
+          "shape": "triangle",
+          "cost": 3
+        }
+      ]
+    }
+  ],
+  "paths": [
+    {
+      "id": "riverbend--bamboo-grove",
+      "a": "riverbend",
+      "b": "bamboo-grove",
+      "d": "M 121.28 250.85 Q 266 131.11 449.31 90.09",
+      "cubes": [
+        {
+          "x": 206.21,
+          "y": 189.42,
+          "angle": -0.56
+        },
+        {
+          "x": 252.06,
+          "y": 162.86,
+          "angle": -0.49
+        },
+        {
+          "x": 299.64,
+          "y": 139.54,
+          "angle": -0.42
+        },
+        {
+          "x": 348.73,
+          "y": 119.58,
+          "angle": -0.35
+        }
+      ]
+    },
+    {
+      "id": "bamboo-grove--salt-lick",
+      "a": "bamboo-grove",
+      "b": "salt-lick",
+      "d": "M 449.31 90.09 Q 598.16 109.13 722.16 193.64",
+      "cubes": [
+        {
+          "x": 541.64,
+          "y": 108.87,
+          "angle": 0.28
+        },
+        {
+          "x": 591.95,
+          "y": 125.5,
+          "angle": 0.36
+        },
+        {
+          "x": 640.62,
+          "y": 146.43,
+          "angle": 0.45
+        }
+      ]
+    },
+    {
+      "id": "salt-lick--misty-hollow",
+      "a": "salt-lick",
+      "b": "misty-hollow",
+      "d": "M 722.16 193.64 Q 795.53 99.02 903.85 48",
+      "cubes": [
+        {
+          "x": 787.72,
+          "y": 123.8,
+          "angle": -0.72
+        },
+        {
+          "x": 829.38,
+          "y": 91.09,
+          "angle": -0.61
+        }
+      ]
+    },
+    {
+      "id": "riverbend--old-banyan",
+      "a": "riverbend",
+      "b": "old-banyan",
+      "d": "M 121.28 250.85 Q 235.61 351.46 383.15 389.23",
+      "cubes": [
+        {
+          "x": 193.99,
+          "y": 306.3,
+          "angle": 0.58
+        },
+        {
+          "x": 239.51,
+          "y": 333.4,
+          "angle": 0.49
+        },
+        {
+          "x": 287.19,
+          "y": 356.51,
+          "angle": 0.41
+        }
+      ]
+    },
+    {
+      "id": "bamboo-grove--old-banyan",
+      "a": "bamboo-grove",
+      "b": "old-banyan",
+      "d": "M 449.31 90.09 Q 380.33 231.72 383.15 389.23",
+      "cubes": [
+        {
+          "x": 413.21,
+          "y": 180.17,
+          "angle": 1.88
+        },
+        {
+          "x": 399.27,
+          "y": 231.29,
+          "angle": 1.8
+        },
+        {
+          "x": 389.62,
+          "y": 283.38,
+          "angle": 1.71
+        }
+      ]
+    },
+    {
+      "id": "old-banyan--mangrove-edge",
+      "a": "old-banyan",
+      "b": "mangrove-edge",
+      "d": "M 383.15 389.23 Q 536.97 364.88 685.08 412.99",
+      "cubes": [
+        {
+          "x": 482.59,
+          "y": 381.06,
+          "angle": -0.01
+        },
+        {
+          "x": 535.54,
+          "y": 383,
+          "angle": 0.08
+        },
+        {
+          "x": 588.14,
+          "y": 389.36,
+          "angle": 0.16
+        }
+      ]
+    },
+    {
+      "id": "salt-lick--termite-hill",
+      "a": "salt-lick",
+      "b": "termite-hill",
+      "d": "M 722.16 193.64 Q 813.67 314.36 950 380.39",
+      "cubes": [
+        {
+          "x": 785.38,
+          "y": 265.37,
+          "angle": 0.77
+        },
+        {
+          "x": 824.88,
+          "y": 300.69,
+          "angle": 0.69
+        },
+        {
+          "x": 867.26,
+          "y": 332.48,
+          "angle": 0.6
+        }
+      ]
+    },
+    {
+      "id": "termite-hill--sunning-rocks",
+      "a": "termite-hill",
+      "b": "sunning-rocks",
+      "d": "M 950 380.39 Q 967.77 534.53 913.64 679.95",
+      "cubes": [
+        {
+          "x": 953.96,
+          "y": 479.53,
+          "angle": 1.61
+        },
+        {
+          "x": 949.79,
+          "y": 532.35,
+          "angle": 1.69
+        },
+        {
+          "x": 941.2,
+          "y": 584.63,
+          "angle": 1.78
+        }
+      ]
+    },
+    {
+      "id": "mangrove-edge--sunning-rocks",
+      "a": "mangrove-edge",
+      "b": "sunning-rocks",
+      "d": "M 685.08 412.99 Q 831.4 519.04 913.64 679.95",
+      "cubes": [
+        {
+          "x": 763.74,
+          "y": 478.34,
+          "angle": 0.76
+        },
+        {
+          "x": 800.79,
+          "y": 516.22,
+          "angle": 0.83
+        },
+        {
+          "x": 835,
+          "y": 556.68,
+          "angle": 0.9
+        },
+        {
+          "x": 866.22,
+          "y": 599.5,
+          "angle": 0.98
+        }
+      ]
+    },
+    {
+      "id": "kapok-crown--mangrove-edge",
+      "a": "kapok-crown",
+      "b": "mangrove-edge",
+      "d": "M 616.2 700.64 Q 685.16 565.08 685.08 412.99",
+      "cubes": [
+        {
+          "x": 651.77,
+          "y": 616.62,
+          "angle": -1.24
+        },
+        {
+          "x": 666.72,
+          "y": 565.79,
+          "angle": -1.33
+        },
+        {
+          "x": 677.26,
+          "y": 513.86,
+          "angle": -1.41
+        }
+      ]
+    },
+    {
+      "id": "kapok-crown--sunning-rocks",
+      "a": "kapok-crown",
+      "b": "sunning-rocks",
+      "d": "M 616.2 700.64 Q 767.4 725.99 913.64 679.95",
+      "cubes": [
+        {
+          "x": 713.2,
+          "y": 709.56,
+          "angle": 0.02
+        },
+        {
+          "x": 766.16,
+          "y": 708.14,
+          "angle": -0.07
+        },
+        {
+          "x": 818.81,
+          "y": 702.22,
+          "angle": -0.15
+        }
+      ]
+    },
+    {
+      "id": "orchid-glade--old-banyan",
+      "a": "orchid-glade",
+      "b": "old-banyan",
+      "d": "M 82.78 472.3 Q 223 394.72 383.15 389.23",
+      "cubes": [
+        {
+          "x": 173.22,
+          "y": 430.53,
+          "angle": -0.36
+        },
+        {
+          "x": 223.55,
+          "y": 413.98,
+          "angle": -0.28
+        },
+        {
+          "x": 275.07,
+          "y": 401.59,
+          "angle": -0.2
+        }
+      ]
+    },
+    {
+      "id": "orchid-glade--lotus-pool",
+      "a": "orchid-glade",
+      "b": "lotus-pool",
+      "d": "M 82.78 472.3 Q 205.13 547.64 279.96 670.31",
+      "cubes": [
+        {
+          "x": 154.2,
+          "y": 523.67,
+          "angle": 0.7
+        },
+        {
+          "x": 193.25,
+          "y": 559.47,
+          "angle": 0.79
+        },
+        {
+          "x": 228.89,
+          "y": 598.67,
+          "angle": 0.88
+        }
+      ]
+    },
+    {
+      "id": "lotus-pool--kapok-crown",
+      "a": "lotus-pool",
+      "b": "kapok-crown",
+      "d": "M 279.96 670.31 Q 444.44 725.82 616.2 700.64",
+      "cubes": [
+        {
+          "x": 367.65,
+          "y": 694.07,
+          "angle": 0.2
+        },
+        {
+          "x": 419.92,
+          "y": 702.77,
+          "angle": 0.13
+        },
+        {
+          "x": 472.69,
+          "y": 707.53,
+          "angle": 0.05
+        },
+        {
+          "x": 525.67,
+          "y": 708.32,
+          "angle": -0.02
+        }
+      ]
+    },
+    {
+      "id": "lotus-pool--hidden-spring",
+      "a": "lotus-pool",
+      "b": "hidden-spring",
+      "d": "M 279.96 670.31 Q 169.94 722.99 48 720",
+      "cubes": [
+        {
+          "x": 187.89,
+          "y": 704.11,
+          "angle": 2.89
+        },
+        {
+          "x": 135.98,
+          "y": 714.68,
+          "angle": 2.99
+        }
+      ]
+    },
+    {
+      "id": "riverbend--heron-reach",
+      "a": "riverbend",
+      "b": "heron-reach",
+      "d": "M 121.28 250.85 Q 117.09 137.7 48 48",
+      "cubes": [
+        {
+          "x": 107.52,
+          "y": 163.98,
+          "angle": -1.85
+        },
+        {
+          "x": 88.79,
+          "y": 114.46,
+          "angle": -2.01
+        }
+      ]
+    },
+    {
+      "id": "mangrove-edge--palm-shade",
+      "a": "mangrove-edge",
+      "b": "palm-shade",
+      "d": "M 685.08 412.99 Q 606.5 510.84 492.07 562.35",
+      "cubes": [
+        {
+          "x": 611.01,
+          "y": 488.46,
+          "angle": 2.45
+        },
+        {
+          "x": 568.53,
+          "y": 520.12,
+          "angle": 2.55
+        }
+      ]
+    }
+  ],
+  "stats": {
+    "crossings": 0,
+    "minNodeGap": 87.82687334488341,
+    "minPathClear": 101.8544709456203,
+    "minCubeSlack": 0.9517529305650214,
+    "anchorScale": 1,
+    "attempt": 0
+  }
+}

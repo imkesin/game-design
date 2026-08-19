@@ -8,6 +8,8 @@
     "dev": "panda codegen && vite",
     "build": "panda codegen && tsc -b && vite build",
     "map:build": "tsx src/games/civil-service/map/build.ts",
+    "tp:map:build": "tsx src/games/tigers-path/map/build.ts",
+    "tp:map:paint": "tsx src/games/tigers-path/map/paint.node.ts",
     "lint": "oxlint && dprint check",
     "lint:fix": "oxlint --fix && dprint fmt",
     "format": "dprint fmt",

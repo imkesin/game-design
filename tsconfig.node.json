@@ -7,8 +7,9 @@
     "module": "nodenext",
     "moduleResolution": "nodenext"
   },
-  // A `build.ts` under src is a per-game asset generator: a Node script living
-  // beside the game data it emits. Excluded from tsconfig.app for that reason,
-  // so its `node:` imports typecheck without leaking Node globals into the app.
-  "include": ["vite.config.ts", "src/**/build.ts"]
+  // A `build.ts` or `*.node.ts` under src is a per-game Node script living beside
+  // the game data it emits (asset generators, preview tools). Excluded from
+  // tsconfig.app for that reason, so their `node:`/tooling imports typecheck
+  // without leaking Node globals into the app.
+  "include": ["vite.config.ts", "src/**/build.ts", "src/**/*.node.ts"]
 }

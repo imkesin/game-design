@@ -27,3 +27,6 @@ dist-ssr
 /src/generated/*
 !/src/generated/.gitkeep
 styled-system-studio
+
+## Tiger's Path map paint-loop preview (regenerated on demand)
+/src/games/tigers-path/map/preview.png

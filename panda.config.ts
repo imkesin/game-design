@@ -76,7 +76,9 @@ export default defineConfig({
           // One step down from `body`, for paragraph-style rules text
           // (field-improvement) rather than table/label text.
           paragraph: u(2.8),
-          micro: u(2.2)
+          micro: u(2.2),
+          // Smallest step, for the non-essential clearing name labels on the board map.
+          nano: u(1.8)
         }
       }
     }

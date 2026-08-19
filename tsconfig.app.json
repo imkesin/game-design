@@ -12,5 +12,5 @@
     }
   },
   "include": ["src"],
-  "exclude": ["src/**/build.ts"]
+  "exclude": ["src/**/build.ts", "src/**/*.node.ts"]
 }

@@ -1,203 +1,143 @@
 import { ClearingSlotIcon } from "~/games/tigers-path/components/ClearingSlotIcon"
-import { CLEARINGS, PATHS, shapeForLevel } from "~/games/tigers-path/domain"
-import type { Clearing, Path } from "~/games/tigers-path/domain"
-import { css, cx } from "~/generated/styled-system/css"
-import { paperFrame } from "~/shared/components/paperFrame"
+import type { SlotShape } from "~/games/tigers-path/domain"
+import type { GenClearing, GeneratedMap } from "~/games/tigers-path/map/layout"
+import mapData from "~/games/tigers-path/map/map.json"
+import { css } from "~/generated/styled-system/css"
 
 /**
- * The v0 map: a 3x3 lattice of clearings with a path on every adjacent pair,
- * laid out as one `grid-template-areas` grid. Clearings take the odd tracks,
- * paths the even ones, so the whole board is grid placement — no absolute
- * positioning, no coordinates.
+ * The organic board. Every coordinate — clearing centres, the curved path
+ * outlines, and the exact position/rotation of each cube space — is solved at
+ * build time by `map/layout.ts` and baked into `map.json`; this component only
+ * paints it. Regenerate with `pnpm tp:map:build` after editing the graph or the
+ * clearings' `target` hints in `domain.ts`.
  *
- * A path is drawn as a road: a skinny white band with a darker edge down
- * each side, running the full length of its grid cell and a little beyond,
- * so it tucks under the ellipses at both ends and the two clearings read as
- * physically connected. It is noticeably narrower than the cube spaces —
- * a road peeking out from under them, not a lane they sit inside.
+ * One SVG, sized in inches so it prints true. Layout units are 96 per inch, so
+ * one user unit is one CSS pixel: the clearing labels ride in a `foreignObject`
+ * that reuses the HTML `ClearingSlotIcon`, and its millimetre sizes come out at
+ * true millimetres on paper.
  *
- * The layering has no z-index anywhere, but DOM order alone does not decide
- * it: within a shared paint context, `position: static` boxes (step 3 of the
- * CSS painting order) paint *before* any positioned box with `z-index: auto`
- * (step 6), no matter where either sits in the tree. The road is `absolute`
- * and the cube space is `relative`, so both are step-6 boxes — that pair
- * sorts correctly by DOM order. The clearing ellipse has to be `relative`
- * too, or it stays a step-3 box and paints under the road regardless of
- * being written later in the JSX.
- *
- * Path spaces are half-inch squares (roomy for 8-10mm cubes, and contests
- * mean cubes get fingered constantly). Clearings are ellipses that fill their
- * cell — the name up top, its printed slots (shape = level, number = cost)
- * in a row underneath; discs pile onto a slot once it's filled.
- *
- * The board stays mute about paths (no lengths printed) but not clearings —
- * slot shape/cost is printed ground truth, same as a path's cube count is
- * printed ground truth via the spaces themselves.
+ * Paint order is the layering: trails first (a skinny road), then the opaque
+ * cube spaces over them, then the clearing discs last so a disc always covers
+ * the trail ends and any cube corner that reaches its rim.
  */
 
-/** Clearing cell size, inches. Wide enough for a name line plus a row of up to 3 slot icons at their 12mm print floor. */
-const CLEARING_W = 1.7
-const CLEARING_H = 1.35
+const map = mapData as GeneratedMap
 
-/** A path's cube space, inches. */
-const SPACE = 0.5
-const SPACE_GAP = 0.08
+/** Road width — skinny relative to the cube spaces, so it reads as ground peeking out. */
+const TRAIL_W = 0.16 * map.unitsPerInch
 
-/** Path tracks: horizontal columns fit length 4, vertical rows fit length 3. */
-const H_PATH_W = 4 * SPACE + 3 * SPACE_GAP + 0.1
-const V_PATH_H = 3 * SPACE + 2 * SPACE_GAP + 0.1
-
-/** How far a trail reaches past its cell, under the clearing ellipses. */
-const TRAIL_REACH = 0.25
-
-const TEMPLATE_AREAS = `
-  "a  ab b  bc c"
-  "ad .  be .  cf"
-  "d  de e  ef f"
-  "dg .  eh .  fi"
-  "g  gh h  hi i"
-`
-
-const board = css({
-  display: "grid",
-  placeContent: "center",
+const svg = css({
+  display: "block",
   width: "100%",
   height: "100%"
 })
 
-const clearingNode = css({
-  position: "relative",
-  display: "grid",
-  placeItems: "center",
-  borderWidth: "0.5mm",
-  borderStyle: "solid",
-  borderRadius: "9999px"
-})
-
-const clearingBody = css({
+const labelBody = css({
+  width: "100%",
+  height: "100%",
   display: "flex",
   flexDirection: "column",
   alignItems: "center",
-  rowGap: "0.04in"
+  justifyContent: "center",
+  rowGap: "0.04in",
+  pointerEvents: "none"
 })
 
 const clearingName = css({
-  fontSize: "micro",
+  fontSize: "nano",
   fontWeight: 700,
-  letterSpacing: "0.08em",
+  letterSpacing: "0.06em",
   textTransform: "uppercase",
-  whiteSpace: "nowrap"
+  textAlign: "center",
+  lineHeight: 1.05,
+  color: "green.900"
 })
 
-const clearingSlots = css({
+const slotRow = css({
   display: "flex",
   flexWrap: "wrap",
   justifyContent: "center",
-  columnGap: "0.04in",
-  rowGap: "0.04in"
+  columnGap: "0.03in",
+  rowGap: "0.03in"
 })
 
-const pathTrack = css({
-  position: "relative",
-  display: "flex",
-  placeSelf: "stretch",
-  alignItems: "center",
-  justifyContent: "center"
-})
-
-/**
- * The road. Skinny relative to the 0.5in cube spaces — about a third their
- * width — so it reads as ground showing at the edges of the spaces rather
- * than a lane containing them.
- */
-const TRAIL_W = 0.16
-
-const trail = css({
-  position: "absolute",
-  background: "white",
-  borderColor: "stone.500",
-  borderStyle: "solid",
-  borderWidth: 0
-})
-
-const hTrail = css({
-  top: "50%",
-  transform: "translateY(-50%)",
-  left: `${-TRAIL_REACH}in`,
-  right: `${-TRAIL_REACH}in`,
-  height: `${TRAIL_W}in`,
-  borderBlockWidth: "0.4mm"
-})
-
-const vTrail = css({
-  left: "50%",
-  transform: "translateX(-50%)",
-  top: `${-TRAIL_REACH}in`,
-  bottom: `${-TRAIL_REACH}in`,
-  width: `${TRAIL_W}in`,
-  borderInlineWidth: "0.4mm"
-})
-
-/** A cube space. Opaque, so the road passes behind it. */
-const cubeSpace = css({
-  position: "relative",
-  width: "0.5in",
-  height: "0.5in",
-  borderWidth: "0.4mm",
-  borderStyle: "solid",
-  borderColor: "stone.600",
-  borderRadius: "1.5mm",
-  background: "stone.50",
-  flex: "none"
-})
-
-function ClearingNode({ clearing }: { clearing: Clearing }) {
+function ClearingLabel({ clearing }: { clearing: GenClearing }) {
+  // Inset the label box inside the disc so nothing rides the rim.
+  const box = (clearing.r - 8) * 2
   return (
-    <div
-      className={cx(clearingNode, paperFrame({ color: "stone" }))}
-      style={{ gridArea: clearing.area }}
+    <foreignObject
+      x={clearing.x - box / 2}
+      y={clearing.y - box / 2}
+      width={box}
+      height={box}
     >
-      <div className={clearingBody}>
+      <div className={labelBody}>
         <span className={clearingName}>{clearing.name}</span>
-        <div className={clearingSlots}>
+        <div className={slotRow}>
           {clearing.slots.map((slot, i) => (
-            <ClearingSlotIcon key={i} shape={shapeForLevel(slot.level)} cost={slot.cost} />
+            <ClearingSlotIcon key={i} shape={slot.shape as SlotShape} cost={slot.cost} size={10} color="green" />
           ))}
         </div>
       </div>
-    </div>
-  )
-}
-
-function PathTrack({ path }: { path: Path }) {
-  const horizontal = path.orientation === "h"
-  return (
-    <div
-      className={pathTrack}
-      style={{
-        gridArea: path.area,
-        flexDirection: horizontal ? "row" : "column",
-        gap: `${SPACE_GAP}in`
-      }}
-    >
-      <div className={cx(trail, horizontal ? hTrail : vTrail)} />
-      {Array.from({ length: path.length }, (_, i) => <div key={i} className={cubeSpace} />)}
-    </div>
+    </foreignObject>
   )
 }
 
 export function BoardMap() {
+  const widthIn = map.width / map.unitsPerInch
+  const heightIn = map.height / map.unitsPerInch
+
   return (
-    <div
-      className={board}
-      style={{
-        gridTemplateAreas: TEMPLATE_AREAS,
-        gridTemplateColumns: `${CLEARING_W}in ${H_PATH_W}in ${CLEARING_W}in ${H_PATH_W}in ${CLEARING_W}in`,
-        gridTemplateRows: `${CLEARING_H}in ${V_PATH_H}in ${CLEARING_H}in ${V_PATH_H}in ${CLEARING_H}in`
-      }}
+    <svg
+      className={svg}
+      viewBox={`0 0 ${map.width} ${map.height}`}
+      width={`${widthIn}in`}
+      height={`${heightIn}in`}
+      preserveAspectRatio="xMidYMid meet"
     >
-      {PATHS.map((path) => <PathTrack key={path.id} path={path} />)}
-      {CLEARINGS.map((clearing) => <ClearingNode key={clearing.id} clearing={clearing} />)}
-    </div>
+      {/* Trails: the skinny road under everything. */}
+      {map.paths.map((path) => (
+        <path
+          key={`trail-${path.id}`}
+          d={path.d}
+          fill="none"
+          stroke="var(--colors-stone-400)"
+          strokeWidth={TRAIL_W}
+          strokeLinecap="round"
+        />
+      ))}
+
+      {/* Cube spaces: opaque squares, rotated to the path's tangent. */}
+      {map.paths.map((path) =>
+        path.cubes.map((cube, i) => (
+          <rect
+            key={`cube-${path.id}-${i}`}
+            x={cube.x - map.cubeSize / 2}
+            y={cube.y - map.cubeSize / 2}
+            width={map.cubeSize}
+            height={map.cubeSize}
+            rx={0.06 * map.unitsPerInch}
+            transform={`rotate(${(cube.angle * 180) / Math.PI} ${cube.x} ${cube.y})`}
+            fill="var(--colors-stone-50)"
+            stroke="var(--colors-stone-600)"
+            strokeWidth={0.4 * (map.unitsPerInch / 25.4)}
+          />
+        ))
+      )}
+
+      {/* Clearings: discs painted last, then their labels. */}
+      {map.clearings.map((clearing) => (
+        <circle
+          key={`disc-${clearing.id}`}
+          cx={clearing.x}
+          cy={clearing.y}
+          r={clearing.r}
+          fill="var(--colors-green-50)"
+          stroke="var(--colors-green-700)"
+          strokeWidth={0.5 * (map.unitsPerInch / 25.4)}
+        />
+      ))}
+      {map.clearings.map((clearing) => <ClearingLabel key={`label-${clearing.id}`} clearing={clearing} />)}
+    </svg>
   )
 }
