@@ -16,15 +16,14 @@ export type Animal = {
   color: "orange" | "zinc" | "yellow" | "purple" | "green"
   /**
    * Ladder rank, 1 = strongest. Drives contests (higher rank contests
-   * lower; tigers are never contested, snakes never contest) and clearing
-   * entries (Liar's-Dice ladder: count first, then rank).
+   * lower; tigers are never contested, snakes never contest).
    */
   rank: 1 | 2 | 3 | 4 | 5
   /** Cubes of this animal in the Jungle bag at setup. Rarity offsets rank. */
   jungleCount: number
   /** What this animal's engine track governs. */
   power: string
-  /** Track values, start position first (7 positions: start + 6 upgrades, the last of which triggers the end game). */
+  /** Track values, start position first (8 positions: start + 7 upgrades, the last of which triggers the end game). */
   trackValues: readonly number[]
 }
 
@@ -91,7 +90,7 @@ export type SlotLevel = {
 }
 
 /**
- * The four clearing-slot levels. Boar's track values (2/3/3/4/4/5/5, above)
+ * The four clearing-slot levels. Boar's track values (2/3/3/4/4/5/5/5, above)
  * are exactly these four thresholds — everyone can fill Circle slots from the
  * start, only a maxed Boar track reaches Pentagon. The repeated final 5 is
  * the end-game-trigger space; it doesn't unlock a fifth level.
@@ -163,14 +162,14 @@ export type Path = {
 }
 
 /**
- * v0 map: an 11-clearing planar network — no longer a lattice. Each clearing
+ * v0 map: a 14-clearing planar network — no longer a lattice. Each clearing
  * carries a soft `target` (its home region); the build-time generator relaxes
  * these into a crossing-free, evenly-spaced organic layout and writes the final
- * geometry to `map/map.json`. `hidden-spring` is a deliberate peninsula
- * (degree 1) to exercise the layout on dead-end clearings.
+ * geometry to `map/map.json`. `hidden-spring`, `heron-reach`, and `palm-shade`
+ * are deliberate peninsulas (degree 1) to exercise the layout on dead-ends.
  *
- * Lengths still run scarce-short (2) through 4, and path pressure concentrates
- * on Old Banyan and Termite Hill (degree 4 each).
+ * Lengths run scarce-short (2) through 4, and path pressure concentrates on
+ * Old Banyan and Mangrove Edge.
  */
 export const CLEARINGS: readonly Clearing[] = [
   {

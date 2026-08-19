@@ -7,7 +7,8 @@ import { artTint, panelTint, paperShade, softBand } from "~/shared/components/pa
 
 /**
  * The powers board: five engine tracks, one row per animal in hierarchy order,
- * seven positions each. Every player has a marker on every track, so a
+ * eight positions each (start + 7 upgrades). Every player has a marker on every
+ * track, so a
  * position cell is mostly empty space — the numeral sits in a corner tab and
  * the rest of the cell is parking for up to five markers.
  *
