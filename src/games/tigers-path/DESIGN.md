@@ -29,24 +29,24 @@ five animal types.
 **2 actions per turn** by default. Choose from:
 
 - **(A) Claim a path** — pick an **empty** path of length N. Pay **N animals of one type X**
-  from your personal supply to fill every space **at once** (atomic — there is no placing
+  from your sanctuary to fill every space **at once** (atomic — there is no placing
   cube-by-cube). The N animals **stay on the path** as a claimed structure, until someone
   contests it. Advances your **X engine track**.
 - **(B) Claim a clearing** — pick a clearing **adjacent to a path already claimed with animal
   type X** (any player's claim qualifies — paths aren't owned, so this can run off infrastructure
-  someone else built). Pay animals of type X from your personal supply into the clearing (cost is
+  someone else built). Pay animals of type X from your sanctuary into the clearing (cost is
   printed on the clearing itself, per slot — see Clearings). Advances your **X engine track**.
 - **(C) Contest a path** — target a **full path** of length N. Pay **N+1 animals of a strictly
-  higher-ranked type** than the path's current occupant, from your personal supply (snakes can
+  higher-ranked type** than the path's current occupant, from your sanctuary (snakes can
   never contest; tigers can never be contested — both automatic consequences of the hierarchy). All
   **N contested animals go to the Jungle bag**, and the **+1 premium also goes to the Jungle bag**.
   Your N animals then fill the path as your new claim, same as (A).
 - **(D) Recruit from the Jungle** — draw **N** animals from the Jungle bag (N = your Snake track).
-  Choose **1 animal type**: keep **all** drawn animals of that type into your **personal supply**.
+  Choose **1 animal type**: keep **all** drawn animals of that type into your **sanctuary**.
   Every other drawn animal goes to the **Grasslands zone**. (An all-one-type draw keeps everything —
   no leak that turn; a mixed draw leaks more. The variance is deliberate.)
 - **(E) Recruit from the Grasslands** — choose **1 animal type** present in the Grasslands zone.
-  Take **up to N** animals of that type into your personal supply (N = your **Monkey track**; take
+  Take **up to N** animals of that type into your sanctuary (N = your **Monkey track**; take
   fewer if the zone holds fewer than N of that type).
 
 ## Clearings: Animal Presence
@@ -79,10 +79,10 @@ a clearing can offer — filled by paying **2 animals of type X**.
   group-growing, no dependency between slots beyond sharing the clearing's printed spaces. This
   replaces the old Liar's Dice ladder entirely.
 
-**Clearings are a blocking resource, not a payout.** Filling a slot still advances your engine
-track (as always) and permanently denies that slot's capacity to every other player, but nothing is
-scored at the clearing itself. Scoring is planned to run entirely through **network strength**
-(Elephant's end-game multiplier) instead — see Engine and Open Questions.
+**Clearings are a blocking resource _and_ the scoring substrate.** Filling a slot advances your
+engine track (as always) and permanently denies that slot's capacity to every other player. Nothing
+is scored _at_ the clearing directly — but clearing presence is what forms end-game **networks**: a
+clearing holding **≥1 disc** of animal X is a node in X's network (see Players, End, Scoring).
 
 ## Engine
 
@@ -90,11 +90,11 @@ scored at the clearing itself. Scoring is planned to run entirely through **netw
 
 | Track    | Power                                              | Values (start → max)  |
 | -------- | --------------------------------------------------- | --------------------- |
-| Tiger    | Actions per turn                                   | 2 / 3 / 3 / 4 / 4 / 5 |
-| Elephant | End-game multiplier on your largest established network | 1 / 2 / 3 / 4 / 5 / 6 |
-| Monkey   | Animals recruited from the Grasslands zone (E)     | 1 / 2 / 2 / 3 / 3 / 4 |
-| Boar     | Clearing capacity you may add into                 | 2 / 3 / 3 / 4 / 4 / 5 |
-| Snake    | Jungle recruit size (D): draw N, keep 1 type       | 2 / 3 / 3 / 4 / 4 / 5 |
+| Tiger    | Actions per turn                                   | 2 / 3 / 3 / 4 / 4 / 5 / 5 / 5 |
+| Elephant | End-game score multiplier — your scored animal's network (no ramp benefit) | 1 / 2 / 2 / 3 / 3 / 4 / 4 / 4 |
+| Monkey   | Grasslands recruit size (take N, all of 1 type) (E) | 1 / 2 / 2 / 3 / 3 / 4 / 4 / 4 |
+| Boar     | Clearing slots you can fill (this shape & smaller) | 2 / 3 / 3 / 4 / 4 / 5 / 5 / 5 |
+| Snake    | Jungle recruit size (D): draw N, keep 1 type       | 2 / 3 / 3 / 4 / 4 / 5 / 5 / 5 |
 
 Six positions per track (start + 5 upgrades). Tracks advance by **claiming a path or a clearing
 of that animal type** — no separate spend, and both actions advance it.
@@ -105,17 +105,36 @@ of that animal type** — no separate spend, and both actions advance it.
 - **Round discs** = animal presence in clearings (same five colors; a filled slot holds discs of
   one type, count = the number printed on the slot). Discs are unowned — no player identity
   anywhere on the map.
-- **All information is open**: personal supplies public, Jungle bag contents deducible.
+- **All information is open**: sanctuaries public, Jungle bag contents deducible.
 
 ## Players, End, Scoring
 
 - **2–5 players** (target).
-- End trigger undecided. Leading candidates: all clearings occupied, or a player reaching the top of
-  a power track.
-- Scoring plan has shifted: clearings no longer pay out directly (see Clearings), so the current
-  tilt routes scoring entirely through **network strength** — Elephant's end-game multiplier. That
-  reverses the earlier "not entirely end-game" stance; whether any non-end-game scoring survives
-  is open — see Open Questions.
+- **End trigger:** the instant any player reaches the **final column** of any track, the game ends
+  **immediately** — no finish-the-round. Triggering is a weapon (you can end the game on a turn
+  that's good for you and bad for an opponent) and a commitment (see the draft's trigger lock).
+- **Scoring is a single end-game draft.** Each player is assigned exactly **one** animal and scores
+  only that animal:
+  1. **Trigger lock.** The player who ended the game **must** score the animal whose track they just
+     topped — no choice, even if they lead other tracks. (This frees those other tracks for the
+     draft: a trigger player who also led Elephant hands Elephant to the next-highest.)
+  2. **Leftover draft.** The remaining four animals go out one-per-player by **highest track
+     position**: repeatedly assign the globally-highest (player, animal) pairing among the
+     unassigned, trigger pair seeded first. With 5 animals ≥ player count, everyone lands exactly
+     one. **Tie** (equal track position): the animal goes to whoever holds **more of that animal in
+     sanctuary**; still tied, turn order from the trigger player.
+  3. **Value.** An animal's value = the size of its **largest network** — the biggest group of
+     clearings that (a) each hold **≥1 disc** of that animal and (b) are linked to one another by
+     **paths claimed with that same animal**. Presence is binary — a second disc adds nothing. An
+     isolated qualifying clearing is a network of 1.
+  4. **Multiplier.** **Final score = your assigned animal's largest network × your own Elephant
+     track value.** Every player multiplies by their _own_ Elephant level, so neglecting Elephant
+     tanks the score no matter which animal you drew. Elephant no longer aids ramp — it is purely
+     this meta-multiplier.
+- **Why this keeps the board un-owned:** networks are read off the shared, anonymous map, but because
+  exactly one player scores each animal there's no double-counting and no need for player markers.
+  **The draft _is_ the attribution mechanism** — you score your standing in an animal economy, not
+  territory you own.
 
 ## Design Tensions to Watch
 
@@ -138,31 +157,39 @@ of that animal type** — no separate spend, and both actions advance it.
   animals **plus** the +1 premium to the Jungle bag. Aggression leaks much harder than drawing does
   now — watch whether N+1 (a whole path + a re-paid clearing bid + a track advance) is actually
   worth it versus just claiming an empty path instead.
+- **Elephant double-dip:** climbing the Elephant track (for the universal multiplier) means claiming
+  Elephant paths and clearings, which builds the _communal_ Elephant network. So Elephant tends to
+  be the fattest network **and** whoever tops it both ends the game and is auto-assigned Elephant at
+  max multiplier — network × top multiplier, all to one player. The opportunity cost (actions and
+  recruiting neglected to get there) may balance it; if it runs away, dampen by capping the
+  multiplier or barring the Elephant scorer from multiplying the Elephant network itself.
+- **Universal-multiplier pull:** every player multiplies by their own Elephant level, so all players
+  are pulled toward the same track — watch whether this flattens opening diversity. Intended
+  (neglect Elephant → very low score), but the line between "meaningful" and "mandatory" is thin.
 
 ## Open Questions
 
-- Scoring cadence: the network-strength tilt reads as entirely end-game (Elephant's multiplier
-  fires once, at game end) — is there any interim/non-end-game scoring left, or is end-game the
-  whole game now?
-- End trigger.
-- **Established network** — now the single scoring mechanism, so this is the load-bearing open
-  question: Elephant's multiplier scores "your largest established network" of clearings, still
-  undefined. Candidates: clearings linked by paths of your Elephant-claimed type; clearings whose
-  slots you personally filled, regardless of adjacency; some connectivity rule over claimed paths
-  independent of animal type. (The old "top shareholder" candidate is gone along with clearing
-  dominance.)
+- **Track length & the Elephant multiplier curve.** Scoring is settled in _structure_ (end-game
+  draft, network × Elephant), but the multiplier's ceiling sets the whole score range and the doc
+  and code disagree: the Engine table shows 6 positions with Elephant `1 → 6`, while `domain.ts` has
+  8-entry `trackValues` with Elephant maxing at **×4** (`[1,2,2,3,3,4,4,4]`). Pick a canonical track
+  length and Elephant curve, then reconcile the table, `domain.ts`, the Powers board, and the
+  end-trigger "final column."
 - Clearing slot counts/shapes per clearing: 9 clearings need a printed 1–4 slot layout each (level
   mix per clearing) — not yet designed, parallel to how path lengths were chosen for the v0 map.
+  Slot layout now also shapes scoring geography (which clearings can host which animals' networks),
+  so it's worth designing with network formation in mind, not just capacity.
 
 ## Setup
 
-- Board starts **empty**. Personal supplies start **empty**. All tracks at start position.
+- Board starts **empty**. Sanctuaries start **empty**. All tracks at start position.
 - First player's opening move is necessarily a recruit from the Jungle.
 
 ## Prototype (v0)
 
-Print-and-play pages live in `src/games/tigers-path`. No scoring — playtest the action economy and
-see what feels interesting.
+Print-and-play pages live in `src/games/tigers-path`. Scoring is now designed (end-game draft +
+network × Elephant, above) but not yet rendered on any component — the v0 pages still exist to
+playtest the action economy and see what feels interesting.
 
 - **Main board:** 9 clearings, 12 paths (3×2, 6×3, 3×4 — short paths kept scarce).
 - **Powers board:** 5 tracks × 6 positions, sized for 5 player markers.

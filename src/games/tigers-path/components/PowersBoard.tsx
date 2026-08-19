@@ -178,6 +178,19 @@ function TrackRow({ animal }: { animal: Animal }) {
               <span className={shapeTag}>
                 <ClearingSlotIcon shape={shapeForBoarValue(value)} size={8} color={animal.color} />
               </span> :
+            isStart ?
+              // The start cell is itself panelTint (.200), so the usual panelTint
+              // tab vanishes there. Give the start numeral the AnimalDot chip
+              // treatment instead — mid-scale fill (.500) with paper ink (.50).
+              <span
+                className={valueTag}
+                style={{
+                  background: `var(--colors-${animal.color}-500)`,
+                  color: `var(--colors-${animal.color}-50)`
+                }}
+              >
+                {value}
+              </span> :
               <span className={cx(valueTag, panelTint({ color: animal.color }))} style={ink(animal)}>
                 {value}
               </span>}

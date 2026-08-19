@@ -54,7 +54,7 @@ export const ANIMALS: readonly Animal[] = [
     color: "yellow",
     rank: 3,
     jungleCount: 30,
-    power: "Animals recruited from the Grasslands zone",
+    power: "Grasslands recruit size (take N, all of 1 type)",
     trackValues: [1, 2, 2, 3, 3, 4, 4, 4]
   },
   {
@@ -63,7 +63,7 @@ export const ANIMALS: readonly Animal[] = [
     color: "purple",
     rank: 4,
     jungleCount: 32,
-    power: "Clearing capacity you may add into",
+    power: "Clearing slots you can fill (this shape & smaller)",
     trackValues: [2, 3, 3, 4, 4, 5, 5, 5]
   },
   {

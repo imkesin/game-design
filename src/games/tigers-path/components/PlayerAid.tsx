@@ -1,4 +1,3 @@
-import { Fragment } from "react"
 import { AnimalDot } from "~/games/tigers-path/components/AnimalDot"
 import { ClearingSlotIcon } from "~/games/tigers-path/components/ClearingSlotIcon"
 import { ANIMALS, SLOT_LEVELS } from "~/games/tigers-path/domain"
@@ -85,6 +84,13 @@ const badge = css({
   lineHeight: 1
 })
 
+/** The Scoring header carries no badge, so it would sit shorter than the action
+ * headers whose height the 0.36in badge sets. Reserve that same height here so
+ * the tile's band lines up with the rest of the grid. */
+const scoringHead = css({
+  minHeight: "calc(0.36in + 4 * var(--u))"
+})
+
 /** The group cue: the same glyph on every card in a group (an up-arrow for the
  * track-advancers, a plus for the recruits), so the pairing reads without text. */
 const groupGlyph = css({
@@ -145,20 +151,11 @@ const bodyWithSidebar = css({
  * top-to-bottom, so the ">" between ranks is implied by the descent. */
 const sidebar = css({
   display: "grid",
-  alignContent: "space-between",
+  alignContent: "center",
   justifyItems: "center",
   rowGap: "2",
   paddingInline: "2.5",
-  paddingBlock: "2.5"
-})
-
-const sidebarCap = css({
-  fontSize: "micro",
-  fontWeight: 700,
-  letterSpacing: "0.12em",
-  textTransform: "uppercase",
-  opacity: 0.7,
-  lineHeight: 1
+  paddingBlock: "1.5"
 })
 
 const sidebarRank = css({
@@ -170,30 +167,16 @@ const sidebarRank = css({
   lineHeight: 1
 })
 
-const refHead = css({
-  paddingInline: "3",
-  paddingBlock: "2",
-  fontSize: "micro",
-  fontWeight: 700,
-  letterSpacing: "0.22em",
-  textTransform: "uppercase"
-})
-
-const refBody = css({
+/** Scoring's bullets: sized like the action cards' body so the tile doesn't read
+ * as a lesser footnote, but tinted a lighter grey to stay a step subordinate. */
+const scoringBody = css({
   padding: "3",
   display: "grid",
   alignContent: "start",
-  rowGap: "2",
-  fontSize: "micro",
-  lineHeight: 1.35
-})
-
-const refLine = css({
-  display: "flex",
-  alignItems: "center",
-  flexWrap: "wrap",
-  columnGap: "1",
-  rowGap: "0.5"
+  rowGap: "1.5",
+  fontSize: "body",
+  lineHeight: 1.3,
+  color: "stone.500"
 })
 
 type ActionGroup = "advance" | "gain"
@@ -211,7 +194,7 @@ const ACTIONS: readonly { name: string; group: ActionGroup; points: readonly str
     group: "advance",
     points: [
       "Pick an empty path of length N.",
-      "Pay N animals of one type from your supply to fill it all at once — they stay on the path.",
+      "Use N animals of one type from your sanctuary to fill it all at once.",
       "Advance that animal's track 1 step."
     ]
   },
@@ -219,9 +202,9 @@ const ACTIONS: readonly { name: string; group: ActionGroup; points: readonly str
     name: "Claim a Clearing",
     group: "advance",
     points: [
-      "Pick a clearing next to a path already claimed with type T — anyone's claim counts.",
+      "Pick a clearing next to a path already claimed by animals of type T.",
       "Pay type T all at once for an empty slot your Boar number has unlocked; the printed number is its cost.",
-      "Those cubes return to the Jungle bag — then place one disc of type T's colour in the slot.",
+      "Those cubes return to the Jungle bag — then place one disc of type T's color in the slot.",
       "Advance T's track 1 step."
     ]
   },
@@ -230,7 +213,7 @@ const ACTIONS: readonly { name: string; group: ActionGroup; points: readonly str
     group: "advance",
     points: [
       "Target a full path of length N.",
-      "Pay N+1 of a strictly higher-ranked type T — the N contested animals and the +1 premium all go to the Jungle bag.",
+      "Use N+1 animals of a strictly higher-ranked type T to take over the path — the N losing animals and the +1 premium all go to the Jungle bag.",
       "Your N animals occupy the claimed path, and you advance T's track 1 step.",
       "Tigers are never contested; snakes never contest."
     ]
@@ -248,9 +231,26 @@ const ACTIONS: readonly { name: string; group: ActionGroup; points: readonly str
     group: "gain",
     points: [
       "Take up to your Monkey number of animals, all of a single type.",
-      "Move them from the Grasslands zone into your supply."
+      "Move them from the Grasslands zone into your sanctuary."
     ]
   }
+]
+
+const SCORING: readonly React.ReactNode[] = [
+  <>
+    <strong>End:</strong> The instant any track reaches its final step.
+  </>,
+  <>
+    <strong>One animal:</strong>{" "}
+    The player who ends the game locks their top animal; the rest are drafted by highest track position (ties → more in
+    sanctuary).
+  </>,
+  <>
+    <strong>Network:</strong> An animal's connected clearings.
+  </>,
+  <>
+    <strong>Score</strong> = Network size × Elephant number.
+  </>
 ]
 
 function AdvanceGlyph() {
@@ -284,8 +284,13 @@ function Points({ points }: { points: readonly string[] }) {
 }
 
 function ActionCell(
-  { n, name, group, points, sidebar: side }:
-    { n: number; name: string; group: ActionGroup; points: readonly string[]; sidebar?: React.ReactNode }
+  { label, name, group, points, sidebar: side }: {
+    label: string
+    name: string
+    group: ActionGroup
+    points: readonly string[]
+    sidebar?: React.ReactNode
+  }
 ) {
   const { color, Glyph } = GROUPS[group]
   return (
@@ -295,7 +300,7 @@ function ActionCell(
           className={badge}
           style={{ background: `var(--colors-${color}-400)`, color: `var(--colors-${color}-950)` }}
         >
-          {n}
+          {label}
         </span>
         <div>
           <div className={kicker}>Action</div>
@@ -331,7 +336,6 @@ function HierarchyLadder() {
 function SlotsLadder() {
   return (
     <div className={cx(sidebar, softBand({ color: "stone" }))}>
-      <span className={sidebarCap}>Unlock</span>
       {SLOT_LEVELS.map((slot) => (
         <span key={slot.level} className={sidebarRank}>
           <ClearingSlotIcon shape={slot.shape} size={7} />
@@ -343,7 +347,6 @@ function SlotsLadder() {
 }
 
 export function PlayerAid() {
-  const totalCubes = ANIMALS.reduce((n, a) => n + a.jungleCount, 0)
   return (
     <div className={aid}>
       <div className={cx(header, darkBand({ color: "stone" }))}>
@@ -358,7 +361,7 @@ export function PlayerAid() {
         {ACTIONS.map((action, i) => (
           <ActionCell
             key={action.name}
-            n={i + 1}
+            label={String.fromCharCode(65 + i)}
             name={action.name}
             group={action.group}
             points={action.points}
@@ -371,21 +374,19 @@ export function PlayerAid() {
         ))}
 
         <div className={cx(cell, paperFrame({ color: "stone" }))}>
-          <div className={cx(refHead, softBand({ color: "stone" }))}>Setup</div>
-          <div className={refBody}>
-            <div className={refLine}>
-              {ANIMALS.map((animal) => (
-                <Fragment key={animal.id}>
-                  <AnimalDot animal={animal} size={0.2} />
-                  <span>×{animal.jungleCount}</span>
-                </Fragment>
-              ))}
-            </div>
+          <div className={cx(cellHead, scoringHead, softBand({ color: "stone" }))}>
             <div>
-              All {totalCubes}{" "}
-              cubes into the Jungle bag. Board empty, supplies empty, every marker on Start. Opening move is necessarily
-              a Jungle recruit. v0 has no scoring.
+              <div className={kicker}>End Game</div>
+              <div className={actionName}>Scoring</div>
             </div>
+          </div>
+          <div className={scoringBody}>
+            {SCORING.map((point, i) => (
+              <span key={i} className={bullet}>
+                <span className={bulletMark}>●</span>
+                <span>{point}</span>
+              </span>
+            ))}
           </div>
         </div>
       </div>
