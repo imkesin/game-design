@@ -1,4 +1,4 @@
-import { ANIMALS, CLEARINGS, ROUTES } from "~/games/tigers-path/domain"
+import { ANIMALS, CLEARINGS, PATHS } from "~/games/tigers-path/domain"
 import { css } from "~/generated/styled-system/css"
 
 /**
@@ -40,21 +40,22 @@ const meta = css({
 })
 
 export function PreviewPage() {
-  const cubes = ANIMALS.reduce((n, a) => n + a.bagCount, 0)
-  const spaces = ROUTES.reduce((n, r) => n + r.length, 0)
+  const cubes = ANIMALS.reduce((n, a) => n + a.jungleCount, 0)
+  const spaces = PATHS.reduce((n, r) => n + r.length, 0)
   return (
     <div className={page}>
       <span className={title}>Tiger's Path</span>
       <span className={meta}>
-        v0 playtest kit — no scoring yet. {CLEARINGS.length} clearings, {ROUTES.length} routes ({spaces} spaces),{" "}
-        {cubes} cubes across 5 animals.
+        v0 playtest kit — no scoring yet. {CLEARINGS.length} clearings, {PATHS.length} paths ({spaces} spaces), {cubes}
+        {" "}
+        cubes across 5 animals.
       </span>
       <a className={link} href="/tigers-path/print/board">Board — letter landscape →</a>
       <a className={link} href="/tigers-path/print/powers">Powers board — letter landscape →</a>
       <a className={link} href="/tigers-path/print/aid">Player aid — letter portrait →</a>
       <span className={meta}>
-        Bring: cubes in 5 colors (or any 5 distinguishable sets), a bag, and 5 track markers per player. Cubes double as
-        clearing discs in v0.
+        Bring: cubes in 5 colors (or any 5 distinguishable sets), a Jungle bag, and 5 track markers per player. Cubes
+        double as clearing discs in v0.
       </span>
     </div>
   )

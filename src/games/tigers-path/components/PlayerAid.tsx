@@ -1,217 +1,394 @@
 import { Fragment } from "react"
 import { AnimalDot } from "~/games/tigers-path/components/AnimalDot"
-import { ANIMAL_BY_ID, ANIMALS } from "~/games/tigers-path/domain"
+import { ClearingSlotIcon } from "~/games/tigers-path/components/ClearingSlotIcon"
+import { ANIMALS, SLOT_LEVELS } from "~/games/tigers-path/domain"
 import { css, cx } from "~/generated/styled-system/css"
-import { darkBand, paperFrame } from "~/shared/components/paperFrame"
+import { darkBand, paperFrame, softBand } from "~/shared/components/paperFrame"
 
 /**
  * The whole rulebook, one sheet — v0 has no scoring, so the aid IS the rules.
- * Three zones: the six actions (the thing consulted every turn, so it gets the
- * top and the most space), then the two lookup strips (hierarchy, ladder),
- * then clearing law and setup as prose footnotes.
+ * The five actions are the thing consulted every turn, so they get the sheet:
+ * a 2×3 grid of full cards, each a numbered ACTION with its name at display
+ * size and the rule underneath. The sixth cell is the reference corner — the
+ * lookups (hierarchy, slot levels, setup) that a turn rarely needs but a game
+ * needs somewhere.
  */
 
 const aid = css({
   display: "grid",
-  alignContent: "start",
-  rowGap: "0.16in",
+  gridTemplateRows: "auto auto 1fr",
+  rowGap: "0.14in",
   width: "100%",
   height: "100%"
 })
 
-const title = css({
-  fontSize: "title",
-  fontWeight: 800,
-  letterSpacing: "0.1em",
-  textTransform: "uppercase"
+const header = css({
+  paddingInline: "3",
+  paddingBlock: "1.5",
+  borderRadius: "3mm"
 })
 
-const subtitle = css({
+const title = css({
+  fontSize: "name",
+  fontWeight: 700,
+  letterSpacing: "0.14em",
+  textTransform: "uppercase",
+  lineHeight: 1
+})
+
+const turnBar = css({
+  paddingInline: "3",
+  paddingBlock: "2",
+  borderRadius: "3mm",
   fontSize: "body",
   fontWeight: 600,
-  color: "stone.600"
+  lineHeight: 1.3
 })
 
-const section = css({
-  borderWidth: "0.4mm",
+const grid = css({
+  display: "grid",
+  gridTemplateColumns: "1fr 1fr",
+  gridTemplateRows: "repeat(3, 1fr)",
+  // Column-major so the left column is the three track-advancing actions and
+  // the right column is the two recruits — the grouping is the layout.
+  gridAutoFlow: "column",
+  gap: "0.16in",
+  minHeight: 0
+})
+
+const cell = css({
+  display: "grid",
+  gridTemplateRows: "auto 1fr",
+  borderWidth: "0.5mm",
   borderStyle: "solid",
   borderRadius: "3mm",
   overflow: "hidden"
 })
 
-const sectionHead = css({
-  paddingInline: "3",
-  paddingBlock: "1",
-  fontSize: "body",
-  fontWeight: 700,
-  letterSpacing: "0.1em",
-  textTransform: "uppercase"
-})
-
-const sectionBody = css({
-  paddingInline: "3",
-  paddingBlock: "2",
+const cellHead = css({
   display: "grid",
-  rowGap: "1.5"
+  gridTemplateColumns: "auto 1fr auto",
+  columnGap: "2.5",
+  alignItems: "center",
+  paddingInline: "3",
+  paddingBlock: "2"
 })
 
-const actionRow = css({
+const badge = css({
   display: "grid",
-  gridTemplateColumns: "0.32in 1.15in 1fr",
-  columnGap: "2",
-  alignItems: "baseline",
-  fontSize: "body",
-  lineHeight: 1.35
-})
-
-const actionKey = css({
+  placeItems: "center",
+  width: "0.36in",
+  height: "0.36in",
+  borderRadius: "999px",
+  fontSize: "name",
   fontWeight: 800,
-  fontSize: "name"
+  lineHeight: 1
+})
+
+/** The group cue: the same glyph on every card in a group (an up-arrow for the
+ * track-advancers, a plus for the recruits), so the pairing reads without text. */
+const groupGlyph = css({
+  width: "0.28in",
+  height: "0.28in",
+  opacity: 0.85
+})
+
+const kicker = css({
+  fontSize: "micro",
+  fontWeight: 700,
+  letterSpacing: "0.22em",
+  textTransform: "uppercase",
+  opacity: 0.72,
+  lineHeight: 1
 })
 
 const actionName = css({
-  fontWeight: 700,
+  fontSize: "title",
+  fontWeight: 800,
   textTransform: "uppercase",
-  letterSpacing: "0.04em"
+  letterSpacing: "0.01em",
+  lineHeight: 1.02
 })
 
-const strip = css({
+const cellBody = css({
+  padding: "3",
+  display: "grid",
+  alignContent: "start",
+  rowGap: "1.5",
+  fontSize: "body",
+  lineHeight: 1.32
+})
+
+/** A scan-friendly point: a small muted bullet, hanging only its own width so
+ * wrapped lines align without a heavy indent. */
+const bullet = css({
+  display: "grid",
+  gridTemplateColumns: "auto 1fr",
+  columnGap: "1.5",
+  alignItems: "baseline"
+})
+
+const bulletMark = css({
+  fontSize: "micro",
+  color: "stone.400",
+  transform: "translateY(-0.02in)"
+})
+
+/** A card whose body shares space with a right-wall sidebar (Contest only). */
+const bodyWithSidebar = css({
+  display: "grid",
+  gridTemplateColumns: "1fr auto",
+  minHeight: 0
+})
+
+/** The hierarchy ladder, mounted on the right wall of Contest. Order is
+ * top-to-bottom, so the ">" between ranks is implied by the descent. */
+const sidebar = css({
+  display: "grid",
+  alignContent: "space-between",
+  justifyItems: "center",
+  rowGap: "2",
+  paddingInline: "2.5",
+  paddingBlock: "2.5"
+})
+
+const sidebarCap = css({
+  fontSize: "micro",
+  fontWeight: 700,
+  letterSpacing: "0.12em",
+  textTransform: "uppercase",
+  opacity: 0.7,
+  lineHeight: 1
+})
+
+const sidebarRank = css({
+  display: "grid",
+  justifyItems: "center",
+  rowGap: "0.5",
+  fontSize: "micro",
+  fontWeight: 700,
+  lineHeight: 1
+})
+
+const refHead = css({
+  paddingInline: "3",
+  paddingBlock: "2",
+  fontSize: "micro",
+  fontWeight: 700,
+  letterSpacing: "0.22em",
+  textTransform: "uppercase"
+})
+
+const refBody = css({
+  padding: "3",
+  display: "grid",
+  alignContent: "start",
+  rowGap: "2",
+  fontSize: "micro",
+  lineHeight: 1.35
+})
+
+const refLine = css({
   display: "flex",
   alignItems: "center",
   flexWrap: "wrap",
-  columnGap: "1.5",
-  rowGap: "1",
-  fontSize: "body",
-  fontWeight: 700
+  columnGap: "1",
+  rowGap: "0.5"
 })
 
-const prose = css({
-  fontSize: "body",
-  lineHeight: 1.4
-})
+type ActionGroup = "advance" | "gain"
 
-const ACTIONS: readonly { key: string; name: string; text: string }[] = [
+/** Each group's colour and glyph — shared by every card in the group so the two
+ * families (advance a track / gain cubes) read at a glance, without a label. */
+const GROUPS: Record<ActionGroup, { color: string; Glyph: () => React.ReactElement }> = {
+  advance: { color: "orange", Glyph: AdvanceGlyph },
+  gain: { color: "green", Glyph: GainGlyph }
+}
+
+const ACTIONS: readonly { name: string; group: ActionGroup; points: readonly string[] }[] = [
   {
-    key: "A",
-    name: "Place",
-    text: "Put 1 animal from your supply onto any empty route space."
+    name: "Claim a Path",
+    group: "advance",
+    points: [
+      "Pick an empty path of length N.",
+      "Pay N animals of one type from your supply to fill it all at once — they stay on the path.",
+      "Advance that animal's track 1 step."
+    ]
   },
   {
-    key: "B",
-    name: "Move",
-    text:
-      "Move up to your Elephant number of animals of one type to empty spaces, anywhere. Only animals on incomplete routes may move — a full route is locked."
+    name: "Claim a Clearing",
+    group: "advance",
+    points: [
+      "Pick a clearing next to a path already claimed with type T — anyone's claim counts.",
+      "Pay type T all at once for an empty slot your Boar number has unlocked; the printed number is its cost.",
+      "Those cubes return to the Jungle bag — then place one disc of type T's colour in the slot.",
+      "Advance T's track 1 step."
+    ]
   },
   {
-    key: "C",
-    name: "Displace",
-    text:
-      "Put a higher-ranked animal from your supply onto an occupied space. You choose where the occupant relocates: any route with an empty space. Every opponent draws 1 from the bag."
+    name: "Contest a Path",
+    group: "advance",
+    points: [
+      "Target a full path of length N.",
+      "Pay N+1 of a strictly higher-ranked type T — the N contested animals and the +1 premium all go to the Jungle bag.",
+      "Your N animals occupy the claimed path, and you advance T's track 1 step.",
+      "Tigers are never contested; snakes never contest."
+    ]
   },
   {
-    key: "D",
-    name: "Claim",
-    text:
-      "A route full of one type: clear it (1 cube to general supply, the rest to the bag), pay extra animals of that type from your supply into a clearing at either end (see ladder), and advance that animal's track 1 step."
+    name: "Recruit — Jungle",
+    group: "gain",
+    points: [
+      "Draw your Snake number of animals from the Jungle bag.",
+      "Keep 1 type of the animals drawn; the rest go to the Grasslands zone."
+    ]
   },
   {
-    key: "E",
-    name: "Bag pull",
-    text: "Draw your Snake number from the bag: 1 to the general supply, the rest to your supply."
-  },
-  {
-    key: "F",
-    name: "Take",
-    text: "Take your Monkey number of animals from the general supply."
+    name: "Recruit — Grasslands",
+    group: "gain",
+    points: [
+      "Take up to your Monkey number of animals, all of a single type.",
+      "Move them from the Grasslands zone into your supply."
+    ]
   }
 ]
 
-/** The first six rungs of the entry ladder, then a trailing ellipsis. */
-const LADDER: readonly { count: number; animal: (typeof ANIMALS)[number] }[] = [
-  ...[...ANIMALS].reverse().map((animal) => ({ count: 1, animal })),
-  { count: 2, animal: ANIMAL_BY_ID.snake },
-  { count: 2, animal: ANIMAL_BY_ID.boar }
-]
-
-function Section({ head, children }: { head: string; children: React.ReactNode }) {
+function AdvanceGlyph() {
   return (
-    <div className={cx(section, paperFrame({ color: "stone" }))}>
-      <div className={cx(sectionHead, darkBand({ color: "stone" }))}>{head}</div>
-      <div className={sectionBody}>{children}</div>
+    <svg className={groupGlyph} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.4}>
+      <path d="M12 20 V6" strokeLinecap="round" />
+      <path d="M6 11 L12 5 L18 11" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  )
+}
+
+function GainGlyph() {
+  return (
+    <svg className={groupGlyph} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.4}>
+      <path d="M12 5 V19 M5 12 H19" strokeLinecap="round" />
+    </svg>
+  )
+}
+
+function Points({ points }: { points: readonly string[] }) {
+  return (
+    <div className={cellBody}>
+      {points.map((point) => (
+        <span key={point} className={bullet}>
+          <span className={bulletMark}>●</span>
+          <span>{point}</span>
+        </span>
+      ))}
+    </div>
+  )
+}
+
+function ActionCell(
+  { n, name, group, points, sidebar: side }:
+    { n: number; name: string; group: ActionGroup; points: readonly string[]; sidebar?: React.ReactNode }
+) {
+  const { color, Glyph } = GROUPS[group]
+  return (
+    <div className={cx(cell, paperFrame({ color: "stone" }))}>
+      <div className={cx(cellHead, darkBand({ color }))}>
+        <span
+          className={badge}
+          style={{ background: `var(--colors-${color}-400)`, color: `var(--colors-${color}-950)` }}
+        >
+          {n}
+        </span>
+        <div>
+          <div className={kicker}>Action</div>
+          <div className={actionName}>{name}</div>
+        </div>
+        <Glyph />
+      </div>
+      {side ?
+        (
+          <div className={bodyWithSidebar}>
+            <Points points={points} />
+            {side}
+          </div>
+        ) :
+        <Points points={points} />}
+    </div>
+  )
+}
+
+function HierarchyLadder() {
+  return (
+    <div className={cx(sidebar, softBand({ color: "stone" }))}>
+      {ANIMALS.map((animal) => (
+        <span key={animal.id} className={sidebarRank}>
+          <AnimalDot animal={animal} size={0.24} />
+          <span>{animal.name}</span>
+        </span>
+      ))}
+    </div>
+  )
+}
+
+function SlotsLadder() {
+  return (
+    <div className={cx(sidebar, softBand({ color: "stone" }))}>
+      <span className={sidebarCap}>Unlock</span>
+      {SLOT_LEVELS.map((slot) => (
+        <span key={slot.level} className={sidebarRank}>
+          <ClearingSlotIcon shape={slot.shape} size={7} />
+          <span>Boar {slot.boarThreshold}+</span>
+        </span>
+      ))}
     </div>
   )
 }
 
 export function PlayerAid() {
+  const totalCubes = ANIMALS.reduce((n, a) => n + a.jungleCount, 0)
   return (
     <div className={aid}>
-      <div>
-        <div className={title}>Tiger's Path</div>
-        <div className={subtitle}>
-          On your turn, take actions equal to your Tiger number (start 2). Repeats allowed.
-        </div>
+      <div className={cx(header, darkBand({ color: "stone" }))}>
+        <span className={title}>Tiger's Path</span>
       </div>
 
-      <Section head="Actions">
-        {ACTIONS.map((action) => (
-          <div key={action.key} className={actionRow}>
-            <span className={actionKey}>{action.key}</span>
-            <span className={actionName}>{action.name}</span>
-            <span>{action.text}</span>
-          </div>
+      <div className={cx(turnBar, softBand({ color: "stone" }))}>
+        Each turn, take actions equal to your <strong>Tiger number</strong> (starts at 2). Repeats allowed.
+      </div>
+
+      <div className={grid}>
+        {ACTIONS.map((action, i) => (
+          <ActionCell
+            key={action.name}
+            n={i + 1}
+            name={action.name}
+            group={action.group}
+            points={action.points}
+            sidebar={action.name === "Contest a Path" ?
+              <HierarchyLadder /> :
+              action.name === "Claim a Clearing" ?
+              <SlotsLadder /> :
+              undefined}
+          />
         ))}
-      </Section>
 
-      <Section head="Hierarchy — left displaces right">
-        <div className={strip}>
-          {ANIMALS.map((animal, i) => (
-            <Fragment key={animal.id}>
-              {i > 0 && <span>&gt;</span>}
-              <AnimalDot animal={animal} />
-              <span>{animal.name}</span>
-            </Fragment>
-          ))}
+        <div className={cx(cell, paperFrame({ color: "stone" }))}>
+          <div className={cx(refHead, softBand({ color: "stone" }))}>Setup</div>
+          <div className={refBody}>
+            <div className={refLine}>
+              {ANIMALS.map((animal) => (
+                <Fragment key={animal.id}>
+                  <AnimalDot animal={animal} size={0.2} />
+                  <span>×{animal.jungleCount}</span>
+                </Fragment>
+              ))}
+            </div>
+            <div>
+              All {totalCubes}{" "}
+              cubes into the Jungle bag. Board empty, supplies empty, every marker on Start. Opening move is necessarily
+              a Jungle recruit. v0 has no scoring.
+            </div>
+          </div>
         </div>
-        <span className={prose}>Tigers are never displaced. Snakes never displace.</span>
-      </Section>
-
-      <Section head="Clearing entry — the ladder">
-        <div className={strip}>
-          {LADDER.map((rung, i) => (
-            <Fragment key={i}>
-              {i > 0 && <span>&lt;</span>}
-              <span>{rung.count}</span>
-              <AnimalDot animal={rung.animal} size={0.24} />
-            </Fragment>
-          ))}
-          <span>&lt; …</span>
-        </div>
-        <span className={prose}>
-          First entry into an empty clearing: any 1 animal. A later entry must be a single-type group strictly higher on
-          the ladder than the highest group already there. Each type enters a clearing once, and a group never grows
-          after entry.
-        </span>
-        <span className={prose}>
-          A clearing holds 2 animals by default. To push it past that, your Boar number must cover the clearing's new
-          total.
-        </span>
-      </Section>
-
-      <Section head="Setup">
-        <div className={strip}>
-          {ANIMALS.map((animal) => (
-            <Fragment key={animal.id}>
-              <AnimalDot animal={animal} size={0.24} />
-              <span>×{animal.bagCount}</span>
-            </Fragment>
-          ))}
-          <span className={prose}>→ all 80 cubes into the bag.</span>
-        </div>
-        <span className={prose}>
-          Board empty, supplies empty, every marker on Start. First player's opening move is necessarily a bag pull. v0
-          has no scoring — play to find out what feels strong.
-        </span>
-      </Section>
+      </div>
     </div>
   )
 }

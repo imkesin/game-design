@@ -1,21 +1,32 @@
 import { PowersBoard } from "~/games/tigers-path/components/PowersBoard"
-import { css, cx } from "~/generated/styled-system/css"
-import { paperFrame } from "~/shared/components/paperFrame"
+import { css } from "~/generated/styled-system/css"
 
 /**
- * The powers board on a letter sheet, landscape: the five tracks, and beneath
- * them the general supply — a labeled parking zone rather than a rules object,
- * but giving it printed ground keeps "general supply" from becoming a loose
- * pile arguments are had over.
+ * The powers board, personal-copy edition: two shrunk copies of the same
+ * five-track board stacked on one portrait letter sheet with a cut line
+ * between them, so each player takes their own half and tracks their own
+ * status rather than sharing one landscape board at the table.
+ *
+ * The board's natural footprint (five 1in rows + gaps, eight 1.1in columns
+ * plus the label) is fixed pixel/inch geometry inside `PowersBoard` — rather
+ * than touching its internals, each copy is rendered at full size and shrunk
+ * with `zoom`, which (unlike `transform: scale`) participates in layout and is
+ * honored when printing. A transform is a paint-time effect that Safari/WebKit
+ * — and some Chrome print paths — drop on print, leaving the board painted at
+ * full size from the top-left corner and clipped.
  */
+
+const BOARD_W = 10.9
+const BOARD_H = 5.48
+const SCALE = 0.7
 
 const printCss = `
   :root { --u: 1mm; }
-  @page { size: 11in 8.5in; margin: 0; }
+  @page { size: 8.5in 11in; margin: 0; }
   @media print {
     html, body { margin: 0 !important; padding: 0 !important; background: #fff !important; }
     .screen-only { display: none !important; }
-    .print-root { background: #fff !important; padding: 0 !important; display: block !important; height: 8.5in !important; overflow: hidden !important; }
+    .print-root { background: #fff !important; padding: 0 !important; display: block !important; height: 11in !important; overflow: hidden !important; }
     .sheet { box-shadow: none !important; margin: 0 !important; }
   }
 `
@@ -44,35 +55,36 @@ const note = css({
 })
 
 const sheet = css({
-  width: "11in",
-  height: "8.5in",
+  width: "8.5in",
+  height: "11in",
   background: "#fff",
   boxSizing: "border-box",
   boxShadow: "0 8px 24px rgba(0,0,0,0.4)",
   flex: "none",
   padding: "0.4in",
   display: "grid",
-  gridTemplateRows: "1fr 1.8in",
-  rowGap: "0.25in"
+  gridTemplateRows: "1fr auto 1fr",
+  justifyItems: "center",
+  alignItems: "center"
 })
 
-const supplyZone = css({
-  borderWidth: "0.5mm",
-  borderStyle: "dashed",
-  borderRadius: "4mm",
-  display: "grid",
-  placeItems: "center",
-  justifySelf: "center",
-  width: "9.78in"
+const cutLine = css({
+  width: "100%",
+  borderTopWidth: "0.5mm",
+  borderTopStyle: "dashed",
+  borderTopColor: "stone.400",
+  marginBlock: "0.15in"
 })
 
-const supplyLabel = css({
-  fontSize: "title",
-  fontWeight: 800,
-  letterSpacing: "0.14em",
-  textTransform: "uppercase",
-  color: "stone.400"
-})
+const boardWindow = css({ flex: "none" })
+
+function ScaledBoard() {
+  return (
+    <div className={boardWindow} style={{ zoom: SCALE, width: `${BOARD_W}in`, height: `${BOARD_H}in` }}>
+      <PowersBoard />
+    </div>
+  )
+}
 
 export function PowersPrintPage() {
   return (
@@ -80,13 +92,12 @@ export function PowersPrintPage() {
       <style>{printCss}</style>
       <div className={`print-root ${screen}`}>
         <div className={`${note} screen-only`}>
-          Print → Letter landscape · Margins: None · Scale: 100%
+          Print → Letter portrait · Margins: None · Scale: 100% · Cut along the dashed line
         </div>
         <div className={`sheet ${sheet}`}>
-          <PowersBoard />
-          <div className={cx(supplyZone, paperFrame({ color: "stone" }))}>
-            <span className={supplyLabel}>General Supply</span>
-          </div>
+          <ScaledBoard />
+          <div className={cutLine} />
+          <ScaledBoard />
         </div>
       </div>
     </>

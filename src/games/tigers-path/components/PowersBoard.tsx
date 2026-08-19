@@ -1,18 +1,25 @@
 import { AnimalDot } from "~/games/tigers-path/components/AnimalDot"
-import { ANIMALS } from "~/games/tigers-path/domain"
-import type { Animal } from "~/games/tigers-path/domain"
+import { ClearingSlotIcon } from "~/games/tigers-path/components/ClearingSlotIcon"
+import { ANIMALS, SLOT_LEVELS } from "~/games/tigers-path/domain"
+import type { Animal, SlotShape } from "~/games/tigers-path/domain"
 import { css, cx } from "~/generated/styled-system/css"
-import { panelTint, paperShade, softBand } from "~/shared/components/paperFrame"
+import { artTint, panelTint, paperShade, softBand } from "~/shared/components/paperFrame"
 
 /**
  * The powers board: five engine tracks, one row per animal in hierarchy order,
- * six positions each. Every player has a marker on every track, so a position
- * cell is mostly empty space — the numeral sits in a corner tab and the rest
- * of the cell is parking for up to five markers.
+ * seven positions each. Every player has a marker on every track, so a
+ * position cell is mostly empty space — the numeral sits in a corner tab and
+ * the rest of the cell is parking for up to five markers.
  *
  * The start position is a notch darker than the rest of its row (`.200`
  * against `.100`, same move as meeple-syrup's trade ladders) — markers begin
  * there and the shade has to be findable without a legend.
+ *
+ * The final position is the end-game trigger, not a new power tier (its value
+ * just repeats the previous cell's) — so it carries the animal's own glyph
+ * instead of a numeral, tinted a shade darker than the cell's paper rather
+ * than boxed in a badge, so it reads as a watermark you notice only once you
+ * reach it, not a sixth value competing with the real ones.
  *
  * A row is the animal's own colour end to end: label band at `.200` with dark
  * ink, positions at `.100`. The board doubles as the hierarchy reference —
@@ -20,7 +27,7 @@ import { panelTint, paperShade, softBand } from "~/shared/components/paperFrame"
  */
 
 const LABEL_W = 2.1
-const CELL_W = 1.28
+const CELL_W = 1.1
 const ROW_H = 1.0
 
 const board = css({
@@ -99,6 +106,32 @@ const startTag = css({
   opacity: 0.6
 })
 
+/** The end-game-trigger cell's glyph: the animal's own initial, filling the cell. */
+const endGlyph = css({
+  position: "absolute",
+  inset: 0,
+  display: "grid",
+  placeItems: "center",
+  fontWeight: 800,
+  lineHeight: 1,
+  pointerEvents: "none"
+})
+
+/** Boar-only: the clearing-slot shape this value unlocks, top-left corner in
+ * place of a numeral (the number would carry no meaning of its own). */
+const shapeTag = css({
+  position: "absolute",
+  top: "0.5",
+  left: "0.5"
+})
+
+/** Boar's own track values are exactly the four thresholds in SLOT_LEVELS. */
+function shapeForBoarValue(value: number): SlotShape {
+  const slot = SLOT_LEVELS.find((s) => s.boarThreshold === value)
+  if (!slot) throw new Error(`no clearing-slot level unlocked at Boar value ${value}`)
+  return slot.shape
+}
+
 function ink(animal: Animal) {
   return { color: `var(--colors-${animal.color}-800)` }
 }
@@ -127,17 +160,28 @@ function TrackRow({ animal }: { animal: Animal }) {
         </div>
       </div>
       {animal.trackValues.map((value, i) => {
-        const shade = i === 0 ? panelTint : paperShade
+        const isStart = i === 0
+        const isEnd = i === animal.trackValues.length - 1
+        const isBoar = animal.id === "boar"
+        const shade = isStart ? panelTint : paperShade
         return (
           <div
             key={i}
             className={cx(valueCell, shade({ color: animal.color }))}
             style={rail(animal)}
           >
-            <span className={cx(valueTag, panelTint({ color: animal.color }))} style={ink(animal)}>
-              {value}
-            </span>
-            {i === 0 && <span className={startTag} style={ink(animal)}>Start</span>}
+            {isEnd ?
+              <span className={cx(endGlyph, artTint({ color: animal.color }))} style={{ fontSize: `${ROW_H * 0.55}in` }}>
+                {animal.name[0]}
+              </span> :
+            isBoar ?
+              <span className={shapeTag}>
+                <ClearingSlotIcon shape={shapeForBoarValue(value)} size={8} color={animal.color} />
+              </span> :
+              <span className={cx(valueTag, panelTint({ color: animal.color }))} style={ink(animal)}>
+                {value}
+              </span>}
+            {isStart && <span className={startTag} style={ink(animal)}>Start</span>}
           </div>
         )
       })}

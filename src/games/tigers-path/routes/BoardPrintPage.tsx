@@ -5,7 +5,7 @@ import { css } from "~/generated/styled-system/css"
  * The map on a letter sheet, landscape. Unlike the established games' 18x24in
  * print-shop boards, the whole v0 kit targets a home printer — the point is a
  * playtest this week, not a handsome board. 0.4in margins leave a 10.2x7.7in
- * live area; the map is 9.2x7.5in and centres in it.
+ * live area; the map is 9.8x7.6in and centres in it.
  */
 
 const printCss = `

@@ -1,15 +1,16 @@
-import { CLEARINGS, ROUTES } from "~/games/tigers-path/domain"
-import type { Clearing, Route } from "~/games/tigers-path/domain"
+import { ClearingSlotIcon } from "~/games/tigers-path/components/ClearingSlotIcon"
+import { CLEARINGS, PATHS, shapeForLevel } from "~/games/tigers-path/domain"
+import type { Clearing, Path } from "~/games/tigers-path/domain"
 import { css, cx } from "~/generated/styled-system/css"
 import { paperFrame } from "~/shared/components/paperFrame"
 
 /**
- * The v0 map: a 3x3 lattice of clearings with a route on every adjacent pair,
+ * The v0 map: a 3x3 lattice of clearings with a path on every adjacent pair,
  * laid out as one `grid-template-areas` grid. Clearings take the odd tracks,
- * routes the even ones, so the whole board is grid placement — no absolute
+ * paths the even ones, so the whole board is grid placement — no absolute
  * positioning, no coordinates.
  *
- * A route is drawn as a road: a skinny white band with a darker edge down
+ * A path is drawn as a road: a skinny white band with a darker edge down
  * each side, running the full length of its grid cell and a little beyond,
  * so it tucks under the ellipses at both ends and the two clearings read as
  * physically connected. It is noticeably narrower than the cube spaces —
@@ -24,25 +25,27 @@ import { paperFrame } from "~/shared/components/paperFrame"
  * too, or it stays a step-3 box and paints under the road regardless of
  * being written later in the JSX.
  *
- * Route spaces are half-inch squares (roomy for 8-10mm cubes, and displacement
- * means cubes get fingered constantly). Clearings are ellipses that fill their
- * cell — the name across the middle, discs piling around it; capacity is a
- * rules fact (Boar track), not a board fact.
+ * Path spaces are half-inch squares (roomy for 8-10mm cubes, and contests
+ * mean cubes get fingered constantly). Clearings are ellipses that fill their
+ * cell — the name up top, its printed slots (shape = level, number = cost)
+ * in a row underneath; discs pile onto a slot once it's filled.
  *
- * The board is deliberately mute about rules: no lengths printed, no ladder.
+ * The board stays mute about paths (no lengths printed) but not clearings —
+ * slot shape/cost is printed ground truth, same as a path's cube count is
+ * printed ground truth via the spaces themselves.
  */
 
-/** Clearing cell size, inches. Width > height because names run horizontal. */
-const CLEARING_W = 1.5
+/** Clearing cell size, inches. Wide enough for a name line plus a row of up to 3 slot icons at their 12mm print floor. */
+const CLEARING_W = 1.7
 const CLEARING_H = 1.35
 
-/** A route's cube space, inches. */
+/** A path's cube space, inches. */
 const SPACE = 0.5
 const SPACE_GAP = 0.08
 
-/** Route tracks: horizontal columns fit length 4, vertical rows fit length 3. */
-const H_ROUTE_W = 4 * SPACE + 3 * SPACE_GAP + 0.1
-const V_ROUTE_H = 3 * SPACE + 2 * SPACE_GAP + 0.1
+/** Path tracks: horizontal columns fit length 4, vertical rows fit length 3. */
+const H_PATH_W = 4 * SPACE + 3 * SPACE_GAP + 0.1
+const V_PATH_H = 3 * SPACE + 2 * SPACE_GAP + 0.1
 
 /** How far a trail reaches past its cell, under the clearing ellipses. */
 const TRAIL_REACH = 0.25
@@ -71,6 +74,13 @@ const clearingNode = css({
   borderRadius: "9999px"
 })
 
+const clearingBody = css({
+  display: "flex",
+  flexDirection: "column",
+  alignItems: "center",
+  rowGap: "0.04in"
+})
+
 const clearingName = css({
   fontSize: "micro",
   fontWeight: 700,
@@ -79,7 +89,15 @@ const clearingName = css({
   whiteSpace: "nowrap"
 })
 
-const routeTrack = css({
+const clearingSlots = css({
+  display: "flex",
+  flexWrap: "wrap",
+  justifyContent: "center",
+  columnGap: "0.04in",
+  rowGap: "0.04in"
+})
+
+const pathTrack = css({
   position: "relative",
   display: "flex",
   placeSelf: "stretch",
@@ -139,24 +157,31 @@ function ClearingNode({ clearing }: { clearing: Clearing }) {
       className={cx(clearingNode, paperFrame({ color: "stone" }))}
       style={{ gridArea: clearing.area }}
     >
-      <span className={clearingName}>{clearing.name}</span>
+      <div className={clearingBody}>
+        <span className={clearingName}>{clearing.name}</span>
+        <div className={clearingSlots}>
+          {clearing.slots.map((slot, i) => (
+            <ClearingSlotIcon key={i} shape={shapeForLevel(slot.level)} cost={slot.cost} />
+          ))}
+        </div>
+      </div>
     </div>
   )
 }
 
-function RouteTrack({ route }: { route: Route }) {
-  const horizontal = route.orientation === "h"
+function PathTrack({ path }: { path: Path }) {
+  const horizontal = path.orientation === "h"
   return (
     <div
-      className={routeTrack}
+      className={pathTrack}
       style={{
-        gridArea: route.area,
+        gridArea: path.area,
         flexDirection: horizontal ? "row" : "column",
         gap: `${SPACE_GAP}in`
       }}
     >
       <div className={cx(trail, horizontal ? hTrail : vTrail)} />
-      {Array.from({ length: route.length }, (_, i) => <div key={i} className={cubeSpace} />)}
+      {Array.from({ length: path.length }, (_, i) => <div key={i} className={cubeSpace} />)}
     </div>
   )
 }
@@ -167,11 +192,11 @@ export function BoardMap() {
       className={board}
       style={{
         gridTemplateAreas: TEMPLATE_AREAS,
-        gridTemplateColumns: `${CLEARING_W}in ${H_ROUTE_W}in ${CLEARING_W}in ${H_ROUTE_W}in ${CLEARING_W}in`,
-        gridTemplateRows: `${CLEARING_H}in ${V_ROUTE_H}in ${CLEARING_H}in ${V_ROUTE_H}in ${CLEARING_H}in`
+        gridTemplateColumns: `${CLEARING_W}in ${H_PATH_W}in ${CLEARING_W}in ${H_PATH_W}in ${CLEARING_W}in`,
+        gridTemplateRows: `${CLEARING_H}in ${V_PATH_H}in ${CLEARING_H}in ${V_PATH_H}in ${CLEARING_H}in`
       }}
     >
-      {ROUTES.map((route) => <RouteTrack key={route.id} route={route} />)}
+      {PATHS.map((path) => <PathTrack key={path.id} path={path} />)}
       {CLEARINGS.map((clearing) => <ClearingNode key={clearing.id} clearing={clearing} />)}
     </div>
   )
