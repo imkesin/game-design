@@ -1,8 +1,8 @@
 import { writeFileSync } from "node:fs"
 import { dirname, resolve } from "node:path"
 import { fileURLToPath } from "node:url"
+import { type GeneratedMap, generateMap, type LayoutError, UNITS_PER_INCH } from "./layout.ts"
 import { ALL_VARIANTS, buildSpec } from "./spec.ts"
-import { generateMap, type GeneratedMap, type LayoutError, UNITS_PER_INCH } from "./layout.ts"
 
 /**
  * Regenerates the board geometry from the authored graph in `domain.ts` into

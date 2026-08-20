@@ -172,14 +172,21 @@ function TrackRow({ animal }: { animal: Animal }) {
             style={rail(animal)}
           >
             {isEnd ?
-              <span className={cx(endGlyph, artTint({ color: animal.color }))} style={{ fontSize: `${ROW_H * 0.55}in` }}>
-                {animal.name[0]}
-              </span> :
-            isBoar ?
-              <span className={shapeTag}>
-                <ClearingSlotIcon shape={shapeForBoarValue(value)} size={8} color={animal.color} />
-              </span> :
-            isStart ?
+              (
+                <span
+                  className={cx(endGlyph, artTint({ color: animal.color }))}
+                  style={{ fontSize: `${ROW_H * 0.55}in` }}
+                >
+                  {animal.name[0]}
+                </span>
+              ) :
+              isBoar ?
+              (
+                <span className={shapeTag}>
+                  <ClearingSlotIcon shape={shapeForBoarValue(value)} size={8} color={animal.color} />
+                </span>
+              ) :
+              isStart ?
               // The start cell is itself panelTint (.200), so the usual panelTint
               // tab vanishes there. Give the start numeral the AnimalDot chip
               // treatment instead — mid-scale fill (.500) with paper ink (.50).
@@ -192,9 +199,11 @@ function TrackRow({ animal }: { animal: Animal }) {
               >
                 {value}
               </span> :
-              <span className={cx(valueTag, panelTint({ color: animal.color }))} style={ink(animal)}>
-                {value}
-              </span>}
+              (
+                <span className={cx(valueTag, panelTint({ color: animal.color }))} style={ink(animal)}>
+                  {value}
+                </span>
+              )}
             {isStart && <span className={startTag} style={ink(animal)}>Start</span>}
           </div>
         )

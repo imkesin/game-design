@@ -47,10 +47,15 @@ const clearingName = css({
   color: "green.900"
 })
 
-const slotRow = css({
-  display: "flex",
-  flexWrap: "wrap",
+// A grid, not a wrapping flex row, so each slot count gets a deliberate shape:
+// 1 → single, 2 → a row, 3 → a triangle (two on top, one centred below), 4 → a
+// 2×2 square. All but the single use two columns; for 3, the last icon spans
+// both columns so it sits centred under the pair (a wrapping row packed 4 as
+// 3-over-1 instead of a square).
+const slotGrid = css({
+  display: "grid",
   justifyContent: "center",
+  justifyItems: "center",
   columnGap: "0.03in",
   rowGap: "0.03in"
 })
@@ -58,6 +63,8 @@ const slotRow = css({
 function ClearingLabel({ clearing }: { clearing: GenClearing }) {
   // Inset the label box inside the disc so nothing rides the rim.
   const box = (clearing.r - 6) * 2
+  const n = clearing.slots.length
+  const cols = n === 1 ? 1 : 2
   return (
     <foreignObject
       x={clearing.x - box / 2}
@@ -67,9 +74,17 @@ function ClearingLabel({ clearing }: { clearing: GenClearing }) {
     >
       <div className={labelBody}>
         <span className={clearingName}>{clearing.name}</span>
-        <div className={slotRow}>
+        <div className={slotGrid} style={{ gridTemplateColumns: `repeat(${cols}, auto)` }}>
           {clearing.slots.map((slot, i) => (
-            <ClearingSlotIcon key={i} shape={slot.shape as SlotShape} cost={slot.cost} size={15} color="green" />
+            <ClearingSlotIcon
+              key={i}
+              shape={slot.shape as SlotShape}
+              cost={slot.cost}
+              size={15}
+              color="green"
+              // Triangle base: the last of three slots spans both columns, centred below the pair.
+              style={n === 3 && i === 2 ? { gridColumn: "1 / -1" } : undefined}
+            />
           ))}
         </div>
       </div>
@@ -91,10 +106,12 @@ export function BoardMap({ map }: { map: GeneratedMap }) {
       height={`${heightIn}in`}
       preserveAspectRatio="xMidYMid meet"
     >
-      {/* Grassland: an open field clipping the bottom edge. Drawn first, under
+      {
+        /* Grassland: an open field clipping the bottom edge. Drawn first, under
           everything; the layout keeps all paths and clearings out of its moat,
           and it carries no printed cube spaces or disc rings — the emptiness is
-          what tells it apart from a path or a clearing. */}
+          what tells it apart from a path or a clearing. */
+      }
       {map.grassland && (() => {
         const g = map.grassland
         const d = `M ${g.cx - g.radius} ${g.cy} A ${g.radius} ${g.radius} 0 0 1 ${g.cx + g.radius} ${g.cy} Z`
@@ -108,7 +125,13 @@ export function BoardMap({ map }: { map: GeneratedMap }) {
               </pattern>
             </defs>
             {/* Faint base so the zone boundary still reads, then the tuft texture over it. */}
-            <path d={d} fill="var(--colors-green-50)" fillOpacity={0.5} stroke="var(--colors-green-300)" strokeWidth={0.25 * (map.unitsPerInch / 25.4)} />
+            <path
+              d={d}
+              fill="var(--colors-green-50)"
+              fillOpacity={0.5}
+              stroke="var(--colors-green-300)"
+              strokeWidth={0.25 * (map.unitsPerInch / 25.4)}
+            />
             <path d={d} fill="url(#grassland-tufts)" stroke="none" />
             <text
               x={g.cx}

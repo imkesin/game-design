@@ -4,8 +4,8 @@ import { dirname, resolve } from "node:path"
 import { fileURLToPath } from "node:url"
 import { chromium } from "playwright"
 import { createServer } from "vite"
-import { generateMap, type GeneratedMap, type LayoutError, UNITS_PER_INCH } from "./layout.ts"
-import { ALL_VARIANTS, type BoardVariant, buildSpec } from "./spec.ts"
+import { type GeneratedMap, generateMap, type LayoutError, UNITS_PER_INCH } from "./layout.ts"
+import { ALL_VARIANTS, buildSpec } from "./spec.ts"
 
 /**
  * The paint loop: `pnpm tp:map:paint [variant]`. Edit `domain.ts` or `spec.ts`,
@@ -26,7 +26,9 @@ const mapsOut = resolve(dir, "maps.json")
 const png = resolve(dir, "preview.png")
 const inch = (u: number) => (u / UNITS_PER_INCH).toFixed(2)
 
-const variant: BoardVariant = (process.argv[2] as BoardVariant | undefined) ?? "2p-split"
+// The route to screenshot. Usually a build variant (`2p-split`, `3p-split`, …);
+// also accepts `sheet1`, the composed two-up print that reads several variants.
+const route = process.argv[2] ?? "2p-split"
 
 const all: Record<string, GeneratedMap> = {}
 let failed = false
@@ -50,9 +52,12 @@ await server.listen()
 const url = server.resolvedUrls?.local[0]
 if (url === undefined) throw new Error("Vite did not report a local URL")
 
+// Wide enough that even the 24in composed sheet fits without overflowing the
+// viewport — an element wider than the viewport gets centered off-screen by the
+// flex wrapper and screenshots as black in the overflow.
 const browser = await chromium.launch()
-const page = await browser.newPage({ viewport: { width: 1400, height: 1080 }, deviceScaleFactor: 2 })
-await page.goto(`${url}tigers-path/print/board/${variant}`, { waitUntil: "networkidle" })
+const page = await browser.newPage({ viewport: { width: 2600, height: 1900 }, deviceScaleFactor: 2 })
+await page.goto(`${url}tigers-path/print/board/${route}`, { waitUntil: "networkidle" })
 await page.waitForTimeout(500)
 await page.locator(".sheet").screenshot({ path: png })
 await browser.close()
@@ -61,13 +66,17 @@ await server.close()
 // Restore the last good maps so a failed paint leaves maps.json untouched.
 if (backup !== null) writeFileSync(mapsOut, backup)
 
-const map = all[variant]!
-const { crossings, minNodeGap, minPathClear, minCubeSlack, minGrasslandClear, anchorScale, attempt } = map.stats
-console.log(`\n${failed ? "✗" : "✓"} ${variant}: ${map.clearings.length} clearings, ${map.paths.length} paths`)
-console.log(
-  `  crossings=${crossings}  minNodeGap=${inch(minNodeGap)}in  minPathClear=${inch(minPathClear)}in  `
-    + `minCubeSlack=${inch(minCubeSlack)}in  minGrassClear=${inch(minGrasslandClear)}in  `
-    + `anchorScale=${anchorScale}  attempt=${attempt}`
-)
+const map = all[route]
+if (map) {
+  const { crossings, minNodeGap, minPathClear, minCubeSlack, minGrasslandClear, anchorScale, attempt } = map.stats
+  console.log(`\n${failed ? "✗" : "✓"} ${route}: ${map.clearings.length} clearings, ${map.paths.length} paths`)
+  console.log(
+    `  crossings=${crossings}  minNodeGap=${inch(minNodeGap)}in  minPathClear=${inch(minPathClear)}in  `
+      + `minCubeSlack=${inch(minCubeSlack)}in  minGrassClear=${inch(minGrasslandClear)}in  `
+      + `anchorScale=${anchorScale}  attempt=${attempt}`
+  )
+} else {
+  console.log(`\n${failed ? "✗" : "✓"} ${route} (composed route — per-variant stats above)`)
+}
 console.log(`  preview → ${png}${failed ? "  (best effort — maps.json unchanged)" : ""}`)
 execFile("open", [png], () => {})

@@ -1,3 +1,4 @@
+import type { CSSProperties } from "react"
 import type { SlotShape } from "~/games/tigers-path/domain"
 import { css } from "~/generated/styled-system/css"
 
@@ -78,7 +79,8 @@ export function ClearingSlotIcon({
   shape,
   cost,
   size = 12,
-  color = "stone"
+  color = "stone",
+  style
 }: {
   shape: SlotShape
   /** The slot's animal cost. Omit to draw a bare level glyph (e.g. on the powers board). */
@@ -86,6 +88,8 @@ export function ClearingSlotIcon({
   /** Outer circle diameter, mm — the print floor is 12mm. */
   size?: number
   color?: string
+  /** Extra styles for the outer svg — e.g. a grid-column span when laid out in a slot grid. */
+  style?: CSSProperties
 }) {
   const r = size / 2
   const innerR = r - STROKE / 2
@@ -95,7 +99,7 @@ export function ClearingSlotIcon({
   const ink = `var(--colors-${color}-800)`
 
   return (
-    <svg className={svg} width={`${size}mm`} height={`${size}mm`} viewBox={`0 0 ${size} ${size}`}>
+    <svg className={svg} style={style} width={`${size}mm`} height={`${size}mm`} viewBox={`0 0 ${size} ${size}`}>
       <circle cx={r} cy={r} r={innerR} fill={ring} stroke={rim} strokeWidth={STROKE} />
       {shape === "circle" && (
         <ellipse cx={r} cy={r} rx={r * OVAL_RX_RATIO} ry={innerR} fill={face} stroke={ink} strokeWidth={STROKE} />

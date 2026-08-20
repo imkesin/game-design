@@ -267,7 +267,15 @@ type Grass = { c: Vec; excl: number }
 
 const idealLen = (a: Node, b: Node, cap: number) => cap * SPACING + a.r + b.r + 2 * END_MARGIN
 
-function relax(nodes: Node[], edges: Edge[], W: number, H: number, anchorK: number, nodeMargin: number, grass: Grass | null) {
+function relax(
+  nodes: Node[],
+  edges: Edge[],
+  W: number,
+  H: number,
+  anchorK: number,
+  nodeMargin: number,
+  grass: Grass | null
+) {
   const ITERS = 600
   const K_EDGE = 0.15, K_REP = 1.0, K_CLEAR = 0.9, MAX_STEP = inches(0.28)
 
