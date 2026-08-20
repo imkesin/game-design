@@ -16,8 +16,14 @@ import { type MapSpec, UNITS_PER_INCH } from "./layout.ts"
 const WIDTH = Math.round(10.5 * UNITS_PER_INCH)
 const HEIGHT = Math.round(8.0 * UNITS_PER_INCH)
 
-/** Clearing bounding-disc radius: enough for a name line plus a row of slot icons. */
-const radiusFor = (slots: number) => Math.round((0.4 + 0.12 * slots) * UNITS_PER_INCH)
+/**
+ * Clearing bounding-disc radius, in — enough for a name line plus the 15mm slot
+ * icons. A 2-slot disc must hold both icons side by side (a vertical stack would
+ * crowd out the name); 1- and 3-slot discs already have the room (a 3-slot wraps
+ * 2-over-1), so they stay as small as the graph's path lengths allow.
+ */
+const RADIUS_IN: Record<number, number> = { 1: 0.52, 2: 0.68, 3: 0.76 }
+const radiusFor = (slots: number) => Math.round(RADIUS_IN[slots] * UNITS_PER_INCH)
 
 /** Author-facing targets are 0..100 percentages per axis; the solver works in units. */
 const toUnits = (target: { x: number; y: number }) => ({

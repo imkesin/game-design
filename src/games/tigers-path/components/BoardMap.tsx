@@ -75,7 +75,7 @@ function ClearingLabel({ clearing }: { clearing: GenClearing }) {
         <span className={clearingName}>{clearing.name}</span>
         <div className={slotRow}>
           {clearing.slots.map((slot, i) => (
-            <ClearingSlotIcon key={i} shape={slot.shape as SlotShape} cost={slot.cost} size={14} color="green" />
+            <ClearingSlotIcon key={i} shape={slot.shape as SlotShape} cost={slot.cost} size={15} color="green" />
           ))}
         </div>
       </div>

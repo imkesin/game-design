@@ -42,10 +42,10 @@ const inches = (n: number) => n * UNITS_PER_INCH
 /** Cube space side. Physical squares get fingered constantly, so keep them roomy. */
 export const CUBE = Math.round(inches(0.4))
 /** Gap between adjacent cube spaces — the fixed pitch cubes are laid at. */
-const GAP = Math.round(inches(0.16))
+const GAP = Math.round(inches(0.12))
 const SPACING = CUBE + GAP
 /** Air between the first/last cube and the clearing rim, so cubes never kiss it. */
-const END_MARGIN = Math.round(inches(0.15))
+const END_MARGIN = Math.round(inches(0.1))
 /** Air between a path and the rim of a clearing it does not connect to. */
 const CLEAR_MARGIN = Math.round(inches(0.18))
 
