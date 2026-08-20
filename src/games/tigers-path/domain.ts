@@ -210,9 +210,9 @@ export const CLEARINGS: readonly Clearing[] = [
     name: "Old Banyan",
     target: { x: 43, y: 49 },
     slots: [
-      { level: 1, cost: 2 },
       { level: 2, cost: 2 },
-      { level: 3, cost: 2 }
+      { level: 3, cost: 2 },
+      { level: 4, cost: 2 }
     ]
   },
   {
@@ -220,8 +220,8 @@ export const CLEARINGS: readonly Clearing[] = [
     name: "Mangrove Edge",
     target: { x: 65, y: 60 },
     slots: [
-      { level: 1, cost: 3 },
       { level: 2, cost: 3 },
+      { level: 3, cost: 3 },
       { level: 4, cost: 3 }
     ]
   },

@@ -76,15 +76,15 @@
       "r": 63,
       "slots": [
         {
-          "shape": "circle",
-          "cost": 2
-        },
-        {
           "shape": "triangle",
           "cost": 2
         },
         {
           "shape": "square",
+          "cost": 2
+        },
+        {
+          "shape": "pentagon",
           "cost": 2
         }
       ]
@@ -97,11 +97,11 @@
       "r": 63,
       "slots": [
         {
-          "shape": "circle",
+          "shape": "triangle",
           "cost": 3
         },
         {
-          "shape": "triangle",
+          "shape": "square",
           "cost": 3
         },
         {

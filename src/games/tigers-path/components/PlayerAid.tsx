@@ -212,7 +212,7 @@ const ACTIONS: readonly { name: string; group: ActionGroup; points: readonly str
     name: "Contest a Path",
     group: "advance",
     points: [
-      "Target a full path of length N.",
+      "Target an undefended full path of length N.",
       "Use N+1 animals of a strictly higher-ranked type T to take over the path — the N losing animals and the +1 premium all go to the Jungle bag.",
       "Your N animals occupy the claimed path, and you advance T's track 1 step.",
       "Tigers are never contested; snakes never contest."
