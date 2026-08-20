@@ -183,10 +183,10 @@ type ActionGroup = "advance" | "gain"
 
 /** Each group's colour and glyph — shared by every card in the group so the two
  * families (advance a track / gain cubes) read at a glance, without a label. */
-const GROUPS: Record<ActionGroup, { color: string; Glyph: () => React.ReactElement }> = {
+const GROUPS = {
   advance: { color: "orange", Glyph: AdvanceGlyph },
   gain: { color: "green", Glyph: GainGlyph }
-}
+} as const
 
 const ACTIONS: readonly { name: string; group: ActionGroup; points: readonly string[] }[] = [
   {

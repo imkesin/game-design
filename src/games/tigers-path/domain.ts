@@ -178,7 +178,7 @@ export const CLEARINGS: readonly Clearing[] = [
     target: { x: 5, y: 30 },
     slots: [
       { level: 1, cost: 3 },
-      { level: 3, cost: 3 }
+      { level: 3, cost: 4 }
     ]
   },
   {
@@ -186,7 +186,7 @@ export const CLEARINGS: readonly Clearing[] = [
     name: "Bamboo Grove",
     target: { x: 54, y: 6 },
     slots: [
-      { level: 1, cost: 3 },
+      { level: 1, cost: 2 },
       { level: 2, cost: 3 }
     ]
   },
@@ -196,7 +196,7 @@ export const CLEARINGS: readonly Clearing[] = [
     target: { x: 70, y: 25 },
     slots: [
       { level: 1, cost: 3 },
-      { level: 2, cost: 3 }
+      { level: 2, cost: 4 }
     ]
   },
   {
@@ -212,7 +212,7 @@ export const CLEARINGS: readonly Clearing[] = [
     slots: [
       { level: 2, cost: 2 },
       { level: 3, cost: 2 },
-      { level: 4, cost: 2 }
+      { level: 4, cost: 3 }
     ]
   },
   {
@@ -222,7 +222,7 @@ export const CLEARINGS: readonly Clearing[] = [
     slots: [
       { level: 2, cost: 3 },
       { level: 3, cost: 3 },
-      { level: 4, cost: 3 }
+      { level: 4, cost: 4 }
     ]
   },
   {
@@ -230,7 +230,7 @@ export const CLEARINGS: readonly Clearing[] = [
     name: "Termite Hill",
     target: { x: 95, y: 45 },
     slots: [
-      { level: 1, cost: 3 },
+      { level: 1, cost: 2 },
       { level: 3, cost: 3 }
     ]
   },
@@ -240,7 +240,7 @@ export const CLEARINGS: readonly Clearing[] = [
     target: { x: 90, y: 90 },
     slots: [
       { level: 1, cost: 2 },
-      { level: 4, cost: 2 }
+      { level: 4, cost: 3 }
     ]
   },
   {
@@ -248,7 +248,7 @@ export const CLEARINGS: readonly Clearing[] = [
     name: "Kapok Crown",
     target: { x: 55, y: 85 },
     slots: [
-      { level: 1, cost: 3 },
+      { level: 1, cost: 2 },
       { level: 2, cost: 3 }
     ]
   },
@@ -257,7 +257,7 @@ export const CLEARINGS: readonly Clearing[] = [
     name: "Orchid Glade",
     target: { x: 10, y: 70 },
     slots: [
-      { level: 1, cost: 3 },
+      { level: 1, cost: 2 },
       { level: 3, cost: 3 }
     ]
   },
@@ -267,7 +267,7 @@ export const CLEARINGS: readonly Clearing[] = [
     target: { x: 30, y: 80 },
     slots: [
       { level: 1, cost: 3 },
-      { level: 2, cost: 3 }
+      { level: 2, cost: 4 }
     ]
   },
   {

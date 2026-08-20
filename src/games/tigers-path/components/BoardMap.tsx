@@ -1,7 +1,6 @@
 import { ClearingSlotIcon } from "~/games/tigers-path/components/ClearingSlotIcon"
 import type { SlotShape } from "~/games/tigers-path/domain"
 import type { GenClearing, GeneratedMap } from "~/games/tigers-path/map/layout"
-import mapData from "~/games/tigers-path/map/map.json"
 import { css } from "~/generated/styled-system/css"
 
 /**
@@ -20,11 +19,6 @@ import { css } from "~/generated/styled-system/css"
  * cube spaces over them, then the clearing discs last so a disc always covers
  * the trail ends and any cube corner that reaches its rim.
  */
-
-const map = mapData as GeneratedMap
-
-/** Road width — skinny relative to the cube spaces, so it reads as ground peeking out. */
-const TRAIL_W = 0.16 * map.unitsPerInch
 
 const svg = css({
   display: "block",
@@ -83,9 +77,11 @@ function ClearingLabel({ clearing }: { clearing: GenClearing }) {
   )
 }
 
-export function BoardMap() {
+export function BoardMap({ map }: { map: GeneratedMap }) {
   const widthIn = map.width / map.unitsPerInch
   const heightIn = map.height / map.unitsPerInch
+  // Road width — skinny relative to the cube spaces, so it reads as ground peeking out.
+  const TRAIL_W = 0.16 * map.unitsPerInch
 
   return (
     <svg
@@ -95,6 +91,40 @@ export function BoardMap() {
       height={`${heightIn}in`}
       preserveAspectRatio="xMidYMid meet"
     >
+      {/* Grassland: an open field clipping the bottom edge. Drawn first, under
+          everything; the layout keeps all paths and clearings out of its moat,
+          and it carries no printed cube spaces or disc rings — the emptiness is
+          what tells it apart from a path or a clearing. */}
+      {map.grassland && (() => {
+        const g = map.grassland
+        const d = `M ${g.cx - g.radius} ${g.cy} A ${g.radius} ${g.radius} 0 0 1 ${g.cx + g.radius} ${g.cy} Z`
+        return (
+          <g>
+            <defs>
+              {/* Sparse dots — the zone reads as textured ground, not a filled shape. */}
+              <pattern id="grassland-tufts" width={22} height={22} patternUnits="userSpaceOnUse">
+                <circle cx={5} cy={6} r={1.2} fill="var(--colors-green-300)" />
+                <circle cx={16} cy={15} r={1.2} fill="var(--colors-green-300)" />
+              </pattern>
+            </defs>
+            {/* Faint base so the zone boundary still reads, then the tuft texture over it. */}
+            <path d={d} fill="var(--colors-green-50)" fillOpacity={0.5} stroke="var(--colors-green-300)" strokeWidth={0.25 * (map.unitsPerInch / 25.4)} />
+            <path d={d} fill="url(#grassland-tufts)" stroke="none" />
+            <text
+              x={g.cx}
+              y={g.cy - g.radius * 0.42}
+              textAnchor="middle"
+              fontSize={0.13 * map.unitsPerInch}
+              fontWeight={600}
+              letterSpacing={0.04 * map.unitsPerInch}
+              fill="var(--colors-green-500)"
+            >
+              GRASSLAND
+            </text>
+          </g>
+        )
+      })()}
+
       {/* Trails: the skinny road under everything. */}
       {map.paths.map((path) => (
         <path

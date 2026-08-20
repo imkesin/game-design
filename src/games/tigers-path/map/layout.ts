@@ -48,6 +48,8 @@ const SPACING = CUBE + GAP
 const END_MARGIN = Math.round(inches(0.1))
 /** Air between a path and the rim of a clearing it does not connect to. */
 const CLEAR_MARGIN = Math.round(inches(0.18))
+/** The Grassland zone's moat: clear air between its rim and any clearing or path. */
+const GRASS_MOAT = Math.round(inches(0.9))
 
 /**
  * Minimum rim-to-rim gap between two clearings, derived per graph as the
@@ -209,11 +211,20 @@ export type EdgeSpec = {
   cap: number
 }
 
+/**
+ * The Grassland zone — a semicircle clipping the bottom edge. Modeled to the
+ * solver as a fixed disc centered at `(cx, cy)` (cy on the bottom edge) of
+ * radius `radius`; every clearing and path must clear it by the moat. `radius`
+ * is the visible field; the moat is added internally.
+ */
+export type GrasslandSpec = { cx: number; cy: number; radius: number }
+
 export type MapSpec = {
   width: number
   height: number
   nodes: readonly NodeSpec[]
   edges: readonly EdgeSpec[]
+  grassland?: GrasslandSpec
 }
 
 export type GenClearing = {
@@ -234,12 +245,14 @@ export type GeneratedMap = {
   cubeSize: number
   clearings: GenClearing[]
   paths: GenPath[]
+  grassland: GrasslandSpec | null
   /** Diagnostics, so a bad build is legible without re-running the solver. */
   stats: {
     crossings: number
     minNodeGap: number
     minPathClear: number
     minCubeSlack: number
+    minGrasslandClear: number
     anchorScale: number
     attempt: number
   }
@@ -249,10 +262,12 @@ export type GeneratedMap = {
 
 type Node = { r: number; target: Vec; pos: Vec }
 type Edge = { a: number; b: number; cap: number }
+/** The Grassland resolved for the solver: its center and full exclusion radius (field + moat). */
+type Grass = { c: Vec; excl: number }
 
 const idealLen = (a: Node, b: Node, cap: number) => cap * SPACING + a.r + b.r + 2 * END_MARGIN
 
-function relax(nodes: Node[], edges: Edge[], W: number, H: number, anchorK: number, nodeMargin: number) {
+function relax(nodes: Node[], edges: Edge[], W: number, H: number, anchorK: number, nodeMargin: number, grass: Grass | null) {
   const ITERS = 600
   const K_EDGE = 0.15, K_REP = 1.0, K_CLEAR = 0.9, MAX_STEP = inches(0.28)
 
@@ -290,6 +305,16 @@ function relax(nodes: Node[], edges: Edge[], W: number, H: number, anchorK: numb
       }
     }
 
+    // Grassland repulsion: push any clearing out of the zone (plus its moat).
+    if (grass) {
+      for (let i = 0; i < nodes.length; i++) {
+        const p = nodes[i]!
+        const need = p.r + grass.excl
+        const d = dist(p.pos, grass.c) || 1
+        if (d < need) F[i] = add(F[i]!, scale(norm(sub(p.pos, grass.c)), K_REP * (need - d)))
+      }
+    }
+
     // Node-edge clearance: push a bystander clearing off any grazing path.
     for (let ni = 0; ni < nodes.length; ni++) {
       for (const e of edges) {
@@ -323,7 +348,7 @@ function relax(nodes: Node[], edges: Edge[], W: number, H: number, anchorK: numb
 }
 
 /** Hard pass: push apart any still-overlapping clearings until all are clear. */
-function projectNoOverlap(nodes: Node[], W: number, H: number, nodeMargin: number) {
+function projectNoOverlap(nodes: Node[], W: number, H: number, nodeMargin: number, grass: Grass | null) {
   const clamp = (n: Node) => {
     n.pos.x = Math.max(n.r + 4, Math.min(W - n.r - 4, n.pos.x))
     n.pos.y = Math.max(n.r + 4, Math.min(H - n.r - 4, n.pos.y))
@@ -341,6 +366,18 @@ function projectNoOverlap(nodes: Node[], W: number, H: number, nodeMargin: numbe
           b.pos = sub(b.pos, shift)
           clamp(a)
           clamp(b)
+          moved = true
+        }
+      }
+    }
+    if (grass) {
+      for (let i = 0; i < nodes.length; i++) {
+        const p = nodes[i]!
+        const need = p.r + grass.excl
+        const d = dist(p.pos, grass.c) || 1
+        if (d < need - 0.5) {
+          p.pos = add(p.pos, scale(norm(sub(p.pos, grass.c)), need - d))
+          clamp(p)
           moved = true
         }
       }
@@ -364,13 +401,14 @@ type Report = {
   minNodeGap: number
   minPathClear: number
   minCubeSlack: number
+  minGrasslandClear: number
   crossPairs: [number, number][]
   closePair: { a: number; b: number; gap: number } | null
   shortPaths: { edge: number; slack: number }[]
   grazePair: { node: number; edge: number; clear: number } | null
 }
 
-function verify(nodes: Node[], edges: Edge[], curves: Quad[]): Report {
+function verify(nodes: Node[], edges: Edge[], curves: Quad[], grass: Grass | null): Report {
   const polys = curves.map((q) => polyline(q))
 
   const crossPairs: [number, number][] = []
@@ -433,11 +471,20 @@ function verify(nodes: Node[], edges: Edge[], curves: Quad[]): Report {
     if (slack < 0) shortPaths.push({ edge: ei, slack })
   }
 
+  // Grassland clearance: every clearing rim and every path must sit outside the
+  // zone's exclusion disc (field + moat). Infinity when there is no Grassland.
+  let minGrasslandClear = Infinity
+  if (grass) {
+    for (const n of nodes) minGrasslandClear = Math.min(minGrasslandClear, dist(n.pos, grass.c) - n.r - grass.excl)
+    for (const P of polys) minGrasslandClear = Math.min(minGrasslandClear, pointPolyDist(grass.c, P) - grass.excl)
+  }
+
   return {
     crossings: crossPairs.length,
     minNodeGap,
     minPathClear,
     minCubeSlack,
+    minGrasslandClear,
     crossPairs,
     closePair,
     shortPaths,
@@ -528,11 +575,13 @@ function assemble(
       d: qToPath(curves[i]!),
       cubes: cubesFor(curves[i]!, nodes[edges[i]!.a]!, nodes[edges[i]!.b]!, e.cap)
     })),
+    grassland: spec.grassland ?? null,
     stats: {
       crossings: report.crossings,
       minNodeGap: report.minNodeGap,
       minPathClear: report.minPathClear,
       minCubeSlack: report.minCubeSlack,
+      minGrasslandClear: report.minGrasslandClear,
       anchorScale,
       attempt
     }
@@ -564,6 +613,12 @@ function describeViolations(spec: MapSpec, report: Report, nodeMargin: number): 
   for (const { edge, slack } of [...report.shortPaths].sort((x, y) => x.slack - y.slack)) {
     out.push(`path "${edgeId(edge)}" is ${inch2(-slack)}in too short for its cubes — spread its ends or shorten it`)
   }
+  if (report.minGrasslandClear < 0) {
+    out.push(
+      `the Grassland zone is ${inch2(-report.minGrasslandClear)}in into a clearing or path's moat `
+        + `— pull clearings/paths off the bottom-centre or shrink the zone`
+    )
+  }
   return out
 }
 
@@ -592,7 +647,7 @@ const BEND_SWEEPS = 2
  * preferred bend, so isolated paths look hand-drawn and crowded ones flex away.
  * Deterministic: the only randomness is a seeded per-path default side.
  */
-function chooseCurves(nodes: Node[], edges: Edge[], seed: number): Quad[] {
+function chooseCurves(nodes: Node[], edges: Edge[], seed: number, grass: Grass | null): Quad[] {
   const share = (i: number, j: number) => {
     const e = edges[i]!, f = edges[j]!
     return e.a === f.a || e.a === f.b || e.b === f.a || e.b === f.b
@@ -611,6 +666,7 @@ function chooseCurves(nodes: Node[], edges: Edge[], seed: number): Quad[] {
       if (j === i || share(i, j)) continue
       clear = Math.min(clear, polyMinDist(poly, polys[j]!))
     }
+    if (grass) clear = Math.min(clear, pointPolyDist(grass.c, poly) - grass.excl)
     return clear
   }
 
@@ -653,12 +709,15 @@ export function generateMap(spec: MapSpec): GeneratedMap {
   }
   const edges: Edge[] = spec.edges.map((e) => ({ a: index.get(e.a)!, b: index.get(e.b)!, cap: e.cap }))
   const nodeMargin = nodeMarginFor(spec.nodes)
+  const grass: Grass | null = spec.grassland
+    ? { c: { x: spec.grassland.cx, y: spec.grassland.cy }, excl: spec.grassland.radius + GRASS_MOAT }
+    : null
 
   // How far a candidate is from valid — crossings dominate, then each violated
   // margin adds its overshoot. Used only to pick the best-effort map to show.
   const badness = (r: Report) =>
     r.crossings * 1e6 + Math.max(0, nodeMargin - r.minNodeGap) + Math.max(0, -r.minPathClear)
-    + Math.max(0, -r.minCubeSlack)
+    + Math.max(0, -r.minCubeSlack) + Math.max(0, -r.minGrasslandClear)
 
   let best: { score: number; map: GeneratedMap; violations: string[] } | null = null
 
@@ -674,11 +733,11 @@ export function generateMap(spec: MapSpec): GeneratedMap {
         }
       }))
 
-      relax(nodes, edges, spec.width, spec.height, ANCHOR_BASE * s, nodeMargin)
-      projectNoOverlap(nodes, spec.width, spec.height, nodeMargin)
+      relax(nodes, edges, spec.width, spec.height, ANCHOR_BASE * s, nodeMargin, grass)
+      projectNoOverlap(nodes, spec.width, spec.height, nodeMargin, grass)
 
-      const curves = chooseCurves(nodes, edges, 7 + di * 100 + attempt)
-      const report = verify(nodes, edges, curves)
+      const curves = chooseCurves(nodes, edges, 7 + di * 100 + attempt, grass)
+      const report = verify(nodes, edges, curves, grass)
       const violations = describeViolations(spec, report, nodeMargin)
       const map = assemble(spec, edges, nodes, curves, report, s, attempt)
 
