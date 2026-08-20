@@ -17,7 +17,7 @@ import { css } from "~/generated/styled-system/css"
  */
 
 const BOARD_W = 10.9
-const BOARD_H = 5.48
+const BOARD_H = 6.98
 const SCALE = 0.7
 
 const printCss = `

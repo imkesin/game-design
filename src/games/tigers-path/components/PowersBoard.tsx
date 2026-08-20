@@ -29,7 +29,7 @@ import { artTint, panelTint, paperShade, softBand } from "~/shared/components/pa
 
 const LABEL_W = 2.1
 const CELL_W = 1.1
-const ROW_H = 1.0
+const ROW_H = 1.3
 
 const board = css({
   display: "grid",

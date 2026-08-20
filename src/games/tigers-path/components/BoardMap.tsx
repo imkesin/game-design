@@ -39,7 +39,7 @@ const labelBody = css({
   flexDirection: "column",
   alignItems: "center",
   justifyContent: "center",
-  rowGap: "0.04in",
+  rowGap: "0.02in",
   pointerEvents: "none"
 })
 
@@ -63,7 +63,7 @@ const slotRow = css({
 
 function ClearingLabel({ clearing }: { clearing: GenClearing }) {
   // Inset the label box inside the disc so nothing rides the rim.
-  const box = (clearing.r - 8) * 2
+  const box = (clearing.r - 6) * 2
   return (
     <foreignObject
       x={clearing.x - box / 2}
@@ -75,7 +75,7 @@ function ClearingLabel({ clearing }: { clearing: GenClearing }) {
         <span className={clearingName}>{clearing.name}</span>
         <div className={slotRow}>
           {clearing.slots.map((slot, i) => (
-            <ClearingSlotIcon key={i} shape={slot.shape as SlotShape} cost={slot.cost} size={10} color="green" />
+            <ClearingSlotIcon key={i} shape={slot.shape as SlotShape} cost={slot.cost} size={14} color="green" />
           ))}
         </div>
       </div>

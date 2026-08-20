@@ -17,7 +17,7 @@ const WIDTH = Math.round(10.5 * UNITS_PER_INCH)
 const HEIGHT = Math.round(8.0 * UNITS_PER_INCH)
 
 /** Clearing bounding-disc radius: enough for a name line plus a row of slot icons. */
-const radiusFor = (slots: number) => Math.round((0.36 + 0.1 * slots) * UNITS_PER_INCH)
+const radiusFor = (slots: number) => Math.round((0.4 + 0.12 * slots) * UNITS_PER_INCH)
 
 /** Author-facing targets are 0..100 percentages per axis; the solver works in units. */
 const toUnits = (target: { x: number; y: number }) => ({
