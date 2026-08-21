@@ -134,6 +134,11 @@ clearing can offer — filled by paying **2 animals of type X**.
   slot is blocked for the rest of the game. Watch whether this makes cheap Circle slots an early
   rush (grab low-friction blocking before anyone else can afford it) and whether Square/Pentagon
   slots ever get filled before the game naturally ends, given Boar has to be leveled to reach them.
+- **Network clustering incentive:** score is a single animal's **disc count** within one component
+  of same-color paths — so discs pay off only when linked into an existing color network, not
+  scattered. Watch whether this over-rewards turtling in one region (build where you already control)
+  versus contesting to splice a rival's paths into your own color, and whether Elephant (the
+  multiplier) or Network size ends up the dominant lever.
 - **Jungle bag as shared economy:** action (D) gifts every non-kept-type animal to the Grasslands
   zone (0 on a lucky all-one-type draw, more on a mixed one); contesting gifts the full N contested
   animals **plus** the +1 premium to the Jungle bag. Aggression leaks much harder than drawing does

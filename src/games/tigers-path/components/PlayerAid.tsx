@@ -246,10 +246,10 @@ const SCORING: readonly React.ReactNode[] = [
     sanctuary).
   </>,
   <>
-    <strong>Network:</strong> An animal's connected clearings.
+    <strong>Network:</strong> Your animal's discs linked through paths of its color.
   </>,
   <>
-    <strong>Score</strong> = Network size × Elephant number.
+    <strong>Score</strong> = Network size (discs) × Elephant number.
   </>
 ]
 
