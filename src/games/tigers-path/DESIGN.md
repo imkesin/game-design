@@ -4,6 +4,21 @@ Working title. Path-and-clearing network game heavily inspired by **Hansa Teuton
 central twist: **board pieces are not player-owned**. All players interact with a shared pool of
 five animal types.
 
+## Theme
+
+Each player is a small **band of forest-dwellers** who live alongside the animals rather than owning
+them. That's why board pieces aren't player-owned: a band never possesses a creature, it only
+**temporarily aligns** with one animal type when it claims a path or settles a clearing. The board
+records the animals' presence, never which band placed it.
+
+This makes **contesting** a reassignment, not a theft — a stronger animal takes over a trail as the
+jungle's order allows, and no band loses anything it owned. A band's lasting stake is its **engine
+tracks**: how deeply it has come to know each animal.
+
+At game end, each band **aligns with a single animal type** (its highest track) and is judged by that
+animal's network across the jungle — however that network was built, and by whoever. Every band helps
+grow every animal's presence; each is scored on just one.
+
 ## The Animals
 
 | Animal   | Color  | Rank | In Jungle bag |

@@ -15,8 +15,8 @@ import { type MapSpec, UNITS_PER_INCH } from "./layout.ts"
  */
 
 /**
- * Board variants. The 2P graph renders PORTRAIT either way (the authored targets
- * were composed landscape, so `rotate` turns them 90° into portrait bounds):
+ * Board variants. Every graph is authored PORTRAIT-native — its targets are in
+ * the same frame as the render box, so no rotation is applied:
  *
  *  - `2p-split`: the East (right) half of the 18×24 split sheet — ~11.5×17in,
  *    bigger than the old letter board so 2P spreads out, with the shared
@@ -40,7 +40,7 @@ const VARIANTS: Record<BoardVariant, VariantConfig> = {
 export const ALL_VARIANTS = Object.keys(VARIANTS) as BoardVariant[]
 
 /** Grassland zone radius on the split sheet — a semicircle on the bottom edge. */
-const GRASS_RADIUS = Math.round(3.25 * UNITS_PER_INCH)
+const GRASS_RADIUS = Math.round(2.9 * UNITS_PER_INCH)
 
 /**
  * Clearing bounding-disc radius, in — enough for a name line plus the 15mm slot
@@ -51,12 +51,6 @@ const GRASS_RADIUS = Math.round(3.25 * UNITS_PER_INCH)
  */
 const RADIUS_IN: Record<number, number> = { 1: 0.52, 2: 0.68, 3: 0.768, 4: 0.9 }
 const radiusFor = (slots: number) => Math.round(RADIUS_IN[slots]! * UNITS_PER_INCH)
-
-/**
- * Rotate an author target 90° clockwise (landscape → portrait): the board's long
- * horizontal axis becomes vertical. Both axes stay 0..100 percentages.
- */
-const rotate = (t: { x: number; y: number }) => ({ x: 100 - t.y, y: t.x })
 
 export function buildSpec(variant: BoardVariant = "2p-split"): MapSpec {
   const cfg = VARIANTS[variant]
@@ -77,10 +71,10 @@ export function buildSpec(variant: BoardVariant = "2p-split"): MapSpec {
       id: c.id,
       name: c.name,
       r: radiusFor(c.slots.length),
-      target: toUnits(rotate(c.target)),
+      target: toUnits(c.target),
       slots: c.slots.map((s) => ({ shape: shapeForLevel(s.level), cost: s.cost }))
     })),
-    edges: cfg.graph.paths.map((p) => ({ id: p.id, a: p.from, b: p.to, cap: p.length })),
+    edges: cfg.graph.paths.map((p) => ({ id: p.id, a: p.from, b: p.to, cap: p.length, bend: p.bend })),
     ...(cfg.grass ? { grassland: { cx: Math.round(WIDTH / 2), cy: HEIGHT, radius: GRASS_RADIUS } } : {})
   }
 }

@@ -1,3 +1,5 @@
+import type { BendDirection, BendHint, BendStrength } from "../boards/types.ts"
+
 /**
  * Tiger's Path map layout — the organic-board generator.
  *
@@ -209,6 +211,8 @@ export type EdgeSpec = {
   b: string
   /** Cube capacity = number of spaces on the path. */
   cap: number
+  /** Optional curve-direction hint (soft bias); see `BendHint` in `boards/types.ts`. */
+  bend?: BendHint
 }
 
 /**
@@ -261,7 +265,9 @@ export type GeneratedMap = {
 // ----- solver -----------------------------------------------------------------
 
 type Node = { r: number; target: Vec; pos: Vec }
-type Edge = { a: number; b: number; cap: number }
+/** A resolved bend hint: the unit world direction to bow toward, and the target magnitude. */
+type BendResolved = { dir: Vec; mag: number }
+type Edge = { a: number; b: number; cap: number; bend?: BendResolved }
 /** The Grassland resolved for the solver: its center and full exclusion radius (field + moat). */
 type Grass = { c: Vec; excl: number }
 
@@ -641,6 +647,30 @@ export type LayoutError = Error & { diagnostic: { map: GeneratedMap; violations:
 const BEND_MAGS = [0, 0.07, 0.12, 0.16, 0.2]
 /** The bend an unconstrained path settles on — organic, not ruled, not wild. */
 const PREFERRED_BEND = 0.12
+/** Named bend-hint strengths → magnitude as a fraction of chord length. */
+const STRENGTH_MAG: Record<BendStrength, number> = { slight: 0.07, medium: 0.12, strong: 0.2 }
+/** Compass → unit world vector. Portrait-native: y grows downward, so north is −y. */
+const DIR_VEC: Record<BendDirection, Vec> = {
+  north: { x: 0, y: -1 },
+  south: { x: 0, y: 1 },
+  east: { x: 1, y: 0 },
+  west: { x: -1, y: 0 }
+}
+/**
+ * Weight of a bend hint in curve scoring. Small — it decides among options that
+ * are all comfortably clear (where the clearance term ties at its cap), but is
+ * negligible against a real clearance difference, so a crowded path still yields
+ * to spacing. This is what makes the hint a *soft* bias, never an override.
+ */
+const HINT_BIAS = 2
+
+/** Resolve an authored hint to a world direction + target magnitude (default medium). */
+function resolveBend(b: BendHint | undefined): BendResolved | undefined {
+  if (!b) return undefined
+  const dir = typeof b === "string" ? b : b.dir
+  const strength = typeof b === "string" ? "medium" : b.strength ?? "medium"
+  return { dir: DIR_VEC[dir], mag: STRENGTH_MAG[strength] }
+}
 /** Clearance past which a path is "comfortably clear"; extra room stops scoring,
  * so aesthetics (the preferred bend) decide among roomy candidates. */
 const CLEAR_CAP = inches(0.35)
@@ -661,7 +691,21 @@ function chooseCurves(nodes: Node[], edges: Edge[], seed: number, grass: Grass |
     return e.a === f.a || e.a === f.b || e.b === f.a || e.b === f.b
   }
   const prefSign = edges.map((_, i) => (rng(seed + i)() < 0.5 ? -1 : 1))
-  const curves = edges.map((e, i) => bentCurve(nodes[e.a]!.pos, nodes[e.b]!.pos, prefSign[i]!, PREFERRED_BEND))
+  // Unit perpendicular of each chord; a bend hint bows along ±this.
+  const perp = edges.map((e) => {
+    const d = norm(sub(nodes[e.b]!.pos, nodes[e.a]!.pos))
+    return { x: -d.y, y: d.x }
+  })
+  /** Signed alignment of the `sign`-side bulge with a hint's direction, in [-1, 1]. */
+  const sideAlign = (i: number, sign: number, dir: Vec) => sign * (perp[i]!.x * dir.x + perp[i]!.y * dir.y)
+  // Seed hinted paths at their requested side + strength so neighbours route around it.
+  const curves = edges.map((e, i) => {
+    if (e.bend) {
+      const sign = sideAlign(i, 1, e.bend.dir) >= 0 ? 1 : -1
+      return bentCurve(nodes[e.a]!.pos, nodes[e.b]!.pos, sign, e.bend.mag)
+    }
+    return bentCurve(nodes[e.a]!.pos, nodes[e.b]!.pos, prefSign[i]!, PREFERRED_BEND)
+  })
   const polys = curves.map((q) => polyline(q))
 
   const clearanceOf = (i: number, poly: Vec[]) => {
@@ -694,8 +738,12 @@ function chooseCurves(nodes: Node[], edges: Edge[], seed: number, grass: Grass |
           if (crosses) continue
           if (cubeSpan(q, a, b).span - cubeFootprint(edges[i]!.cap) < 0) continue
           const capped = Math.min(clearanceOf(i, poly), CLEAR_CAP)
-          // Aesthetic tie-break within the cap: hug the preferred bend & side.
-          const aesthetic = -Math.abs(mag - PREFERRED_BEND) - (sign === prefSign[i]! ? 0 : 0.02)
+          // Tie-break within the cap. A hinted path leans toward its requested side
+          // and strength; an unconstrained one hugs the preferred organic bend.
+          const bend = edges[i]!.bend
+          const aesthetic = bend
+            ? HINT_BIAS * (sideAlign(i, sign, bend.dir) - 0.5 * (Math.abs(mag - bend.mag) / 0.2))
+            : -Math.abs(mag - PREFERRED_BEND) - (sign === prefSign[i]! ? 0 : 0.02)
           const score = capped * 1000 + aesthetic
           if (score > bestScore) {
             bestScore = score
@@ -715,7 +763,12 @@ export function generateMap(spec: MapSpec): GeneratedMap {
   for (const e of spec.edges) {
     if (!index.has(e.a) || !index.has(e.b)) throw new Error(`Edge ${e.id} references unknown clearing`)
   }
-  const edges: Edge[] = spec.edges.map((e) => ({ a: index.get(e.a)!, b: index.get(e.b)!, cap: e.cap }))
+  const edges: Edge[] = spec.edges.map((e) => ({
+    a: index.get(e.a)!,
+    b: index.get(e.b)!,
+    cap: e.cap,
+    bend: resolveBend(e.bend)
+  }))
   const nodeMargin = nodeMarginFor(spec.nodes)
   const grass: Grass | null = spec.grassland
     ? { c: { x: spec.grassland.cx, y: spec.grassland.cy }, excl: spec.grassland.radius + GRASS_MOAT }

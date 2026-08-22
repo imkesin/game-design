@@ -16,7 +16,7 @@ export const BOARD_2P: BoardGraph = {
     {
       id: "riverbend",
       name: "Riverbend",
-      target: { x: 5, y: 30 },
+      target: { x: 70, y: 5 },
       slots: [
         { level: 1, cost: 3 },
         { level: 3, cost: 4 }
@@ -25,7 +25,7 @@ export const BOARD_2P: BoardGraph = {
     {
       id: "bamboo-grove",
       name: "Bamboo Grove",
-      target: { x: 54, y: 6 },
+      target: { x: 94, y: 54 },
       slots: [
         { level: 1, cost: 2 },
         { level: 2, cost: 3 }
@@ -34,7 +34,7 @@ export const BOARD_2P: BoardGraph = {
     {
       id: "salt-lick",
       name: "Salt Lick",
-      target: { x: 70, y: 25 },
+      target: { x: 75, y: 70 },
       slots: [
         { level: 1, cost: 3 },
         { level: 2, cost: 4 }
@@ -43,13 +43,13 @@ export const BOARD_2P: BoardGraph = {
     {
       id: "misty-hollow",
       name: "Misty Hollow",
-      target: { x: 90, y: 5 },
+      target: { x: 95, y: 90 },
       slots: [{ level: 2, cost: 3 }]
     },
     {
       id: "old-banyan",
       name: "Old Banyan",
-      target: { x: 43, y: 49 },
+      target: { x: 51, y: 43 },
       slots: [
         { level: 2, cost: 2 },
         { level: 3, cost: 2 },
@@ -59,7 +59,7 @@ export const BOARD_2P: BoardGraph = {
     {
       id: "mangrove-edge",
       name: "Mangrove Edge",
-      target: { x: 65, y: 60 },
+      target: { x: 40, y: 65 },
       slots: [
         { level: 2, cost: 3 },
         { level: 3, cost: 3 },
@@ -69,7 +69,7 @@ export const BOARD_2P: BoardGraph = {
     {
       id: "termite-hill",
       name: "Termite Hill",
-      target: { x: 95, y: 45 },
+      target: { x: 55, y: 95 },
       slots: [
         { level: 1, cost: 2 },
         { level: 3, cost: 3 }
@@ -78,7 +78,7 @@ export const BOARD_2P: BoardGraph = {
     {
       id: "sunning-rocks",
       name: "Sunning Rocks",
-      target: { x: 90, y: 90 },
+      target: { x: 10, y: 90 },
       slots: [
         { level: 1, cost: 2 },
         { level: 4, cost: 3 }
@@ -87,7 +87,7 @@ export const BOARD_2P: BoardGraph = {
     {
       id: "kapok-crown",
       name: "Kapok Crown",
-      target: { x: 55, y: 85 },
+      target: { x: 15, y: 55 },
       slots: [
         { level: 1, cost: 2 },
         { level: 2, cost: 3 }
@@ -96,7 +96,7 @@ export const BOARD_2P: BoardGraph = {
     {
       id: "orchid-glade",
       name: "Orchid Glade",
-      target: { x: 10, y: 70 },
+      target: { x: 30, y: 10 },
       slots: [
         { level: 1, cost: 2 },
         { level: 3, cost: 3 }
@@ -105,7 +105,7 @@ export const BOARD_2P: BoardGraph = {
     {
       id: "lotus-pool",
       name: "Lotus Pool",
-      target: { x: 30, y: 80 },
+      target: { x: 20, y: 30 },
       slots: [
         { level: 1, cost: 3 },
         { level: 2, cost: 4 }
@@ -114,19 +114,19 @@ export const BOARD_2P: BoardGraph = {
     {
       id: "hidden-spring",
       name: "Hidden Spring",
-      target: { x: 0, y: 100 },
+      target: { x: 0, y: 0 },
       slots: [{ level: 2, cost: 3 }]
     },
     {
       id: "heron-reach",
       name: "Heron Reach",
-      target: { x: 0, y: 0 },
+      target: { x: 100, y: 0 },
       slots: [{ level: 2, cost: 3 }]
     },
     {
       id: "palm-shade",
       name: "Palm Shade",
-      target: { x: 48, y: 75 },
+      target: { x: 25, y: 48 },
       slots: [{ level: 2, cost: 3 }]
     }
   ],

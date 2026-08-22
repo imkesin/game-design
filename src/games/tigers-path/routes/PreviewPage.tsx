@@ -58,6 +58,9 @@ export function PreviewPage() {
       <span className={section}>Boards</span>
       <a className={link} href="/tigers-path/print/board/sheet1">Sheet 1 — 3P (West) + 2P (East), 24×18 shared →</a>
       <a className={link} href="/tigers-path/print/board/2p-solo">2P — solo, letter portrait (Grassland off-board) →</a>
+      <a className={link} href="/tigers-path/print/board/3p-template">
+        3P — blank template, letter portrait (hand-draw grid) →
+      </a>
 
       <span className={section}>Furniture</span>
       <a className={link} href="/tigers-path/print/powers">Powers board — letter landscape →</a>

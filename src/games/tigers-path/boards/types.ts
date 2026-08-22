@@ -26,7 +26,8 @@ export type Clearing = {
    * top-right corner. Because the board isn't square, equal x/y steps aren't
    * equal physical distances — think "percent across, percent down".
    *
-   * Authored LANDSCAPE; `spec.ts` rotates 90° CW into the portrait render box.
+   * Authored PORTRAIT-native — same frame as the render box (x across the narrow
+   * width, y down the tall height), no rotation applied.
    * The generator (`../map/layout.ts`) treats it as an anchor, not a fixed
    * position — the final coordinate is solved for spacing and zero crossings.
    * Nudge these to steer regions, not geometry.
@@ -35,12 +36,29 @@ export type Clearing = {
   slots: readonly ClearingSlotSpec[]
 }
 
+/** Compass a path's curve should bow toward. Portrait-native: north = up (−y), east = right (+x). */
+export type BendDirection = "north" | "south" | "east" | "west"
+/** How far the bow reaches, as a preset fraction of chord length (~0.07 / 0.12 / 0.20). */
+export type BendStrength = "slight" | "medium" | "strong"
+/**
+ * Optional per-path curve hint. A *soft bias*: among the curve options that stay
+ * clear of other paths and clearings, the path prefers to bow toward `dir` at
+ * `strength` (default `"medium"`). On a crowded path the solver still yields to
+ * clearance, and the build never fails for a hint. The bow is perpendicular to
+ * the chord, so a hint pointing along the path's own run is ignored.
+ *
+ * Shorthand: `bend: "east"` == `bend: { dir: "east", strength: "medium" }`.
+ */
+export type BendHint = BendDirection | { dir: BendDirection; strength?: BendStrength }
+
 export type Path = {
   id: string
   from: string
   to: string
   /** Cube spaces on the path = its capacity. Claiming requires all of them, one type. */
-  length: 2 | 3 | 4
+  length: 2 | 3 | 4 | 5
+  /** Optional curve-direction hint (soft bias); see `BendHint`. */
+  bend?: BendHint
 }
 
 export type BoardGraph = {
