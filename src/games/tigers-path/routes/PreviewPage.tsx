@@ -49,7 +49,7 @@ export function PreviewPage() {
     <div className={page}>
       <span className={title}>Tiger's Path</span>
       <span className={meta}>
-        v0 playtest kit — no scoring yet. {cubes} cubes across 5 animals.
+        v0 playtest kit. {cubes} cubes across 5 animals.
         <br />
         2P: {two.clearings} clearings, {two.paths} paths + {two.slots} slots = {two.total} actions. 3P:{" "}
         {three.clearings} clearings, {three.paths} paths + {three.slots} slots = {three.total} actions.

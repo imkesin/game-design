@@ -128,6 +128,25 @@ clearing can offer — filled by paying **2 animals of type X**.
   that's good for you and bad for an opponent).
 - Scoring is settled — see the **Player Aid**.
 
+### End-game animal draft
+
+Each scoring player locks one animal to be judged on. The player who **ends the game** locks their
+top track's animal first; every other player is then resolved by track position. When two non-ending
+players contend for the same animal T:
+
+1. **Higher T-track position** claims T.
+2. **Tie → more of animal T in supply** (sanctuary) claims T.
+3. **Still tied → both score T.** Each reads the same T-network off the board, but scores it
+   × their own Elephant number — so a differing Elephant still separates them. Only if that is also
+   equal do they place equally.
+
+### Score ties
+
+Normally the draft assigns every player a **distinct** animal, so a final-score tie resolves by rank:
+the player scoring the **higher-ranked animal** wins (T > E > M > B > S — e.g. **Monkey beats Boar**).
+The sole exception is the shared-animal case (draft step 3): those two are on the same animal, so rank
+can't separate them and they place equally.
+
 ## Design Tensions to Watch
 
 - **Free-rider problem, moved to clearings:** Claim Path and Claim Clearing are separate actions,

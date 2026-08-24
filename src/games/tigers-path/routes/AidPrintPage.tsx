@@ -2,8 +2,8 @@ import { PlayerAid } from "~/games/tigers-path/components/PlayerAid"
 import { css } from "~/generated/styled-system/css"
 
 /**
- * The reference sheet on letter portrait. v0 has no rulebook, so this page is
- * the rules — print one per player.
+ * The reference sheet on letter portrait — the aid is the rulebook. Print one
+ * per player.
  */
 
 const printCss = `

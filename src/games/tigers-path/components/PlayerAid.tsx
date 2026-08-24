@@ -5,12 +5,11 @@ import { css, cx } from "~/generated/styled-system/css"
 import { darkBand, paperFrame, softBand } from "~/shared/components/paperFrame"
 
 /**
- * The whole rulebook, one sheet — v0 has no scoring, so the aid IS the rules.
- * The five actions are the thing consulted every turn, so they get the sheet:
- * a 2×3 grid of full cards, each a numbered ACTION with its name at display
- * size and the rule underneath. The sixth cell is the reference corner — the
- * lookups (hierarchy, slot levels, setup) that a turn rarely needs but a game
- * needs somewhere.
+ * The whole rulebook, one sheet. The five actions are consulted every turn, so
+ * they get the sheet: a 2×3 grid of full cards, each a numbered ACTION with its
+ * name at display size and the rule underneath. The sixth cell holds end-game
+ * Scoring. Two reference ladders ride as sidebars on the cards that need them —
+ * the contest hierarchy on Contest, the slot levels on Claim a Clearing.
  */
 
 const aid = css({
@@ -140,15 +139,15 @@ const bulletMark = css({
   transform: "translateY(-0.02in)"
 })
 
-/** A card whose body shares space with a right-wall sidebar (Contest only). */
+/** A card whose body shares space with a right-wall sidebar (Contest, Claim a Clearing). */
 const bodyWithSidebar = css({
   display: "grid",
   gridTemplateColumns: "1fr auto",
   minHeight: 0
 })
 
-/** The hierarchy ladder, mounted on the right wall of Contest. Order is
- * top-to-bottom, so the ">" between ranks is implied by the descent. */
+/** A reference ladder mounted on a card's right wall — the contest hierarchy on
+ * Contest, the slot levels on Claim a Clearing. Laid out top-to-bottom. */
 const sidebar = css({
   display: "grid",
   alignContent: "center",
@@ -242,14 +241,14 @@ const SCORING: readonly React.ReactNode[] = [
   </>,
   <>
     <strong>One animal:</strong>{" "}
-    The player who ends the game locks their top animal; the rest are drafted by highest track position (ties → more in
-    sanctuary).
+    The game-ender locks their top animal; the rest draft by highest track position (ties → more of it in sanctuary; else
+    shared).
   </>,
   <>
-    <strong>Network:</strong> Your animal's discs linked through paths of its color.
+    <strong>Score</strong> = your animal's disc network (discs linked by its color's paths) × Elephant number.
   </>,
   <>
-    <strong>Score</strong> = Network size (discs) × Elephant number.
+    <strong>Tie:</strong> higher-ranked animal wins (T &gt; E &gt; M &gt; B &gt; S).
   </>
 ]
 

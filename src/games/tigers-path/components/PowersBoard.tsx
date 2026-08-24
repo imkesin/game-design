@@ -39,12 +39,18 @@ const board = css({
   height: "100%"
 })
 
+// Symbol + name across the top, the power description spanning the full width
+// beneath — so the description gets the whole label column instead of being
+// squeezed into the sliver beside the dot, and can be set larger.
 const labelCell = css({
   display: "grid",
   gridTemplateColumns: "auto 1fr",
+  gridTemplateAreas: '"symbol name" "power power"',
   alignItems: "center",
   columnGap: "2",
+  rowGap: "1",
   paddingInline: "2.5",
+  paddingBlock: "1.5",
   borderWidth: "0.4mm",
   borderStyle: "solid",
   borderStartStartRadius: "4mm",
@@ -52,12 +58,10 @@ const labelCell = css({
   borderInlineEndWidth: 0
 })
 
-const labelText = css({
-  display: "grid",
-  rowGap: "0.5"
-})
+const labelSymbol = css({ gridArea: "symbol", display: "grid", placeItems: "center" })
 
 const labelName = css({
+  gridArea: "name",
   fontSize: "name",
   fontWeight: 700,
   letterSpacing: "0.06em",
@@ -66,7 +70,8 @@ const labelName = css({
 })
 
 const labelPower = css({
-  fontSize: "micro",
+  gridArea: "power",
+  fontSize: "body",
   fontWeight: 600,
   lineHeight: 1.2
 })
@@ -83,14 +88,18 @@ const valueCell = css({
   }
 })
 
-/** The numeral tab: top-left corner, out of the markers' way. */
+/**
+ * The numeral tab: top-left corner, out of the markers' way. Sized to read as
+ * large as the boar shapes inlined on this same board (`ClearingSlotIcon`
+ * size 8mm) — digit height ≈ 0.7 × font-size, so ~8.5u gives an ~6mm glyph.
+ */
 const valueTag = css({
   position: "absolute",
   top: 0,
   left: 0,
   paddingInline: "1.5",
   paddingBlock: "0.5",
-  fontSize: "body",
+  fontSize: "calc(8.5 * var(--u))",
   fontWeight: 700,
   lineHeight: 1,
   borderEndEndRadius: "2mm"
@@ -154,11 +163,11 @@ function TrackRow({ animal }: { animal: Animal }) {
         className={cx(labelCell, softBand({ color: animal.color }))}
         style={rail(animal)}
       >
-        <AnimalDot animal={animal} size={0.34} />
-        <div className={labelText}>
-          <span className={labelName}>{animal.name}</span>
-          <span className={labelPower}>{animal.power}</span>
-        </div>
+        <span className={labelSymbol}>
+          <AnimalDot animal={animal} size={0.34} />
+        </span>
+        <span className={labelName}>{animal.name}</span>
+        <span className={labelPower}>{animal.power}</span>
       </div>
       {animal.trackValues.map((value, i) => {
         const isStart = i === 0
@@ -183,7 +192,7 @@ function TrackRow({ animal }: { animal: Animal }) {
               isBoar ?
               (
                 <span className={shapeTag}>
-                  <ClearingSlotIcon shape={shapeForBoarValue(value)} size={8} color={animal.color} />
+                  <ClearingSlotIcon shape={shapeForBoarValue(value)} size={11} color={animal.color} />
                 </span>
               ) :
               isStart ?

@@ -18,7 +18,7 @@ import { css } from "~/generated/styled-system/css"
 
 const BOARD_W = 10.9
 const BOARD_H = 6.98
-const SCALE = 0.7
+const SCALE = 0.72
 
 const printCss = `
   :root { --u: 1mm; }
@@ -61,11 +61,14 @@ const sheet = css({
   boxSizing: "border-box",
   boxShadow: "0 8px 24px rgba(0,0,0,0.4)",
   flex: "none",
-  padding: "0.4in",
+  padding: "0.25in",
   display: "grid",
-  gridTemplateRows: "1fr auto 1fr",
-  justifyItems: "center",
-  alignItems: "center"
+  // Natural-height rows centered as one block: the two boards hug the cut line
+  // rather than each floating in the middle of a tall 1fr track. Leftover
+  // vertical slack goes to the outer margins, not the seam.
+  gridTemplateRows: "auto auto auto",
+  alignContent: "center",
+  justifyItems: "center"
 })
 
 const cutLine = css({
@@ -73,7 +76,7 @@ const cutLine = css({
   borderTopWidth: "0.5mm",
   borderTopStyle: "dashed",
   borderTopColor: "stone.400",
-  marginBlock: "0.15in"
+  marginBlock: "0.1in"
 })
 
 const boardWindow = css({ flex: "none" })

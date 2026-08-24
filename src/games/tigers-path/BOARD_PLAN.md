@@ -201,6 +201,14 @@ truth for clearing/path/slot counts** — read them there rather than mirroring 
   graph and required for 4P/5P: keep length-2 paths **rare**, and every clearing a length-2 path
   touches must have a **minimum slot cost of 3** (the top-level pentagon on a length-2 peninsula
   like Wild Mango also needs a maxed Boar track, so it's not a cheap upgrade either).
+- **Start conservative on clearing count — slots outgrow clearings.** Actions = paths + slots, and
+  slots scale super-linearly with clearings (more nodes → more room for 2–3-slot clearings), so a
+  clearing budget that looks right by node count overshoots on actions. 3P is the cautionary case:
+  20 clearings → 39 slots → **63 actions vs. the ~59 target** (see §11.2 balance pass). When
+  planning a new board, **anchor on the action target and start low on clearings**, then add if
+  capacity comes in short — e.g. **begin 4P at ~25 clearings and 5P at ~29, treating each as a
+  ceiling, not a floor** (both a notch under the proportional table's ~25/~30). Easier to grow a
+  sparse board than to trim a dense one.
 - **Composition didn't need a solver change.** Two independently-solved 11.5×17 half-maps drop into
   a CSS grid at true inch sizes and print correctly at 24×18; the only gotcha was the paint-preview
   viewport (see §9), never the print itself.
