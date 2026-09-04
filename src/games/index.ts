@@ -2,6 +2,7 @@ import type { Game } from "~/shared/game"
 import { civilService } from "./civil-service"
 import { graft } from "./graft"
 import { meepleSyrup } from "./meeple-syrup"
+import { regolith } from "./regolith"
 import { relativism } from "./relativism"
 import { tigersPath } from "./tigers-path"
 
@@ -11,5 +12,6 @@ export const games: Record<string, Game> = {
   [civilService.id]: civilService,
   [relativism.id]: relativism,
   [meepleSyrup.id]: meepleSyrup,
-  [tigersPath.id]: tigersPath
+  [tigersPath.id]: tigersPath,
+  [regolith.id]: regolith
 }
