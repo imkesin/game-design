@@ -187,7 +187,7 @@ export function AidPrintPage() {
                 </li>
                 <li>
                   Leaving the <span className={b}>top revealed zone</span> bumps it and the marker{" "}
-                  <span className={b}>resets to start</span> at once. Everything unlocks.
+                  <span className={b}>resets to the bottom tick</span> at once. Everything unlocks.
                 </li>
                 <li>Advancing pays you nothing directly. It is tempo — yours or someone else's.</li>
               </ul>
@@ -234,12 +234,12 @@ export function AidPrintPage() {
                 </li>
                 <li>
                   <span className={b}>Machinery (E1).</span>{" "}
-                  Choose a zone in a B silo. On bump, put your marker in its M slot. Your workers yield a bonus there;
+                  Choose a zone in a B silo. On bump, put your marker beside it. Your workers yield a bonus there;
                   anyone may still use it.
                 </li>
                 <li>
                   <span className={b}>Polymers (E2).</span>{" "}
-                  Same, for a zone in a C silo (P slot). Your workers convert better there.
+                  Same, for a zone in a C silo. Your workers convert better there.
                 </li>
                 <li>
                   <span className={b}>Upgraded worker (E3), Special projects (F1).</span> Not in v0.
@@ -250,10 +250,10 @@ export function AidPrintPage() {
             <section>
               <div className={h}>Setup · v0 (pencil in)</div>
               <ul className={list}>
-                <li>Cover tiles on every hatched zone. All markers on start.</li>
+                <li>Cover tiles on every hatched zone. Every marker disc on its silo's bottom tick.</li>
                 <li>Workers per player: ____ &nbsp; Starting goods: ____</li>
                 <li>Game ends: ____ &nbsp; Score: VP from covers + ____</li>
-                <li>Bonus for M / P slots: ____</li>
+                <li>Bonus for machinery / polymer markers: ____</li>
               </ul>
             </section>
           </div>

@@ -5,29 +5,42 @@ import type { Outcome, Silo, Terms, Zone } from "~/games/regolith/domain"
 import { css } from "~/generated/styled-system/css"
 
 /**
- * The silo board, print edition. One portrait letter sheet holds three silos;
- * `SiloSheet` draws whichever it is given, so the twelve split across four.
+ * The silo board, print edition. One portrait letter sheet holds two silos;
+ * `SiloSheet` draws whichever it is given, so the twelve split across six.
+ * Two per sheet is more paper than three, but the wide zone boxes leave room
+ * for a meeple beside the recipe and keep every price on one line.
  *
- * Every silo is three columns — tick track, zone boxes, upgrade slot — and
- * every zone is one 1.8in row, tall enough for a meeple to sit on the recipe.
- * The whole sheet is a single CSS grid with named areas, so a zone's tick
- * cells, box and slot are pinned to the same row by name rather than by
- * arithmetic. A sheet is as tall as its tallest silo; shorter silos leave
- * their upper rows empty. Covered zones are hatched — the cover tile from
+ * Every silo is two columns — tick track and zone boxes — sized so two silos
+ * fill the printable page edge to edge. The whole sheet is a single CSS grid
+ * with named areas, so a zone's tick cells and box are pinned to the same row
+ * by name rather than by arithmetic. Machinery and polymer markers have no
+ * printed slot; they go beside the zone, and the rule lives in the aid. A
+ * sheet is as tall as its tallest silo; shorter silos leave their upper rows
+ * empty. Covered zones are hatched — the cover tile from
  * `CoverSheet` lies over them, so they carry no label of their own.
+ *
+ * Components are shape-coded: goods are cubes, so anything printed for a cube
+ * is a square; time is discs, so a tick is a 16mm circle the marker disc sits
+ * on. The circles stack from the bottom of their zone, split down the middle
+ * by the box's left border and resting on its bottom edge, so the track
+ * column is exactly half a disc wide and the box pads its left side by the
+ * other half; content is centered in what remains. The marker starts on the
+ * bottom tick of zone I; there is no separate start cell.
  */
 
 export const SHEET_W_IN = 8.5
 export const SHEET_H_IN = 11
-const PAD_IN = 0.3
-const TICK_W = 0.36
-const ZONE_W = 1.9
-const SLOT_W = 0.26
-const GAP_W = 0.14
+/** Time marker and time token discs are 16mm; a tick is drawn at disc size. */
+export const DISC_MM = 16
+const PAD_IN = 0.25
+// Half a disc: the other half of each tick circle lies inside the zone box.
+const TICK_W = DISC_MM / 2 / 25.4
+const GAP_W = 0.25
 const HEAD_H = 0.4
-export const ZONE_H = 1.8
-const START_H = 0.3
 const ROW_GAP = 0.08
+// Two silos span the printable width; five zones and a header span its height.
+const ZONE_W = (SHEET_W_IN - 2 * PAD_IN - GAP_W) / 2 - TICK_W
+export const ZONE_H = (SHEET_H_IN - 2 * PAD_IN - HEAD_H - 5 * ROW_GAP) / 5 - 0.005
 
 // 1mm in CSS px, for the SVG marks, whose `size` is a pixel width.
 const MM = 96 / 25.4
@@ -36,15 +49,13 @@ function areas(silos: readonly Silo[], maxZones: number): string {
   const rows: string[] = []
   const cols = (f: (j: number) => string[]) =>
     silos.flatMap((_, j) => [...f(j), j < silos.length - 1 ? "." : ""]).filter(Boolean).join(" ")
-  rows.push(cols((j) => [`h${j}`, `h${j}`, `h${j}`]))
-  for (let i = maxZones; i >= 1; i--) rows.push(cols((j) => [`t${j}-${i}`, `z${j}-${i}`, `s${j}-${i}`]))
-  rows.push(cols((j) => [`m${j}`, `b${j}`, `b${j}`]))
+  rows.push(cols((j) => [`h${j}`, `h${j}`]))
+  for (let i = maxZones; i >= 1; i--) rows.push(cols((j) => [`t${j}-${i}`, `z${j}-${i}`]))
   return rows.map((r) => `"${r}"`).join(" ")
 }
 
 function columns(n: number): string {
-  return Array.from({ length: n }, (_, j) => `${TICK_W}in ${ZONE_W}in ${SLOT_W}in${j < n - 1 ? ` ${GAP_W}in` : ""}`)
-    .join(" ")
+  return Array.from({ length: n }, (_, j) => `${TICK_W}in ${ZONE_W}in${j < n - 1 ? ` ${GAP_W}in` : ""}`).join(" ")
 }
 
 const sheet = css({
@@ -75,40 +86,37 @@ const head = css({
 })
 const headId = css({ fontSize: "9pt", fontWeight: 600, color: "#555" })
 
+// Painted after the box so the circles sit over its border and hatching.
 const ticks = css({
   display: "flex",
   flexDirection: "column",
-  justifyContent: "space-evenly",
-  alignItems: "center",
-  height: "100%"
+  justifyContent: "end",
+  alignItems: "start",
+  rowGap: "1.5mm",
+  height: "100%",
+  position: "relative",
+  zIndex: 1
 })
 const tick = css({
-  width: "0.26in",
-  height: "0.26in",
-  border: "0.3mm solid #000",
-  boxSizing: "border-box",
-  background: "#fff"
-})
-const start = css({
-  width: "0.26in",
-  height: "0.26in",
+  width: `${DISC_MM}mm`,
+  height: `${DISC_MM}mm`,
+  flex: "none",
   border: "0.3mm solid #000",
   borderRadius: "50%",
   boxSizing: "border-box",
-  justifySelf: "center",
-  alignSelf: "center"
+  background: "#fff"
 })
-const startLabel = css({ fontSize: "7pt", color: "#555", alignSelf: "center", paddingLeft: "1mm" })
 
 const box = css({
   height: "100%",
   border: "0.4mm solid #000",
   borderRadius: "1.5mm",
   boxSizing: "border-box",
-  padding: "2mm 2.2mm",
+  padding: `3mm 3mm 2.5mm ${DISC_MM / 2 + 1.5}mm`,
   display: "grid",
   gridTemplateRows: "auto 1fr auto",
   gridTemplateAreas: `"name" "recipe" "time"`,
+  justifyItems: "center",
   rowGap: "1mm",
   background: "#fff",
   position: "relative",
@@ -121,7 +129,8 @@ const boxEmpty = css({ borderStyle: "dashed", color: "#888" })
 const name = css({
   gridArea: "name",
   display: "flex",
-  justifyContent: "space-between",
+  justifyContent: "center",
+  textAlign: "center",
   fontSize: "8.5pt",
   fontWeight: 700,
   letterSpacing: "0.05em",
@@ -133,41 +142,32 @@ const recipe = css({
   gridTemplateRows: "auto auto auto",
   gridTemplateAreas: `"in" "arrow" "out"`,
   alignContent: "start",
-  justifyItems: "start",
+  justifyItems: "center",
   rowGap: "0.6mm",
   fontSize: "12pt",
   fontWeight: 700
 })
 const side = css({ display: "flex", alignItems: "center", gap: "1.6mm", whiteSpace: "nowrap" })
-const down = css({ gridArea: "arrow", fontSize: "11pt", fontWeight: 400, lineHeight: 1, paddingLeft: "0.5mm" })
+const down = css({ gridArea: "arrow", fontSize: "11pt", fontWeight: 400, lineHeight: 1, padding: "0 0.5mm" })
 const term = css({ display: "inline-flex", alignItems: "center", gap: "0.5mm" })
 const plus = css({ fontSize: "12pt", fontWeight: 400, padding: "0 0.5mm" })
 const effectLabel = css({ fontSize: "11pt", fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.03em" })
+// Wraps rather than clips: the widest price (three goods + time) can run
+// past the box at this width, and a centered tail line reads fine.
 const timeRow = css({
   gridArea: "time",
+  justifySelf: "stretch",
   display: "flex",
+  flexWrap: "wrap",
+  justifyContent: "center",
   alignItems: "center",
-  gap: "1mm",
+  gap: "0.5mm 1mm",
   whiteSpace: "nowrap",
   fontSize: "9pt",
   fontWeight: 600,
   borderTop: "0.2mm dashed #999",
   paddingTop: "1mm",
   color: "#333"
-})
-const slot = css({
-  width: "0.22in",
-  height: "0.18in",
-  border: "0.3mm dashed #777",
-  borderRadius: "0.5mm",
-  boxSizing: "border-box",
-  alignSelf: "center",
-  justifySelf: "center",
-  fontSize: "6pt",
-  color: "#777",
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center"
 })
 
 export function TermList({ terms: ts, size = 5.4 }: { terms: Terms; size?: number }) {
@@ -247,13 +247,6 @@ export function ZoneBox({ silo, n, zone, style }: { silo: Silo; n: number; zone:
   )
 }
 
-/** Which upgrade marker a silo's zones can carry: machinery on B, polymers on C. */
-function slotLabel(silo: Silo): string | undefined {
-  if (silo.id.startsWith("B")) return "M"
-  if (silo.id.startsWith("C")) return "P"
-  return undefined
-}
-
 export function SiloSheet({ silos }: { silos: readonly Silo[] }) {
   const maxZones = Math.max(...silos.map((s) => s.maxZones))
   const cells: ReactNode[] = []
@@ -284,20 +277,14 @@ export function SiloSheet({ silos }: { silos: readonly Silo[] }) {
             </div>
           )
       )
-      const label = slotLabel(silo)
-      if (label) {
-        cells.push(<div key={`s${j}-${n}`} className={slot} style={{ gridArea: `s${j}-${n}` }}>{label}</div>)
-      }
     }
-    cells.push(<div key={`m${j}`} className={start} style={{ gridArea: `m${j}` }} />)
-    cells.push(<div key={`b${j}`} className={startLabel} style={{ gridArea: `b${j}` }}>marker start</div>)
   })
   return (
     <div
       className={`sheet ${sheet}`}
       style={{
         gridTemplateColumns: columns(silos.length),
-        gridTemplateRows: `${HEAD_H}in repeat(${maxZones}, ${ZONE_H}in) ${START_H}in`,
+        gridTemplateRows: `${HEAD_H}in repeat(${maxZones}, ${ZONE_H}in)`,
         gridTemplateAreas: areas(silos, maxZones)
       }}
     >
@@ -314,7 +301,7 @@ const coverGrid = css({
   background: "#fff",
   color: "#000",
   display: "grid",
-  gridTemplateColumns: `repeat(3, ${ZONE_W}in)`,
+  gridTemplateColumns: `repeat(2, ${ZONE_W}in)`,
   gridAutoRows: `${ZONE_H}in`,
   gap: "0.2in",
   alignContent: "start",
@@ -379,9 +366,12 @@ const vpBox = css({
   justifyContent: "center"
 })
 
+/** Cover tiles per sheet: two across, four down at zone-box size. */
+export const COVERS_PER_SHEET = 8
+
 /**
  * Cover tiles, printed at zone-box size so each lies over the zone it hides.
- * Three across, four down: all twelve on one portrait sheet.
+ * Two across, four down; the twelve take two portrait sheets.
  *
  * Playtest shape. The intended final form is inverted: the cover is the
  * greyed-out face showing what it costs to build, and the zone underneath is
@@ -390,10 +380,10 @@ const vpBox = css({
  * Shows the zone's recipe so a builder knows what the structure will do, and
  * a VP box to pencil in until the values are tuned.
  */
-export function CoverSheet() {
+export function CoverSheet({ tiles }: { tiles: ReturnType<typeof covers> }) {
   return (
     <div className={`sheet ${coverGrid}`}>
-      {covers().map((c) => {
+      {tiles.map((c) => {
         const zone = c.silo.zones[c.zone - 1]!
         return (
           <div key={c.name} className={coverTile}>

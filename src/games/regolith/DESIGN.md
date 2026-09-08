@@ -259,16 +259,22 @@ is deliberate — one rule for every silo.
 Print-and-play pages live in `src/games/regolith`. `domain.ts` encodes the goods, values and silo
 zones; everything below renders from it, so a retune is a data change.
 
-- **Silo board** (`/regolith/print/board`): four portrait letter sheets of three silos each — A/B,
-  C, D1/D2/E1, E2/E3/F1. Each zone is a 1.8in box (room for a meeple) printing its name, recipe and,
-  where it has one, the cheaper time price with a token count. A tick track runs left of each silo
-  (one square per tick, a circle for marker start); B and C zones carry an M / P slot on the right
-  for machinery and polymer markers. Covered zones are hatched. Undefined zones print as dashed
-  boxes to pencil in.
-- **Cover tiles** (fifth sheet of the same route): twelve tiles at zone-box size, each with its
-  zone's recipe and an empty VP box, to lay over the hatched zones.
+- **Silo board** (`/regolith/print/board`): six portrait letter sheets of two silos each — A/B1,
+  B2/C1, C2/C3, D1/D2, E1/E2, E3/F1. Two silos fill the printable page edge to edge, so each zone is
+  a box about 3.6 × 1.9in (room for a meeple beside the recipe) printing its name, recipe and, where
+  it has one, the cheaper time price with a token count. A tick track runs left of each silo: one
+  16mm circle per tick, stacked from the bottom of the zone, split down the middle by the box's left
+  border and resting on its bottom edge; the box's contents are centered clear of it. The marker
+  starts on zone I's bottom tick; there is no separate start cell. Machinery and polymer markers
+  have no printed slot: they sit beside the zone they claim. Covered zones are hatched. Undefined
+  zones print as dashed boxes to pencil in.
+- **Shape code:** goods are cubes and time is discs, so anything printed for a good is square and
+  anything printed for time is a circle.
+- **Cover tiles** (last two sheets of the same route): twelve tiles at zone-box size, two across and
+  four down, each with its zone's recipe and an empty VP box, to lay over the hatched zones.
 - **Player aid** (`/regolith/print/aid`): the three turn shapes, place / advance / bump / lock /
   reset, paying with time, the goods value strip, upgrade effects, and blanks for the setup values
   still to be tuned.
-- **Bring:** meeples for workers, one cube per silo for the time marker, a pool of time tokens,
-  cubes for goods, and small markers per player for covers under construction and M / P slots.
+- **Bring:** meeples for workers, one 16mm disc per silo for the time marker, a pool of discs for
+  time tokens, cubes for goods, and small markers per player for covers under construction and for
+  machinery / polymer claims.

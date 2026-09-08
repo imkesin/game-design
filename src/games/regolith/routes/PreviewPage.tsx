@@ -127,7 +127,7 @@ export function PreviewPage() {
         marks a zone that starts covered.
       </span>
       <div className={links}>
-        <a className={link} href="/regolith/print/board">Silo board + covers (5 portrait sheets) →</a>
+        <a className={link} href="/regolith/print/board">Silo board + covers (8 portrait sheets) →</a>
         <a className={link} href="/regolith/print/aid">Player aid →</a>
       </div>
       <div className={grid}>

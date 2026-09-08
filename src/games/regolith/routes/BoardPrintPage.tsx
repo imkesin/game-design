@@ -1,9 +1,9 @@
-import { CoverSheet, SiloSheet } from "~/games/regolith/components/SiloBoard"
-import { SILOS } from "~/games/regolith/domain"
+import { COVERS_PER_SHEET, CoverSheet, SiloSheet } from "~/games/regolith/components/SiloBoard"
+import { covers, SILOS } from "~/games/regolith/domain"
 import { css } from "~/generated/styled-system/css"
 
 /**
- * The silo board: four portrait letter sheets of three silos, then one sheet
+ * The silo board: six portrait letter sheets of two silos, then two sheets
  * of cover tiles cut out and laid over the covered zones. Print at 100% with
  * no margins so the 1.8in zones hold a meeple.
  */
@@ -43,8 +43,14 @@ const note = css({
   borderRadius: "8px"
 })
 
-const SHEETS = [["A", "B1", "B2"], ["C1", "C2", "C3"], ["D1", "D2", "E1"], ["E2", "E3", "F1"]].map((ids) =>
+const SHEETS = [["A", "B1"], ["B2", "C1"], ["C2", "C3"], ["D1", "D2"], ["E1", "E2"], ["E3", "F1"]].map((ids) =>
   ids.map((id) => SILOS.find((s) => s.id === id)!)
+)
+
+// The cover tiles in board order, split into sheet-sized runs.
+const COVER_SHEETS = Array.from(
+  { length: Math.ceil(covers().length / COVERS_PER_SHEET) },
+  (_, i) => covers().slice(i * COVERS_PER_SHEET, (i + 1) * COVERS_PER_SHEET)
 )
 
 const shadow = css({ boxShadow: "0 8px 24px rgba(0,0,0,0.4)", flex: "none" })
@@ -60,9 +66,11 @@ export function BoardPrintPage() {
             <SiloSheet silos={silos} />
           </div>
         ))}
-        <div className={shadow}>
-          <CoverSheet />
-        </div>
+        {COVER_SHEETS.map((tiles, i) => (
+          <div key={i} className={shadow}>
+            <CoverSheet tiles={tiles} />
+          </div>
+        ))}
       </div>
     </>
   )
