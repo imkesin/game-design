@@ -1,10 +1,37 @@
 /**
- * Flat-top hex geometry. Tile size is one number — the side length — and the
- * width/height fall out of it, which is both how the size gets specified out
- * loud ("45mm a side, like Catan") and a guarantee that the six sides stay
- * equal. Nothing downstream assumes a particular size.
+ * Flat-top hex geometry. Every printed tile is a sticker applied to a physical
+ * hex blank, so the size is specified the way it is measured: the blank's
+ * flat-to-flat height, less the rim of blank left showing around the sticker.
+ * The side length falls out of those two, the width and height out of the
+ * side, and the six sides stay equal by construction. Nothing downstream
+ * assumes a particular size.
  */
-export const HEX_SIDE_MM = 45
+
+/**
+ * The blank's flat-to-flat measure, and the dimension the sticker is fitted
+ * to.
+ *
+ * The blanks are quoted at 3.11in x 3.66in — 79mm across the flats, 93mm point
+ * to point — which is about 2% wider than a regular hex of that height, whose
+ * points would fall at 91.2mm. That is spec rounding, or a measurement taken
+ * across a chamfered corner, rather than a genuinely squashed hex; either way
+ * the height is the safe one to fit to. If the blanks really are regular at
+ * 93mm, a sticker cut to this height simply lands with more rim than asked
+ * for, which is the harmless direction to be wrong in.
+ */
+export const BLANK_HEIGHT_MM = 79
+
+/**
+ * Blank left showing on every edge — the sticker's breathing room, and the one
+ * number to turn after holding a proof against a real tile. Expressed as a
+ * margin rather than as a scale factor because this is what the eye actually
+ * judges, and because it survives a change of blank: swap `BLANK_HEIGHT_MM`
+ * and the rim stays what it was.
+ */
+export const STICKER_MARGIN_MM = 2
+
+/** Derived, not chosen: the largest regular hex leaving that rim on the blank. */
+export const HEX_SIDE_MM = (BLANK_HEIGHT_MM - 2 * STICKER_MARGIN_MM) / Math.sqrt(3)
 
 const MM_PER_INCH = 25.4
 const HEX_SIDE_IN = HEX_SIDE_MM / MM_PER_INCH

@@ -4,15 +4,16 @@ Drop an SVG in here and it becomes that good's mark on the hex tiles — no code
 
 ## Naming
 
-The filename is the good's id, from the `Good` union in `../domain.ts`:
+The filename is the good's id, from the `Good` union in `../domain.ts` — the six resources plus
+energy:
 
 ```
-water.svg   rock.svg   carbon.svg   metal.svg   sulfur.svg   food.svg
+rock.svg   water.svg   chemical.svg   metal.svg   food.svg   electronics.svg   energy.svg
 ```
 
-A file here **overrides** the built-in mark for that good (see `../components/resourceMarks.ts`,
-which mixes Lucide icons with the hand-drawn glyphs in `../components/icons/`). Delete the file to
-go back to the built-in.
+A file here is the _only_ source of that good's mark — there are no built-ins (see
+`../components/resourceMarks.ts`). A good with no file draws an obvious dashed placeholder, so a
+missing mark shows up on the tile rather than silently borrowing something that reads wrong.
 
 ## What kind of SVG works
 
