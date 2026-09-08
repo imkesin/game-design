@@ -1,6 +1,7 @@
 import type { Game } from "~/shared/game"
+import { AidPrintPage } from "./routes/AidPrintPage"
+import { BoardPrintPage } from "./routes/BoardPrintPage"
 import { PreviewPage } from "./routes/PreviewPage"
-import { TileSheetPrintPage } from "./routes/TileSheetPrintPage"
 import { REGOLITH_THEME_ID } from "./theme"
 
 export const regolith: Game = {
@@ -8,6 +9,7 @@ export const regolith: Game = {
   name: "Regolith",
   routes: {
     "/": PreviewPage,
-    "/print/tiles": TileSheetPrintPage
+    "/print/board": BoardPrintPage,
+    "/print/aid": AidPrintPage
   }
 }

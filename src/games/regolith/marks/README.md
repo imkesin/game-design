@@ -1,29 +1,30 @@
-# Tile marks
+# Good marks
 
-Drop an SVG in here and it becomes that good's mark on the hex tiles — no code change needed.
+Drop an SVG in here and it becomes that good's mark on the silo board — no code change needed.
 
 ## Naming
 
-The filename is the good's id, from the `Good` union in `../domain.ts` — the six resources plus
-energy:
+The filename is the good's id, from the `Good` union in `../domain.ts` — the six goods:
 
 ```
-rock.svg   water.svg   chemical.svg   metal.svg   food.svg   electronics.svg   energy.svg
+energy.svg   rock.svg   water.svg   metal.svg   chemical.svg   food.svg
 ```
+
+Plus `time.svg`, the time-token mark, which is not a good and is fetched by name.
 
 A file here is the _only_ source of that good's mark — there are no built-ins (see
 `../components/resourceMarks.ts`). A good with no file draws an obvious dashed placeholder, so a
-missing mark shows up on the tile rather than silently borrowing something that reads wrong.
+missing mark shows up on the board rather than silently borrowing something that reads wrong.
 
 ## What kind of SVG works
 
-- **Square `viewBox`.** The mark is drawn into a square box inside the hex, so a non-square source
-  will look stretched.
+- **Square `viewBox`.** The mark is drawn into a square box, so a non-square source will look
+  stretched.
 - **Black art, or `currentColor`.** The sheets print pure black-and-white to keep prototype printing
   cheap. The file's own `fill`/`stroke` are left alone, so both solid silhouettes (game-icons.net)
   and line art (Lucide-style) work.
 - **No background layer.** Download without one. A full-canvas background path in the common
-  `M0 0h512v512H0z` form is stripped automatically, but anything else will paint over the tile.
+  `M0 0h512v512H0z` form is stripped automatically, but anything else will paint over the mark.
 
 ## Sourcing
 

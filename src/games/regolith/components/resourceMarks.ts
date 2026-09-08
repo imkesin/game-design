@@ -21,14 +21,22 @@ export type MarkIcon = (props: MarkProps) => ReactNode
 
 // `fileMark` builds a component per call, so these are cached: rebuilding one
 // per render would give it a fresh identity every time and remount the mark.
-const marks = new Map<Good, MarkIcon>()
+const marks = new Map<string, MarkIcon>()
 
-export function markFor(good: Good): MarkIcon {
-  let mark = marks.get(good)
+/**
+ * The mark for any file in `../marks/`, by basename. Goods go through
+ * `markFor`; this is for the few marks that are not goods, like `time`.
+ */
+export function markNamed(name: string): MarkIcon {
+  let mark = marks.get(name)
   if (mark === undefined) {
-    const raw = MARK_FILES[good]
+    const raw = MARK_FILES[name]
     mark = raw === undefined ? MissingMark : fileMark(raw)
-    marks.set(good, mark)
+    marks.set(name, mark)
   }
   return mark
+}
+
+export function markFor(good: Good): MarkIcon {
+  return markNamed(good)
 }
