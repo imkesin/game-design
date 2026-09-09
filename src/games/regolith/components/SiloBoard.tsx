@@ -1,31 +1,44 @@
 import type { CSSProperties, ReactNode } from "react"
 import { markFor, markNamed } from "~/games/regolith/components/resourceMarks"
-import { covers, zoneName } from "~/games/regolith/domain"
-import type { Outcome, Silo, Terms, Zone } from "~/games/regolith/domain"
+import { Badge, badgeSize, ResourceTile, TILE_MM } from "~/games/regolith/components/ResourceTile"
+import { ANNEXES_PER_ZONE, RESET_BONUS, UPGRADE_SLOTS_PER_ZONE, zoneName } from "~/games/regolith/domain"
+import type { Outcome, Silo, Terms, Upgrade, Zone } from "~/games/regolith/domain"
 import { css } from "~/generated/styled-system/css"
 
 /**
- * The silo board, print edition. One portrait letter sheet holds two silos;
- * `SiloSheet` draws whichever it is given, so the twelve split across six.
- * Two per sheet is more paper than three, but the wide zone boxes leave room
- * for a meeple beside the recipe and keep every price on one line.
+ * The silo board, print edition. One portrait letter sheet holds two of the
+ * tall silos (A–C); `SiloSheet` draws whichever it is given. The single-zone
+ * silos go two across on landscape sheets instead (`LandscapeSheet`): all of
+ * D on one, E and F1 on another. Two per row is more paper than three, but
+ * the wide zone boxes leave room for a meeple beside the recipe.
  *
- * Every silo is two columns — tick track and zone boxes — sized so two silos
- * fill the printable page edge to edge. The whole sheet is a single CSS grid
- * with named areas, so a zone's tick cells and box are pinned to the same row
- * by name rather than by arithmetic. Machinery and polymer markers have no
- * printed slot; they go beside the zone, and the rule lives in the aid. A
- * sheet is as tall as its tallest silo; shorter silos leave their upper rows
- * empty. Covered zones are hatched — the cover tile from
- * `CoverSheet` lies over them, so they carry no label of their own.
+ * Every silo is one column of zone boxes, sized so two silos fill the
+ * printable page edge to edge. The whole sheet is a single CSS grid with
+ * named areas. A sheet is as tall as its tallest silo; shorter silos leave
+ * their upper rows empty.
  *
- * Components are shape-coded: goods are cubes, so anything printed for a cube
- * is a square; time is discs, so a tick is a 16mm circle the marker disc sits
- * on. The circles stack from the bottom of their zone, split down the middle
- * by the box's left border and resting on its bottom edge, so the track
- * column is exactly half a disc wide and the box pads its left side by the
- * other half; content is centered in what remains. The marker starts on the
- * bottom tick of zone I; there is no separate start cell.
+ * A zone box reads left to right: what the worker pays, a dividing line, what
+ * it brings home, then the ownership strip. Goods are `ResourceTile`s. The tick
+ * track is the dividing line itself — one 16mm circle per tick, stacked up
+ * from the box's bottom edge and centred on the line, so the time marker sits
+ * between cost and yield. The marker starts on zone I's bottom tick; there is
+ * no separate start cell. Components are shape-coded: goods are cubes, so
+ * their tiles are square; time is discs, so a tick is a circle at disc size.
+ *
+ * A zone that can be paid with time carries a quarter-disc in its bottom-left
+ * corner: the time mark with a "−1" badge. The rule is one less of every
+ * input and one more tick, so that is all the box needs to say.
+ *
+ * The bottom tick of every track holds a small "+1" energy tile: the marker
+ * covers it each time a reset brings it home, and whoever ticked the reset
+ * takes that energy. Printed once per silo because it happens once per cycle.
+ *
+ * A ruled strip down the box's right edge holds what players can own on the
+ * zone, as cells. At the top is the annex, grey, one per zone at the printed
+ * player count: empty until Construction puts an owner's marker in it, after
+ * which it is a second worker slot. Rent is one rule for every cell and is
+ * not printed. Below it, on the B and C silos only, two square slots take
+ * machinery (B) or polymer (C) markers; the other silos take neither.
  */
 
 export const SHEET_W_IN = 8.5
@@ -33,14 +46,20 @@ export const SHEET_H_IN = 11
 /** Time marker and time token discs are 16mm; a tick is drawn at disc size. */
 export const DISC_MM = 16
 const PAD_IN = 0.25
-// Half a disc: the other half of each tick circle lies inside the zone box.
-const TICK_W = DISC_MM / 2 / 25.4
 const GAP_W = 0.25
-const HEAD_H = 0.4
-const ROW_GAP = 0.08
-// Two silos span the printable width; five zones and a header span its height.
-const ZONE_W = (SHEET_W_IN - 2 * PAD_IN - GAP_W) / 2 - TICK_W
-export const ZONE_H = (SHEET_H_IN - 2 * PAD_IN - HEAD_H - 5 * ROW_GAP) / 5 - 0.005
+const ROW_GAP = 0.04
+/**
+ * Every zone box is a tarot card on its side: 4.75 × 2.75, whatever its
+ * width. Two silos span a portrait sheet's printable width and the tallest
+ * silo's four rows fit its height with room to spare; two single-zone silos
+ * span a landscape sheet, two rows deep. No sheet header: every zone already
+ * names its silo, and the id lives in the aid.
+ */
+export const BOX_ASPECT = 4.75 / 2.75
+const ZONE_W = (SHEET_W_IN - 2 * PAD_IN - GAP_W) / 2
+export const ZONE_H = ZONE_W / BOX_ASPECT
+const LAND_W = (SHEET_H_IN - 2 * PAD_IN - GAP_W) / 2
+const LAND_H = LAND_W / BOX_ASPECT
 
 // 1mm in CSS px, for the SVG marks, whose `size` is a pixel width.
 const MM = 96 / 25.4
@@ -49,13 +68,12 @@ function areas(silos: readonly Silo[], maxZones: number): string {
   const rows: string[] = []
   const cols = (f: (j: number) => string[]) =>
     silos.flatMap((_, j) => [...f(j), j < silos.length - 1 ? "." : ""]).filter(Boolean).join(" ")
-  rows.push(cols((j) => [`h${j}`, `h${j}`]))
-  for (let i = maxZones; i >= 1; i--) rows.push(cols((j) => [`t${j}-${i}`, `z${j}-${i}`]))
+  for (let i = maxZones; i >= 1; i--) rows.push(cols((j) => [`z${j}-${i}`]))
   return rows.map((r) => `"${r}"`).join(" ")
 }
 
 function columns(n: number): string {
-  return Array.from({ length: n }, (_, j) => `${TICK_W}in ${ZONE_W}in${j < n - 1 ? ` ${GAP_W}in` : ""}`).join(" ")
+  return Array.from({ length: n }, (_, j) => `${ZONE_W}in${j < n - 1 ? ` ${GAP_W}in` : ""}`).join(" ")
 }
 
 const sheet = css({
@@ -72,30 +90,71 @@ const sheet = css({
   fontFamily: "system-ui, sans-serif"
 })
 
-const head = css({
-  display: "flex",
-  alignItems: "baseline",
-  justifyContent: "space-between",
-  borderBottom: "0.5mm solid #000",
-  paddingBottom: "1mm",
-  fontSize: "12pt",
-  fontWeight: 800,
-  letterSpacing: "0.06em",
-  textTransform: "uppercase",
-  whiteSpace: "nowrap"
+const box = css({
+  height: "100%",
+  border: "0.4mm solid #000",
+  borderRadius: "1.5mm",
+  boxSizing: "border-box",
+  // No right padding: the ownership strip is flush with the box's edge.
+  padding: "0 0 0 3mm",
+  display: "grid",
+  // Five columns, with overlapping spans: cost sits in 1–2, the track in
+  // 2–3, yield in 3–4, the ownership strip in 5. The two auto columns are the
+  // track's width, so cost and yield each get a fr column plus half the
+  // track to centre in, and can lean into the track's space when they wrap.
+  // The fr columns may shrink below their content: a long zone name overflows
+  // rather than widening its column and pushing the track off centre.
+  gridTemplateColumns: "minmax(0, 1fr) auto auto minmax(0, 1fr) minmax(0, 1fr)",
+  // Name row, body, and the name's invisible mirror, so the body stays
+  // centred. The track and the strip span all three so they run border to
+  // border.
+  gridTemplateRows: "auto 1fr auto",
+  rowGap: "1mm",
+  background: "#fff",
+  position: "relative",
+  overflow: "hidden"
 })
-const headId = css({ fontSize: "9pt", fontWeight: 600, color: "#555" })
-
-// Painted after the box so the circles sit over its border and hatching.
-const ticks = css({
+const boxEmpty = css({ borderStyle: "dashed", color: "#888" })
+// Small and grey: the zone's name is a label, not something anyone reads
+// mid-turn. `foot` is its invisible mirror below, so the body stays centred.
+const NAME_PT = 6.5
+const name = css({
+  gridRow: "1",
+  gridColumn: "1 / 3",
+  display: "flex",
+  justifyContent: "start",
+  textAlign: "left",
+  paddingTop: "2mm",
+  fontSize: `${NAME_PT}pt`,
+  lineHeight: 1,
+  fontWeight: 700,
+  letterSpacing: "0.08em",
+  textTransform: "uppercase",
+  whiteSpace: "nowrap",
+  color: "#555"
+})
+const foot = css({ gridRow: "3", gridColumn: "1 / 3", paddingTop: "2mm", fontSize: `${NAME_PT}pt`, lineHeight: 1 })
+// The dividing line, border to border, with the tick circles stacked up it
+// from the bottom. As wide as a disc so the circles never crowd the tiles.
+const track = css({
+  gridRow: "1 / 4",
+  gridColumn: "2 / 4",
+  position: "relative",
+  width: `${DISC_MM}mm`,
   display: "flex",
   flexDirection: "column",
   justifyContent: "end",
-  alignItems: "start",
+  alignItems: "center",
   rowGap: "1.5mm",
-  height: "100%",
-  position: "relative",
-  zIndex: 1
+  margin: "0 2mm"
+})
+const line = css({
+  position: "absolute",
+  top: 0,
+  bottom: 0,
+  left: "50%",
+  borderLeft: "0.25mm solid #888",
+  transform: "translateX(-50%)"
 })
 const tick = css({
   width: `${DISC_MM}mm`,
@@ -104,71 +163,107 @@ const tick = css({
   border: "0.3mm solid #000",
   borderRadius: "50%",
   boxSizing: "border-box",
-  background: "#fff"
-})
-
-const box = css({
-  height: "100%",
-  border: "0.4mm solid #000",
-  borderRadius: "1.5mm",
-  boxSizing: "border-box",
-  padding: `3mm 3mm 2.5mm ${DISC_MM / 2 + 1.5}mm`,
-  display: "grid",
-  gridTemplateRows: "auto 1fr auto",
-  gridTemplateAreas: `"name" "recipe" "time"`,
-  justifyItems: "center",
-  rowGap: "1mm",
   background: "#fff",
   position: "relative",
-  overflow: "hidden"
-})
-const boxCovered = css({
-  backgroundImage: "repeating-linear-gradient(135deg, #e5e5e5 0 1mm, #fff 1mm 3mm)"
-})
-const boxEmpty = css({ borderStyle: "dashed", color: "#888" })
-const name = css({
-  gridArea: "name",
-  display: "flex",
-  justifyContent: "center",
-  textAlign: "center",
-  fontSize: "8.5pt",
-  fontWeight: 700,
-  letterSpacing: "0.05em",
-  textTransform: "uppercase"
-})
-const recipe = css({
-  gridArea: "recipe",
   display: "grid",
-  gridTemplateRows: "auto auto auto",
-  gridTemplateAreas: `"in" "arrow" "out"`,
-  alignContent: "start",
-  justifyItems: "center",
-  rowGap: "0.6mm",
-  fontSize: "12pt",
-  fontWeight: 700
+  placeItems: "center"
 })
-const side = css({ display: "flex", alignItems: "center", gap: "1.6mm", whiteSpace: "nowrap" })
-const down = css({ gridArea: "arrow", fontSize: "11pt", fontWeight: 400, lineHeight: 1, padding: "0 0.5mm" })
-const term = css({ display: "inline-flex", alignItems: "center", gap: "0.5mm" })
-const plus = css({ fontSize: "12pt", fontWeight: 400, padding: "0 0.5mm" })
-const effectLabel = css({ fontSize: "11pt", fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.03em" })
-// Wraps rather than clips: the widest price (three goods + time) can run
-// past the box at this width, and a centered tail line reads fine.
-const timeRow = css({
-  gridArea: "time",
-  justifySelf: "stretch",
+// The reset bonus: a small energy tile inside the very first tick of the
+// track. The marker covers it whenever it comes home, which is the rule.
+const RESET_TILE_MM = 8
+// Cost and yield: tiles wrap and centre in whatever width the side has. The
+// top padding keeps a badge clear of the name row.
+const side = css({
   display: "flex",
   flexWrap: "wrap",
   justifyContent: "center",
+  alignContent: "center",
   alignItems: "center",
-  gap: "0.5mm 1mm",
-  whiteSpace: "nowrap",
-  fontSize: "9pt",
-  fontWeight: 600,
-  borderTop: "0.2mm dashed #999",
-  paddingTop: "1mm",
-  color: "#333"
+  gap: "2.5mm 2mm",
+  padding: "2mm 0 3mm",
+  fontSize: "12pt",
+  fontWeight: 700
 })
+const nothing = css({ fontSize: "16pt", fontWeight: 400, color: "#000" })
+// Three tiles make a triangle: two stacked on the left, the third on the
+// right at half height. The gaps match the wrapping layout's.
+const triangle = css({
+  display: "grid",
+  gridTemplateColumns: "auto auto",
+  gridTemplateRows: "auto auto",
+  gridTemplateAreas: `"a c" "b c"`,
+  gap: "2.5mm 2mm",
+  alignItems: "center"
+})
+const effectLabel = css({
+  fontSize: "11pt",
+  fontWeight: 800,
+  textTransform: "uppercase",
+  letterSpacing: "0.03em",
+  textAlign: "center"
+})
+// What a player can own on the zone: a strip down the box's right edge, ruled
+// off from the recipe, with the annex on top and the upgrade slots inscribed
+// beneath it as cells. Nothing here is padded; the cells run to the edge.
+const own = css({
+  gridRow: "1 / 4",
+  gridColumn: "5",
+  display: "grid",
+  borderLeft: "0.35mm solid #000",
+  // A rule between cells, never under the last one: the box border is there.
+  "& > * + *": { borderTop: "0.35mm solid #000" }
+})
+// The annex alone fills the strip; with upgrade slots it takes the top half
+// and the two slots split the rest.
+const OWN_ROWS_ANNEX_ONLY = "1fr"
+const OWN_ROWS_WITH_SLOTS = "2fr 1fr 1fr"
+const cell = css({
+  boxSizing: "border-box",
+  padding: "1.2mm 1.5mm",
+  fontSize: "5pt",
+  lineHeight: 1,
+  fontWeight: 700,
+  letterSpacing: "0.1em",
+  textTransform: "uppercase",
+  color: "#777"
+})
+const annex = css({ background: "#ececec" })
+const slot = css({ background: "#fff" })
+// Paying with time: a quarter of a time disc tucked into the box's
+// bottom-left corner, mark inside, badge riding the arc.
+const TIME_CORNER_MM = 13
+const timeCorner = css({
+  position: "absolute",
+  left: 0,
+  bottom: 0,
+  width: `${TIME_CORNER_MM}mm`,
+  height: `${TIME_CORNER_MM}mm`,
+  boxSizing: "border-box",
+  borderTop: "1.1mm solid #000",
+  borderRight: "1.1mm solid #000",
+  borderTopRightRadius: "100%",
+  background: "#fff"
+})
+const timeMark = css({ position: "absolute", display: "block" })
+const term = css({ display: "inline-flex", alignItems: "center", gap: "0.5mm" })
+const plus = css({ fontSize: "12pt", fontWeight: 400, padding: "0 0.5mm" })
+
+/** A recipe side as tiles: one per good, its count in the badge. */
+function TileList({ terms: ts }: { terms: Terms }) {
+  if (ts.length === 0) return <span className={nothing}>—</span>
+  if (ts.length === 3) {
+    return (
+      <span className={triangle}>
+        {ts.map((x, i) => <ResourceTile key={x.good} kind={x.good} qty={x.qty} style={{ gridArea: "abc"[i]! }} />)}
+      </span>
+    )
+  }
+  return (
+    <>
+      {ts.map((x) => <ResourceTile key={x.good} kind={x.good} qty={x.qty} />)}
+    </>
+  )
+}
 
 export function TermList({ terms: ts, size = 5.4 }: { terms: Terms; size?: number }) {
   if (ts.length === 0) return <span className={term}>—</span>
@@ -200,49 +295,120 @@ export function TimeTerm({ count, size = 5.4 }: { count: number; size?: number }
 }
 
 const EFFECT_LABEL: Record<Exclude<Outcome["kind"], "goods">, string> = {
-  construct: "Uncover",
+  annex: "+1 Annex",
   worker: "+1 Worker",
   machinery: "1 Machine",
   polymers: "1 Polymer",
-  "upgraded-worker": "Upgrade",
+  specialist: "Specialist",
   special: "Project"
 }
 
-function OutcomeView({ outcome, size = 5.4 }: { outcome: Outcome; size?: number }) {
-  if (outcome.kind === "goods") return <TermList terms={outcome.goods} size={size} />
-  return <span className={effectLabel}>{EFFECT_LABEL[outcome.kind]}</span>
-}
-
-/** Inputs over an arrow over outputs — one term row per side, never wrapped. */
-function RecipeView({ zone, className, size = 5.4 }: { zone: Zone; className: string; size?: number }) {
+function TimeCorner({ ticks }: { ticks: number }) {
+  const Mark = markNamed("time")
+  const badgeMm = badgeSize(TILE_MM)
+  // The mark is most of the quadrant, hugging the corner; the badge rests on
+  // the box's bottom edge, centred where the arc meets it.
+  const markMm = 8
+  const markLeft = 0.9
+  const markBottom = 1
+  const badgeLeft = TIME_CORNER_MM - badgeMm / 2 - 1.5
+  // Flush with the box's bottom border.
+  const badgeBottom = 0
   return (
-    <div className={className}>
-      <span className={side} style={{ gridArea: "in" }}>
-        <TermList terms={zone.cost} size={size} />
+    <div className={timeCorner}>
+      <span className={timeMark} style={{ left: `${markLeft}mm`, bottom: `${markBottom}mm` }}>
+        <Mark size={markMm * MM} color="black" />
       </span>
-      <span className={down}>↓</span>
-      <span className={side} style={{ gridArea: "out" }}>
-        <OutcomeView outcome={zone.outcome} size={size} />
-      </span>
+      <Badge
+        label={ticks === 1 ? "−1" : `−${ticks}`}
+        size={badgeMm}
+        style={{ left: `${badgeLeft}mm`, bottom: `${badgeBottom}mm` }}
+      />
     </div>
   )
 }
 
-export function ZoneBox({ silo, n, zone, style }: { silo: Silo; n: number; zone: Zone; style?: CSSProperties }) {
+function ResetTile() {
   return (
-    <div className={`${box} ${zone.cover ? boxCovered : ""}`} style={style}>
+    <>
+      {RESET_BONUS.map((x) => <ResourceTile key={x.good} kind={x.good} qty={x.qty} size={RESET_TILE_MM} signed />)}
+    </>
+  )
+}
+
+function OutcomeTiles({ outcome }: { outcome: Outcome }) {
+  if (outcome.kind === "goods") return <TileList terms={outcome.goods} />
+  return <span className={effectLabel}>{EFFECT_LABEL[outcome.kind]}</span>
+}
+
+const SLOT_LABEL: Record<Upgrade, string> = { machinery: "Machine", polymers: "Polymer" }
+
+function Owned({ upgrade }: { upgrade?: Upgrade }) {
+  return (
+    <div className={own} style={{ gridTemplateRows: upgrade ? OWN_ROWS_WITH_SLOTS : OWN_ROWS_ANNEX_ONLY }}>
+      {Array.from({ length: ANNEXES_PER_ZONE }, (_, k) => <div key={k} className={`${cell} ${annex}`}>Annex</div>)}
+      {upgrade
+        && Array.from(
+          { length: UPGRADE_SLOTS_PER_ZONE },
+          (_, k) => <div key={k} className={`${cell} ${slot}`}>{SLOT_LABEL[upgrade]}</div>
+        )}
+    </div>
+  )
+}
+
+interface BoxProps {
+  silo: Silo
+  n: number
+  style?: CSSProperties
+  className?: string
+}
+
+export function ZoneBox({ silo, n, zone, style, className }: BoxProps & { zone: Zone }) {
+  return (
+    <div className={`${box} ${className ?? ""}`} style={style}>
       <div className={name}>
         <span>{zoneName(silo, n)}</span>
       </div>
-      <RecipeView zone={zone} className={recipe} />
-      {zone.timeOption && (
-        <div className={timeRow}>
-          <span>or</span>
-          <TermList terms={zone.timeOption.cost} size={4} />
-          <span className={plus}>+</span>
-          <TimeTerm count={zone.timeOption.extraTicks} size={4.8} />
-        </div>
-      )}
+      <div className={side} style={{ gridRow: 2, gridColumn: "1 / 3" }}>
+        <TileList terms={zone.cost} />
+      </div>
+      <div className={track}>
+        <div className={line} />
+        {Array.from({ length: zone.ticks }, (_, k) => (
+          <div key={k} className={tick}>
+            {n === 1 && k === zone.ticks - 1 && <ResetTile />}
+          </div>
+        ))}
+      </div>
+      <div className={side} style={{ gridRow: 2, gridColumn: "3 / 5" }}>
+        <OutcomeTiles outcome={zone.outcome} />
+      </div>
+      <div className={foot} aria-hidden>
+        &nbsp;
+      </div>
+      <Owned {...(silo.upgrade ? { upgrade: silo.upgrade } : {})} />
+      {zone.timeTicks !== undefined && <TimeCorner ticks={zone.timeTicks} />}
+    </div>
+  )
+}
+
+/** A zone still to be designed: the same box, dashed, with "tbd" where the cost goes. */
+function EmptyZoneBox({ silo, n, style, className }: BoxProps) {
+  return (
+    <div className={`${box} ${boxEmpty} ${className ?? ""}`} style={style}>
+      <div className={name}>
+        <span>{zoneName(silo, n)}</span>
+      </div>
+      <div className={side} style={{ gridRow: 2, gridColumn: "1 / 3" }}>tbd</div>
+      <div className={track}>
+        <div className={line} />
+        <div className={tick}>{n === 1 && <ResetTile />}</div>
+      </div>
+      <div className={side} style={{ gridRow: 2, gridColumn: "3 / 5" }} />
+      <div className={foot} aria-hidden>
+        &nbsp;
+      </div>
+      <Owned {...(silo.upgrade ? { upgrade: silo.upgrade } : {})} />
     </div>
   )
 }
@@ -251,31 +417,13 @@ export function SiloSheet({ silos }: { silos: readonly Silo[] }) {
   const maxZones = Math.max(...silos.map((s) => s.maxZones))
   const cells: ReactNode[] = []
   silos.forEach((silo, j) => {
-    cells.push(
-      <div key={`h${j}`} className={head} style={{ gridArea: `h${j}` }}>
-        <span>{silo.name}</span>
-        <span className={headId}>{silo.id}</span>
-      </div>
-    )
     for (let n = 1; n <= silo.maxZones; n++) {
       const zone = silo.zones[n - 1]
-      const t = zone?.ticks ?? 1
-      cells.push(
-        <div key={`t${j}-${n}`} className={ticks} style={{ gridArea: `t${j}-${n}` }}>
-          {Array.from({ length: t }, (_, k) => <div key={k} className={tick} />)}
-        </div>
-      )
+      const style = { gridArea: `z${j}-${n}` }
       cells.push(
         zone
-          ? <ZoneBox key={`z${j}-${n}`} silo={silo} n={n} zone={zone} style={{ gridArea: `z${j}-${n}` }} />
-          : (
-            <div key={`z${j}-${n}`} className={`${box} ${boxEmpty}`} style={{ gridArea: `z${j}-${n}` }}>
-              <div className={name}>
-                <span>{zoneName(silo, n)}</span>
-              </div>
-              <div className={recipe}>tbd</div>
-            </div>
-          )
+          ? <ZoneBox key={`z${j}-${n}`} silo={silo} n={n} zone={zone} style={style} />
+          : <EmptyZoneBox key={`z${j}-${n}`} silo={silo} n={n} style={style} />
       )
     }
   })
@@ -284,7 +432,7 @@ export function SiloSheet({ silos }: { silos: readonly Silo[] }) {
       className={`sheet ${sheet}`}
       style={{
         gridTemplateColumns: columns(silos.length),
-        gridTemplateRows: `${HEAD_H}in repeat(${maxZones}, ${ZONE_H}in)`,
+        gridTemplateRows: `repeat(${maxZones}, ${ZONE_H}in)`,
         gridTemplateAreas: areas(silos, maxZones)
       }}
     >
@@ -293,109 +441,45 @@ export function SiloSheet({ silos }: { silos: readonly Silo[] }) {
   )
 }
 
-const coverGrid = css({
-  width: `${SHEET_W_IN}in`,
-  height: `${SHEET_H_IN}in`,
+const landscape = css({
+  width: `${SHEET_H_IN}in`,
+  height: `${SHEET_W_IN}in`,
   padding: `${PAD_IN}in`,
   boxSizing: "border-box",
   background: "#fff",
   color: "#000",
   display: "grid",
-  gridTemplateColumns: `repeat(2, ${ZONE_W}in)`,
-  gridAutoRows: `${ZONE_H}in`,
-  gap: "0.2in",
+  // Columns and rows are inline: panda cannot extract computed sizes.
+  // The tight portrait row gap is for stacking a silo's zones; these boxes are
+  // separate silos, so they get the same gap as the columns.
+  columnGap: `${GAP_W}in`,
+  rowGap: `${GAP_W}in`,
   alignContent: "start",
   justifyContent: "center",
   fontFamily: "system-ui, sans-serif"
 })
-const coverTile = css({
-  border: "0.4mm solid #000",
-  borderRadius: "1.5mm",
-  boxSizing: "border-box",
-  padding: "2mm 2.2mm",
-  display: "grid",
-  gridTemplateRows: "auto auto 1fr auto",
-  gridTemplateAreas: `"kind" "name" "recipe" "vp"`,
-  rowGap: "1mm",
-  background: "#f3f3f3"
-})
-const coverKind = css({
-  gridArea: "kind",
-  fontSize: "7.5pt",
-  fontWeight: 600,
-  color: "#555",
-  letterSpacing: "0.1em",
-  textTransform: "uppercase"
-})
-const coverName = css({
-  gridArea: "name",
-  fontSize: "13pt",
-  fontWeight: 800,
-  textTransform: "uppercase",
-  letterSpacing: "0.04em"
-})
-const coverRecipe = css({
-  gridArea: "recipe",
-  display: "grid",
-  gridTemplateRows: "auto auto auto",
-  gridTemplateAreas: `"in" "arrow" "out"`,
-  alignContent: "start",
-  justifyItems: "start",
-  rowGap: "0.6mm",
-  fontSize: "11pt",
-  fontWeight: 700,
-  color: "#444"
-})
-const coverVp = css({
-  gridArea: "vp",
-  display: "flex",
-  justifyContent: "space-between",
-  alignItems: "center",
-  fontSize: "9pt",
-  fontWeight: 700,
-  borderTop: "0.2mm dashed #999",
-  paddingTop: "0.8mm"
-})
-const vpBox = css({
-  width: "8mm",
-  height: "7mm",
-  border: "0.3mm solid #000",
-  borderRadius: "1mm",
-  display: "inline-flex",
-  alignItems: "center",
-  justifyContent: "center"
-})
-
-/** Cover tiles per sheet: two across, four down at zone-box size. */
-export const COVERS_PER_SHEET = 8
+// A lone box on the last row spans both columns and centres itself; its
+// width is inline for the same reason.
+const lone = css({ gridColumn: "1 / -1", justifySelf: "center" })
 
 /**
- * Cover tiles, printed at zone-box size so each lies over the zone it hides.
- * Two across, four down; the twelve take two portrait sheets.
- *
- * Playtest shape. The intended final form is inverted: the cover is the
- * greyed-out face showing what it costs to build, and the zone underneath is
- * printed on the board. For now the tile repeats the zone's recipe so the
- * builder can see what they are opening, plus a VP box to pencil in.
- * Shows the zone's recipe so a builder knows what the structure will do, and
- * a VP box to pencil in until the values are tuned.
+ * A landscape sheet of single-zone silos, two across and as many rows as it
+ * takes. The D silos share one, the E silos (and F1) another; a silo with an
+ * odd number of boxes leaves its last one centred on the bottom row.
  */
-export function CoverSheet({ tiles }: { tiles: ReturnType<typeof covers> }) {
+export function LandscapeSheet({ silos }: { silos: readonly Silo[] }) {
   return (
-    <div className={`sheet ${coverGrid}`}>
-      {tiles.map((c) => {
-        const zone = c.silo.zones[c.zone - 1]!
-        return (
-          <div key={c.name} className={coverTile}>
-            <span className={coverKind}>Structure · {c.silo.id}</span>
-            <span className={coverName}>{c.name}</span>
-            <RecipeView zone={zone} className={coverRecipe} size={4.6} />
-            <div className={coverVp}>
-              <span>VP</span>
-              <span className={vpBox}>{c.cover.vp ?? ""}</span>
-            </div>
-          </div>
-        )
+    <div
+      className={`sheet sheet-landscape ${landscape}`}
+      style={{ gridTemplateColumns: `repeat(2, ${LAND_W}in)`, gridAutoRows: `${LAND_H}in` }}
+    >
+      {silos.map((silo, j) => {
+        const zone = silo.zones[0]
+        const last = silos.length % 2 === 1 && j === silos.length - 1
+        const place = last ? { className: lone, style: { width: `${LAND_W}in` } } : {}
+        return zone
+          ? <ZoneBox key={silo.id} silo={silo} n={1} zone={zone} {...place} />
+          : <EmptyZoneBox key={silo.id} silo={silo} n={1} {...place} />
       })}
     </div>
   )

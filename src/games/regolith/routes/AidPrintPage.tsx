@@ -1,11 +1,12 @@
-import { TermList, TimeTerm } from "~/games/regolith/components/SiloBoard"
+import { ResourceTile } from "~/games/regolith/components/ResourceTile"
+import { TermList } from "~/games/regolith/components/SiloBoard"
 import { GOODS, VALUE } from "~/games/regolith/domain"
 import { css } from "~/generated/styled-system/css"
 
 /**
  * One-page player aid: the three turn shapes, the marker rules, paying with
- * time, and the upgrade effects. Portrait letter, two columns. Rules text is
- * the DESIGN.md wording cut to table size.
+ * time, annexes, and the upgrade effects. Portrait letter, two columns. Rules
+ * text is the DESIGN.md wording cut to table size.
  */
 
 const printCss = `
@@ -161,11 +162,13 @@ export function AidPrintPage() {
               <div className={h}>Place</div>
               <ul className={list}>
                 <li>
-                  Your worker enters the <span className={b}>lowest unlocked, empty zone</span>{" "}
-                  of the silo. No choosing higher.
+                  Your worker enters the{" "}
+                  <span className={b}>lowest unlocked zone whose base slot is empty</span>, or any empty, unlocked{" "}
+                  <span className={b}>annex</span> at or below it. Never climb past an empty base slot.
                 </li>
                 <li>
                   <span className={b}>Pay the zone's cost now</span>, in full, from your supply. Can't pay, can't place.
+                  In someone else's annex, also pay them <span className={b}>1 energy</span>.
                 </li>
                 <li>
                   Zones the marker has already passed are <span className={b}>locked</span> until it resets.
@@ -186,22 +189,51 @@ export function AidPrintPage() {
                   <span className={b}>bumped</span>: it returns to its owner with the zone's outcome.
                 </li>
                 <li>
-                  Leaving the <span className={b}>top revealed zone</span> bumps it and the marker{" "}
-                  <span className={b}>resets to the bottom tick</span> at once. Everything unlocks.
+                  Leaving the <span className={b}>top zone</span> bumps it and the marker{" "}
+                  <span className={b}>resets to the bottom tick</span> at once. Everything unlocks. You take{" "}
+                  <span className={b}>1 energy</span> from the supply for the reset.
                 </li>
-                <li>Advancing pays you nothing directly. It is tempo — yours or someone else's.</li>
+                <li>Otherwise advancing pays you nothing directly. It is tempo — yours or someone else's.</li>
               </ul>
             </section>
 
             <section>
               <div className={h}>Paying with time</div>
               <p className={p}>
-                Some zones print a second, cheaper price ending in{" "}
-                <TimeTerm count={1} size={3.8} />. Taking it, put that many <span className={b}>time tokens</span>{" "}
+                A zone with a <ResourceTile kind="time" size={4.5} /> corner can be paid with time instead: pay{" "}
+                <span className={b}>one less of every good</span> in its cost (a good at 1 becomes free) and put{" "}
+                <span className={b}>one time token</span>{" "}
                 in the zone's box. While the marker sits at that zone, an advance{" "}
                 <span className={b}>removes a token instead of moving</span>. Zones below resolve at normal speed; every
                 worker above waits too.
               </p>
+              <p className={p} style={{ marginTop: "1mm" }}>
+                A <span className={b}>specialist</span>{" "}
+                pays the reduced price on these zones and places no token. Reductions never stack: one −1 per zone, by
+                token or by specialist.
+              </p>
+            </section>
+
+            <section>
+              <div className={h}>Annexes</div>
+              <ul className={list}>
+                <li>
+                  The grey square beside a zone is an{" "}
+                  <span className={b}>annex</span>: a second slot, dead until built. Built by Construction; the owner's
+                  marker sits in it.
+                </li>
+                <li>
+                  A worker in an annex pays, waits, bumps and yields{" "}
+                  <span className={b}>exactly like the base slot</span>
+                  . Locks and unlocks with the zone.
+                </li>
+                <li>
+                  Owner places there free. Anyone else pays the owner <span className={b}>1 energy</span> on top.
+                </li>
+                <li>
+                  Annexes in a silo are built <span className={b}>bottom to top</span>: the lowest unbuilt zone first.
+                </li>
+              </ul>
             </section>
           </div>
 
@@ -225,24 +257,30 @@ export function AidPrintPage() {
               <div className={h}>Upgrades resolve on bump</div>
               <ul className={list}>
                 <li>
-                  <span className={b}>Construction (D1).</span>{" "}
-                  On placement, choose the lowest covered zone of any silo and put your marker on its cover. On bump,
-                  remove the cover: the zone opens for everyone, you score its VP.
+                  <span className={b}>Construction (E1).</span>{" "}
+                  On placement, name a silo with an unbuilt annex. On bump, put your marker in that silo's lowest
+                  unbuilt annex.
                 </li>
                 <li>
-                  <span className={b}>Recruit (D2).</span> On bump, take a new worker.
+                  <span className={b}>Recruit (D3).</span> On bump, take a new worker.
                 </li>
                 <li>
-                  <span className={b}>Machinery (E1).</span>{" "}
-                  Choose a zone in a B silo. On bump, put your marker beside it. Your workers yield a bonus there;
-                  anyone may still use it.
+                  <span className={b}>Specialist (E2).</span>{" "}
+                  On bump, the worker you placed comes back as a specialist: it always pays the reduced price on any
+                  {" "}
+                  <ResourceTile kind="time" size={4.5} /> zone, no token. Ordinary everywhere else. Cannot re-enter E2.
                 </li>
                 <li>
-                  <span className={b}>Polymers (E2).</span>{" "}
-                  Same, for a zone in a C silo. Your workers convert better there.
+                  <span className={b}>Machinery (D1).</span>{" "}
+                  Choose a Rock or Water zone with a free machine slot. On bump, put your marker in it. Your workers
+                  yield a bonus there; anyone may still use it.
                 </li>
                 <li>
-                  <span className={b}>Upgraded worker (E3), Special projects (F1).</span> Not in v0.
+                  <span className={b}>Polymers (D2).</span>{" "}
+                  Same, for a Metal, Chemical or Food zone with a free polymer slot. Your workers convert better there.
+                </li>
+                <li>
+                  <span className={b}>Special projects (F1).</span> Not in v0.
                 </li>
               </ul>
             </section>
@@ -250,9 +288,9 @@ export function AidPrintPage() {
             <section>
               <div className={h}>Setup · v0 (pencil in)</div>
               <ul className={list}>
-                <li>Cover tiles on every hatched zone. Every marker disc on its silo's bottom tick.</li>
+                <li>Every marker disc on its silo's bottom tick. Every annex empty.</li>
                 <li>Workers per player: ____ &nbsp; Starting goods: ____</li>
-                <li>Game ends: ____ &nbsp; Score: VP from covers + ____</li>
+                <li>Game ends: ____ &nbsp; Score: ____ (nothing scores yet — note what players race for)</li>
                 <li>Bonus for machinery / polymer markers: ____</li>
               </ul>
             </section>

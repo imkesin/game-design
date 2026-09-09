@@ -1,5 +1,6 @@
 import { Fragment } from "react"
-import { covers, netValue, SILOS, VALUE } from "~/games/regolith/domain"
+import { ResourceTile } from "~/games/regolith/components/ResourceTile"
+import { GOODS, netValue, reducedCost, SILOS, VALUE } from "~/games/regolith/domain"
 import type { Silo, Terms } from "~/games/regolith/domain"
 import { css } from "~/generated/styled-system/css"
 
@@ -57,21 +58,25 @@ const dim = css({ color: "#a3a3a3" })
 const arrow = css({ color: "#737373" })
 const net = css({ color: "#86efac", fontVariantNumeric: "tabular-nums" })
 const todo = css({ gridColumn: "1 / -1", color: "#737373", fontStyle: "italic" })
-const coveredRow = css({ color: "#737373" })
 const links = css({ display: "flex", gap: "20px" })
 const link = css({ color: "#e5e5e5", fontSize: "15px", textDecoration: "underline" })
-const coverList = css({
-  display: "grid",
-  gridTemplateColumns: "auto 1fr auto",
-  columnGap: "12px",
-  rowGap: "4px",
-  fontSize: "13px",
-  border: "1px solid #404040",
-  borderRadius: "6px",
-  padding: "12px",
+// White because the tiles are print components: black on white is what they are for.
+const gallery = css({
   width: "100%",
-  maxWidth: "1100px"
+  maxWidth: "1100px",
+  background: "#fff",
+  color: "#000",
+  borderRadius: "6px",
+  padding: "16px",
+  display: "grid",
+  gridTemplateColumns: "auto 1fr",
+  columnGap: "24px",
+  rowGap: "12px",
+  alignItems: "center",
+  fontSize: "13px"
 })
+const galleryLabel = css({ color: "#525252", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.08em" })
+const tileRow = css({ display: "flex", flexWrap: "wrap", gap: "16px", alignItems: "center" })
 
 function terms(ts: Terms) {
   if (ts.length === 0) return "—"
@@ -79,33 +84,33 @@ function terms(ts: Terms) {
 }
 
 function SiloCard({ silo }: { silo: Silo }) {
-  const start = silo.startZones === undefined ? "?" : silo.startZones
   // Top zone first so the card reads like the silo stands on the board.
   const rows = silo.zones.map((zone, i) => ({ zone, n: i + 1 })).reverse()
   return (
     <div className={card}>
       <div className={head}>
         <span>{silo.id} · {silo.name}</span>
-        <span className={dim}>{silo.zones.length}/{silo.maxZones} zones · start {start}</span>
+        <span className={dim}>{silo.zones.length}/{silo.maxZones} zones</span>
       </div>
       {rows.length === 0 && <span className={todo}>zones undefined</span>}
       {rows.map(({ zone, n }) => {
         const nv = netValue(zone)
+        const cheap = reducedCost(zone)
         return (
           <Fragment key={n}>
-            <span className={zone.cover ? coveredRow : dim}>{zone.cover ? `${n}▣` : n}</span>
+            <span className={dim}>{n}</span>
             <span>{terms(zone.cost)}</span>
             <span className={arrow}>→</span>
             <span>{zone.outcome.kind === "goods" ? terms(zone.outcome.goods) : zone.outcome.kind}</span>
             <span className={dim}>{zone.ticks}t</span>
             <span className={net}>{nv === undefined ? "" : `+${nv}`}</span>
-            {zone.timeOption && (
+            {cheap && (
               <>
                 <span />
-                <span className={dim}>or {terms(zone.timeOption.cost)}</span>
+                <span className={dim}>or {terms(cheap)} (time / specialist)</span>
                 <span className={arrow}>→</span>
                 <span className={dim}>same</span>
-                <span className={dim}>+{zone.timeOption.extraTicks}t</span>
+                <span className={dim}>+{zone.timeTicks}t</span>
                 <span />
               </>
             )}
@@ -123,25 +128,35 @@ export function PreviewPage() {
       <span className={title}>Regolith</span>
       <span className={meta}>
         Silo redesign, zones read from the domain. Values:{" "}
-        {values}. Zones listed top to bottom; a worker enters the lowest open zone and pays its cost on placement. ▣
-        marks a zone that starts covered.
+        {values}. Zones listed top to bottom; a worker enters the lowest open zone (or an annex at or below it) and pays
+        its cost on placement.
       </span>
       <div className={links}>
-        <a className={link} href="/regolith/print/board">Silo board + covers (8 portrait sheets) →</a>
+        <a className={link} href="/regolith/print/board">Silo board (3 portrait + 2 landscape sheets) →</a>
         <a className={link} href="/regolith/print/aid">Player aid →</a>
+      </div>
+      <div className={gallery}>
+        <span className={galleryLabel}>Tiles · 12mm</span>
+        <div className={tileRow}>
+          {GOODS.map((g) => <ResourceTile key={g} kind={g} qty={VALUE[g]} />)}
+          <ResourceTile kind="time" qty={1} />
+        </div>
+        <span className={galleryLabel}>Bare</span>
+        <div className={tileRow}>
+          {GOODS.map((g) => <ResourceTile key={g} kind={g} />)}
+          <ResourceTile kind="time" />
+        </div>
+        <span className={galleryLabel}>Counts</span>
+        <div className={tileRow}>
+          {[1, 2, 3, 4, 6, 11, 16].map((n) => <ResourceTile key={n} kind="energy" qty={n} />)}
+        </div>
+        <span className={galleryLabel}>Sizes</span>
+        <div className={tileRow}>
+          {[8, 10, 12, 16].map((n) => <ResourceTile key={n} kind="water" qty={2} size={n} />)}
+        </div>
       </div>
       <div className={grid}>
         {SILOS.map((s) => <SiloCard key={s.id} silo={s} />)}
-      </div>
-      <div className={coverList}>
-        <span className={head}>Cover tiles · {covers().length}</span>
-        {covers().map((c) => (
-          <Fragment key={c.name}>
-            <span>{c.name}</span>
-            <span className={dim}>{c.silo.id}</span>
-            <span className={dim}>{c.cover.vp === undefined ? "? VP" : `${c.cover.vp} VP`}</span>
-          </Fragment>
-        ))}
       </div>
     </div>
   )
