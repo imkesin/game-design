@@ -12,6 +12,7 @@ import type { BoardGraph } from "./types.ts"
  * Banyan and Mangrove Edge.
  */
 export const BOARD_2P: BoardGraph = {
+  players: 2,
   clearings: [
     {
       id: "riverbend",
@@ -144,7 +145,7 @@ export const BOARD_2P: BoardGraph = {
     { id: "kapok-crown--sunning-rocks", from: "kapok-crown", to: "sunning-rocks", length: 3 },
     { id: "orchid-glade--old-banyan", from: "orchid-glade", to: "old-banyan", length: 3 },
     { id: "orchid-glade--lotus-pool", from: "orchid-glade", to: "lotus-pool", length: 3 },
-    { id: "lotus-pool--kapok-crown", from: "lotus-pool", to: "kapok-crown", length: 4 },
+    { id: "lotus-pool--kapok-crown", from: "lotus-pool", to: "kapok-crown", length: 3 },
     { id: "lotus-pool--hidden-spring", from: "lotus-pool", to: "hidden-spring", length: 2 },
     { id: "riverbend--heron-reach", from: "riverbend", to: "heron-reach", length: 2 },
     { id: "mangrove-edge--palm-shade", from: "mangrove-edge", to: "palm-shade", length: 2 }

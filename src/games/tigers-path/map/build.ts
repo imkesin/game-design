@@ -1,8 +1,9 @@
 import { writeFileSync } from "node:fs"
 import { dirname, resolve } from "node:path"
 import { fileURLToPath } from "node:url"
+import { boardCapacity } from "../boards/index.ts"
 import { type GeneratedMap, generateMap, type LayoutError, UNITS_PER_INCH } from "./layout.ts"
-import { ALL_VARIANTS, buildSpec } from "./spec.ts"
+import { ALL_VARIANTS, buildSpec, graphFor } from "./spec.ts"
 
 /**
  * Regenerates the board geometry from the authored graph in `domain.ts` into
@@ -26,8 +27,11 @@ try {
     const map = generateMap(buildSpec(v))
     all[v] = map
     const { crossings, minNodeGap, minPathClear, minCubeSlack, minGrasslandClear } = map.stats
+    const cap = boardCapacity(graphFor(v))
     console.log(
-      `${v.padEnd(9)} ${map.clearings.length} clearings, ${map.paths.length} paths  `
+      `${
+        v.padEnd(9)
+      } ${cap.clearings} clearings, ${cap.paths} paths (${cap.openers} openers), ${cap.slots} slots = ${cap.actions} actions  `
         + `crossings=${crossings}  minNodeGap=${inch(minNodeGap)}in  minPathClear=${inch(minPathClear)}in  `
         + `minCubeSlack=${inch(minCubeSlack)}in  minGrassClear=${inch(minGrasslandClear)}in`
     )

@@ -1,4 +1,4 @@
-import { BOARD_2P, BOARD_3P } from "../boards/index.ts"
+import { BOARD_2P, BOARD_3P, lintBoard } from "../boards/index.ts"
 import type { BoardGraph } from "../boards/types.ts"
 import { shapeForLevel } from "../domain.ts"
 import { type MapSpec, UNITS_PER_INCH } from "./layout.ts"
@@ -52,9 +52,13 @@ const GRASS_RADIUS = Math.round(2.9 * UNITS_PER_INCH)
 const RADIUS_IN: Record<number, number> = { 1: 0.52, 2: 0.68, 3: 0.768, 4: 0.9 }
 const radiusFor = (slots: number) => Math.round(RADIUS_IN[slots]! * UNITS_PER_INCH)
 
+/** The authored graph behind a variant (for capacity reporting). */
+export const graphFor = (variant: BoardVariant): BoardGraph => VARIANTS[variant].graph
+
 export function buildSpec(variant: BoardVariant = "2p-split"): MapSpec {
   const cfg = VARIANTS[variant]
   if (!cfg) throw new Error(`Unknown board variant "${variant}" (expected ${Object.keys(VARIANTS).join(" | ")})`)
+  lintBoard(cfg.graph, variant)
   const WIDTH = Math.round(cfg.wIn * UNITS_PER_INCH)
   const HEIGHT = Math.round(cfg.hIn * UNITS_PER_INCH)
 

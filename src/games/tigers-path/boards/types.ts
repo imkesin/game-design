@@ -62,6 +62,8 @@ export type Path = {
 }
 
 export type BoardGraph = {
+  /** Player count the board is tuned for; sizes the opener quota (`lint.ts`: 2 × players length-2 paths). */
+  players: number
   clearings: readonly Clearing[]
   paths: readonly Path[]
 }
