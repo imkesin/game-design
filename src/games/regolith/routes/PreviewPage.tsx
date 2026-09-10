@@ -128,8 +128,8 @@ export function PreviewPage() {
       <span className={title}>Regolith</span>
       <span className={meta}>
         Silo redesign, zones read from the domain. Values:{" "}
-        {values}. Zones listed top to bottom; a worker enters the lowest open zone (or an annex at or below it) and pays
-        its cost on placement.
+        {values}. Zones listed top to bottom; a worker enters the lowest open zone (or a bay of its own at or below it)
+        and pays its cost on placement.
       </span>
       <div className={links}>
         <a className={link} href="/regolith/print/board">Silo board (3 portrait + 2 landscape sheets) →</a>

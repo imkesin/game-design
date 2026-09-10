@@ -29,7 +29,7 @@ const START_ANGLE: Record<"square" | "pentagon", number> = {
 }
 
 /** Equilateral, apex up — the vertex layout a Reuleaux triangle's arcs are built from. */
-const TRIANGLE_ANGLES = [-Math.PI / 2, Math.PI / 6, (5 * Math.PI) / 6]
+const TRIANGLE_ANGLES = [-Math.PI / 2, Math.PI / 6, (5 * Math.PI) / 6] as const
 
 /** Oval's horizontal radius as a fraction of the outer radius — its vertical radius is the full rim (touching top/bottom). */
 const OVAL_RX_RATIO = 0.62
@@ -58,17 +58,18 @@ function arcFlags(center: Point, from: Point, to: Point) {
 }
 
 function reuleauxTrianglePath(cx: number, cy: number, r: number) {
-  const pts = TRIANGLE_ANGLES.map((a): Point => ({ x: cx + r * Math.cos(a), y: cy + r * Math.sin(a) }))
+  const pt = (a: number): Point => ({ x: cx + r * Math.cos(a), y: cy + r * Math.sin(a) })
+  const [p0, p1, p2] = TRIANGLE_ANGLES.map(pt) as [Point, Point, Point]
   const side = r * Math.sqrt(3)
   const arcTo = (from: Point, to: Point, center: Point) => {
     const { largeArc, sweep } = arcFlags(center, from, to)
     return `A ${side} ${side} 0 ${largeArc} ${sweep} ${to.x} ${to.y}`
   }
   return [
-    `M ${pts[0].x} ${pts[0].y}`,
-    arcTo(pts[0], pts[1], pts[2]),
-    arcTo(pts[1], pts[2], pts[0]),
-    arcTo(pts[2], pts[0], pts[1]),
+    `M ${p0.x} ${p0.y}`,
+    arcTo(p0, p1, p2),
+    arcTo(p1, p2, p0),
+    arcTo(p2, p0, p1),
     "Z"
   ].join(" ")
 }

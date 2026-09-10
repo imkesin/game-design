@@ -1,7 +1,8 @@
 import type { CSSProperties, ReactNode } from "react"
 import { markFor, markNamed } from "~/games/regolith/components/resourceMarks"
 import { Badge, badgeSize, ResourceTile, TILE_MM } from "~/games/regolith/components/ResourceTile"
-import { ANNEXES_PER_ZONE, RESET_BONUS, UPGRADE_SLOTS_PER_ZONE, zoneName } from "~/games/regolith/domain"
+import { WorkerTile } from "~/games/regolith/components/WorkerTile"
+import { BAYS_PER_ZONE, RESET_BONUS, UPGRADE_SLOTS_PER_ZONE, zoneName } from "~/games/regolith/domain"
 import type { Outcome, Silo, Terms, Upgrade, Zone } from "~/games/regolith/domain"
 import { css } from "~/generated/styled-system/css"
 
@@ -9,7 +10,7 @@ import { css } from "~/generated/styled-system/css"
  * The silo board, print edition. One portrait letter sheet holds two of the
  * tall silos (A–C); `SiloSheet` draws whichever it is given. The single-zone
  * silos go two across on landscape sheets instead (`LandscapeSheet`): all of
- * D on one, E and F1 on another. Two per row is more paper than three, but
+ * D on one, E on another. Two per row is more paper than three, but
  * the wide zone boxes leave room for a meeple beside the recipe.
  *
  * Every silo is one column of zone boxes, sized so two silos fill the
@@ -29,12 +30,13 @@ import { css } from "~/generated/styled-system/css"
  * corner: the time mark with a "−1" badge. The rule is one less of every
  * input and one more tick, so that is all the box needs to say.
  *
- * The bottom tick of every track holds a small "+1" energy tile: the marker
- * covers it each time a reset brings it home, and whoever ticked the reset
- * takes that energy. Printed once per silo because it happens once per cycle.
+ * The bottom tick of a raw-goods track (Energy, Rock, Water) holds a small
+ * "+1" energy tile: the marker covers it each time a reset brings it home,
+ * and whoever ticked the reset takes that energy. Printed once per silo
+ * because it happens once per cycle; the other silos pay nothing for a reset.
  *
  * A ruled strip down the box's right edge holds what players can own on the
- * zone, as cells. At the top is the annex, grey, one per zone at the printed
+ * zone, as cells. At the top is the bay, grey, one per zone at the printed
  * player count: empty until Construction puts an owner's marker in it, after
  * which it is a second worker slot. Rent is one rule for every cell and is
  * not printed. Below it, on the B and C silos only, two square slots take
@@ -203,7 +205,7 @@ const effectLabel = css({
   textAlign: "center"
 })
 // What a player can own on the zone: a strip down the box's right edge, ruled
-// off from the recipe, with the annex on top and the upgrade slots inscribed
+// off from the recipe, with the bay on top and the upgrade slots inscribed
 // beneath it as cells. Nothing here is padded; the cells run to the edge.
 const own = css({
   gridRow: "1 / 4",
@@ -213,9 +215,9 @@ const own = css({
   // A rule between cells, never under the last one: the box border is there.
   "& > * + *": { borderTop: "0.35mm solid #000" }
 })
-// The annex alone fills the strip; with upgrade slots it takes the top half
+// The bay alone fills the strip; with upgrade slots it takes the top half
 // and the two slots split the rest.
-const OWN_ROWS_ANNEX_ONLY = "1fr"
+const OWN_ROWS_BAY_ONLY = "1fr"
 const OWN_ROWS_WITH_SLOTS = "2fr 1fr 1fr"
 const cell = css({
   boxSizing: "border-box",
@@ -227,7 +229,7 @@ const cell = css({
   textTransform: "uppercase",
   color: "#777"
 })
-const annex = css({ background: "#ececec" })
+const bay = css({ background: "#ececec" })
 const slot = css({ background: "#fff" })
 // Paying with time: a quarter of a time disc tucked into the box's
 // bottom-left corner, mark inside, badge riding the arc.
@@ -294,13 +296,10 @@ export function TimeTerm({ count, size = 5.4 }: { count: number; size?: number }
   )
 }
 
-const EFFECT_LABEL: Record<Exclude<Outcome["kind"], "goods">, string> = {
-  annex: "+1 Annex",
-  worker: "+1 Worker",
+const EFFECT_LABEL: Record<Exclude<Outcome["kind"], "goods" | "worker" | "specialist">, string> = {
+  bay: "+1 Bay",
   machinery: "1 Machine",
-  polymers: "1 Polymer",
-  specialist: "Specialist",
-  special: "Project"
+  polymers: "1 Polymer"
 }
 
 function TimeCorner({ ticks }: { ticks: number }) {
@@ -336,17 +335,27 @@ function ResetTile() {
   )
 }
 
+// Yields that are not goods. Workers have a tile; the rest are still words
+// until they have a mark (see `../marks/README.md`).
 function OutcomeTiles({ outcome }: { outcome: Outcome }) {
-  if (outcome.kind === "goods") return <TileList terms={outcome.goods} />
-  return <span className={effectLabel}>{EFFECT_LABEL[outcome.kind]}</span>
+  switch (outcome.kind) {
+    case "goods":
+      return <TileList terms={outcome.goods} />
+    case "worker":
+      return <WorkerTile variant="recruit" />
+    case "specialist":
+      return <WorkerTile variant="specialist" />
+    default:
+      return <span className={effectLabel}>{EFFECT_LABEL[outcome.kind]}</span>
+  }
 }
 
 const SLOT_LABEL: Record<Upgrade, string> = { machinery: "Machine", polymers: "Polymer" }
 
 function Owned({ upgrade }: { upgrade?: Upgrade }) {
   return (
-    <div className={own} style={{ gridTemplateRows: upgrade ? OWN_ROWS_WITH_SLOTS : OWN_ROWS_ANNEX_ONLY }}>
-      {Array.from({ length: ANNEXES_PER_ZONE }, (_, k) => <div key={k} className={`${cell} ${annex}`}>Annex</div>)}
+    <div className={own} style={{ gridTemplateRows: upgrade ? OWN_ROWS_WITH_SLOTS : OWN_ROWS_BAY_ONLY }}>
+      {Array.from({ length: BAYS_PER_ZONE }, (_, k) => <div key={k} className={`${cell} ${bay}`}>Bay</div>)}
       {upgrade
         && Array.from(
           { length: UPGRADE_SLOTS_PER_ZONE },
@@ -376,7 +385,7 @@ export function ZoneBox({ silo, n, zone, style, className }: BoxProps & { zone: 
         <div className={line} />
         {Array.from({ length: zone.ticks }, (_, k) => (
           <div key={k} className={tick}>
-            {n === 1 && k === zone.ticks - 1 && <ResetTile />}
+            {silo.resetBonus && n === 1 && k === zone.ticks - 1 && <ResetTile />}
           </div>
         ))}
       </div>
@@ -402,7 +411,7 @@ function EmptyZoneBox({ silo, n, style, className }: BoxProps) {
       <div className={side} style={{ gridRow: 2, gridColumn: "1 / 3" }}>tbd</div>
       <div className={track}>
         <div className={line} />
-        <div className={tick}>{n === 1 && <ResetTile />}</div>
+        <div className={tick}>{silo.resetBonus && n === 1 && <ResetTile />}</div>
       </div>
       <div className={side} style={{ gridRow: 2, gridColumn: "3 / 5" }} />
       <div className={foot} aria-hidden>
@@ -464,8 +473,8 @@ const lone = css({ gridColumn: "1 / -1", justifySelf: "center" })
 
 /**
  * A landscape sheet of single-zone silos, two across and as many rows as it
- * takes. The D silos share one, the E silos (and F1) another; a silo with an
- * odd number of boxes leaves its last one centred on the bottom row.
+ * takes. The D silos share one, the E silos another; a sheet with an odd
+ * number of boxes leaves its last one centred on the bottom row.
  */
 export function LandscapeSheet({ silos }: { silos: readonly Silo[] }) {
   return (

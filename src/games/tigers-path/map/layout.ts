@@ -763,12 +763,10 @@ export function generateMap(spec: MapSpec): GeneratedMap {
   for (const e of spec.edges) {
     if (!index.has(e.a) || !index.has(e.b)) throw new Error(`Edge ${e.id} references unknown clearing`)
   }
-  const edges: Edge[] = spec.edges.map((e) => ({
-    a: index.get(e.a)!,
-    b: index.get(e.b)!,
-    cap: e.cap,
-    bend: resolveBend(e.bend)
-  }))
+  const edges: Edge[] = spec.edges.map((e) => {
+    const bend = resolveBend(e.bend)
+    return { a: index.get(e.a)!, b: index.get(e.b)!, cap: e.cap, ...(bend ? { bend } : {}) }
+  })
   const nodeMargin = nodeMarginFor(spec.nodes)
   const grass: Grass | null = spec.grassland
     ? { c: { x: spec.grassland.cx, y: spec.grassland.cy }, excl: spec.grassland.radius + GRASS_MOAT }

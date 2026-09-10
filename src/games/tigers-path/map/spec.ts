@@ -74,7 +74,13 @@ export function buildSpec(variant: BoardVariant = "2p-split"): MapSpec {
       target: toUnits(c.target),
       slots: c.slots.map((s) => ({ shape: shapeForLevel(s.level), cost: s.cost }))
     })),
-    edges: cfg.graph.paths.map((p) => ({ id: p.id, a: p.from, b: p.to, cap: p.length, bend: p.bend })),
+    edges: cfg.graph.paths.map((p) => ({
+      id: p.id,
+      a: p.from,
+      b: p.to,
+      cap: p.length,
+      ...(p.bend ? { bend: p.bend } : {})
+    })),
     ...(cfg.grass ? { grassland: { cx: Math.round(WIDTH / 2), cy: HEIGHT, radius: GRASS_RADIUS } } : {})
   }
 }

@@ -1,4 +1,4 @@
-import type { CSSProperties } from "react"
+import type { CSSProperties, ReactNode } from "react"
 import { markFor, markNamed } from "~/games/regolith/components/resourceMarks"
 import type { Good } from "~/games/regolith/domain"
 import { css } from "~/generated/styled-system/css"
@@ -58,10 +58,15 @@ const badge = css({
 })
 
 export interface BadgeProps {
-  /** Printed in the badge, e.g. `3` or `"−1"`. */
-  label: number | string
+  /** Printed in the badge: a count like `3` or `"−1"`, or a small icon sized to fit. */
+  label: number | string | ReactNode
   /** Edge of the badge in mm. */
   size: number
+  /**
+   * Force the two-character square even for a short or iconic label, so a set
+   * of badges that must match ("+1" beside a chevron) all get the same edge.
+   */
+  wide?: boolean
   style?: CSSProperties
 }
 
@@ -73,8 +78,9 @@ export interface BadgeProps {
 // the same text size; the badge stays a square whatever it holds.
 const WIDE_LABEL_RATIO = 1.15
 
-export function Badge({ label, size, style }: BadgeProps) {
-  const edge = String(label).length >= 2 ? size * WIDE_LABEL_RATIO : size
+export function Badge({ label, size, wide = false, style }: BadgeProps) {
+  const twoChars = (typeof label === "string" || typeof label === "number") && String(label).length >= 2
+  const edge = wide || twoChars ? size * WIDE_LABEL_RATIO : size
   return (
     <span
       className={badge}

@@ -5,7 +5,7 @@ import { css } from "~/generated/styled-system/css"
 
 /**
  * One-page player aid: the three turn shapes, the marker rules, paying with
- * time, annexes, and the upgrade effects. Portrait letter, two columns. Rules
+ * time, bays, and the upgrade effects. Portrait letter, two columns. Rules
  * text is the DESIGN.md wording cut to table size.
  */
 
@@ -164,11 +164,12 @@ export function AidPrintPage() {
                 <li>
                   Your worker enters the{" "}
                   <span className={b}>lowest unlocked zone whose base slot is empty</span>, or any empty, unlocked{" "}
-                  <span className={b}>annex</span> at or below it. Never climb past an empty base slot.
+                  <span className={b}>bay of yours</span> at or below it. Never climb past an empty base slot.
                 </li>
                 <li>
                   <span className={b}>Pay the zone's cost now</span>, in full, from your supply. Can't pay, can't place.
-                  In someone else's annex, also pay them <span className={b}>1 energy</span>.
+                  For each machine or polymer on the zone that isn't yours, also pay its owner{" "}
+                  <span className={b}>1 energy</span> (1 of any good if you have no energy).
                 </li>
                 <li>
                   Zones the marker has already passed are <span className={b}>locked</span> until it resets.
@@ -190,8 +191,9 @@ export function AidPrintPage() {
                 </li>
                 <li>
                   Leaving the <span className={b}>top zone</span> bumps it and the marker{" "}
-                  <span className={b}>resets to the bottom tick</span> at once. Everything unlocks. You take{" "}
-                  <span className={b}>1 energy</span> from the supply for the reset.
+                  <span className={b}>resets to the bottom tick</span> at once. Everything unlocks. On{" "}
+                  <span className={b}>Energy, Rock or Water</span> you take <span className={b}>1 energy</span>{" "}
+                  from the supply for the reset.
                 </li>
                 <li>Otherwise advancing pays you nothing directly. It is tempo — yours or someone else's.</li>
               </ul>
@@ -215,23 +217,20 @@ export function AidPrintPage() {
             </section>
 
             <section>
-              <div className={h}>Annexes</div>
+              <div className={h}>Bays</div>
               <ul className={list}>
                 <li>
-                  The grey square beside a zone is an{" "}
-                  <span className={b}>annex</span>: a second slot, dead until built. Built by Construction; the owner's
+                  The grey square beside a zone is a{" "}
+                  <span className={b}>bay</span>: a second slot, dead until built. Built by Construction; the owner's
                   marker sits in it.
                 </li>
                 <li>
-                  A worker in an annex pays, waits, bumps and yields{" "}
-                  <span className={b}>exactly like the base slot</span>
-                  . Locks and unlocks with the zone.
+                  <span className={b}>Owner only.</span>{" "}
+                  Nobody else may place there. A worker in a bay pays, waits, bumps and yields{" "}
+                  <span className={b}>exactly like the base slot</span>. Locks and unlocks with the zone.
                 </li>
                 <li>
-                  Owner places there free. Anyone else pays the owner <span className={b}>1 energy</span> on top.
-                </li>
-                <li>
-                  Annexes in a silo are built <span className={b}>bottom to top</span>: the lowest unbuilt zone first.
+                  Bays in a silo are built <span className={b}>bottom to top</span>: the lowest unbuilt zone first.
                 </li>
               </ul>
             </section>
@@ -258,8 +257,8 @@ export function AidPrintPage() {
               <ul className={list}>
                 <li>
                   <span className={b}>Construction (E1).</span>{" "}
-                  On placement, name a silo with an unbuilt annex. On bump, put your marker in that silo's lowest
-                  unbuilt annex.
+                  On placement, name a silo with an unbuilt bay. On bump, put your marker in that silo's lowest unbuilt
+                  bay.
                 </li>
                 <li>
                   <span className={b}>Recruit (D3).</span> On bump, take a new worker.
@@ -272,15 +271,14 @@ export function AidPrintPage() {
                 </li>
                 <li>
                   <span className={b}>Machinery (D1).</span>{" "}
-                  Choose a Rock or Water zone with a free machine slot. On bump, put your marker in it. Your workers
-                  yield a bonus there; anyone may still use it.
+                  Choose a Rock or Water zone with a free machine slot. On bump, put your marker in it.{" "}
+                  <span className={b}>Every</span> worker there yields a bonus; anyone but you pays you{" "}
+                  <span className={b}>1 energy</span> to place there.
                 </li>
                 <li>
                   <span className={b}>Polymers (D2).</span>{" "}
-                  Same, for a Metal, Chemical or Food zone with a free polymer slot. Your workers convert better there.
-                </li>
-                <li>
-                  <span className={b}>Special projects (F1).</span> Not in v0.
+                  Same, for a Metal, Chemical or Food zone with a free polymer slot. Every worker there converts better;
+                  same toll.
                 </li>
               </ul>
             </section>
@@ -288,7 +286,7 @@ export function AidPrintPage() {
             <section>
               <div className={h}>Setup · v0 (pencil in)</div>
               <ul className={list}>
-                <li>Every marker disc on its silo's bottom tick. Every annex empty.</li>
+                <li>Every marker disc on its silo's bottom tick. Every bay empty.</li>
                 <li>Workers per player: ____ &nbsp; Starting goods: ____</li>
                 <li>Game ends: ____ &nbsp; Score: ____ (nothing scores yet — note what players race for)</li>
                 <li>Bonus for machinery / polymer markers: ____</li>

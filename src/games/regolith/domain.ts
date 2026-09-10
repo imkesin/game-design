@@ -57,12 +57,11 @@ function t(good: Good, qty: number): Term {
  */
 export type Outcome =
   | { kind: "goods"; goods: Terms }
-  | { kind: "annex" }
+  | { kind: "bay" }
   | { kind: "worker" }
   | { kind: "machinery" }
   | { kind: "polymers" }
   | { kind: "specialist" }
-  | { kind: "special" }
 
 export interface Zone {
   /** Paid in full on placement. */
@@ -74,7 +73,8 @@ export interface Zone {
    * a token instead of moving it, so the zone takes `ticks + timeTicks`
    * advances to clear. Workers below resolve at normal speed; every worker
    * above waits too. Only the D and E silos offer it — raw and refining zones
-   * have one price.
+   * have one price. Every zone on the board is 1 tick; a token is the only
+   * thing that makes one take 2.
    *
    * A specialist takes the same reduction on the same zones and places no
    * token. Reductions never stack: at 1 the zone is reduced once, by a token
@@ -103,6 +103,8 @@ export interface Silo {
   maxZones: number
   /** Every zone in this silo prints `UPGRADE_SLOTS_PER_ZONE` slots for this upgrade. Absent: none. */
   upgrade?: Upgrade
+  /** The reset tick on this silo pays its advancer `RESET_BONUS`. Only the raw-goods silos do. */
+  resetBonus?: true
 }
 
 function goods(cost: Terms, yields: Terms, ticks = 1): Zone {
@@ -139,26 +141,32 @@ export function netValue(zone: Zone): number | undefined {
 }
 
 /**
- * Annexes: every zone has room for extra worker slots beside it, built via
+ * Bays: every zone has room for extra worker slots beside it, built via
  * Construction (E1) from the bottom of a silo up. This many are printed on
  * the board, which is the 2–3 player count; 4 players wants two per zone and
- * a second square. A worker in an annex pays, waits and yields exactly as in
- * the base slot; anyone but the annex's owner also pays `ANNEX_RENT` to the
- * owner on placement.
+ * a second square. A bay is its owner's alone: nobody else may place there.
+ * A worker in one pays, waits and yields exactly as in the base slot.
  */
-export const ANNEXES_PER_ZONE = 1
-export const ANNEX_RENT: Terms = [t("energy", 1)]
+export const BAYS_PER_ZONE = 1
 
 /**
  * Machinery and polymer markers sit in printed slots on the zone they claim:
  * this many per zone, so at most this many players can upgrade one zone.
- * Only the B silos take machinery and only the C silos take polymers.
+ * Only the B silos take machinery and only the C silos take polymers. An
+ * upgrade boosts every worker on its zone; anyone but its owner pays
+ * `UPGRADE_TOLL` to the owner on placement, per upgrade there that is not
+ * theirs — 1 of any good if they hold no energy, and no placement if they
+ * hold nothing.
  */
 export const UPGRADE_SLOTS_PER_ZONE = 2
+export const UPGRADE_TOLL: Terms = [t("energy", 1)]
 
 /**
  * The advance that carries a marker past its top zone resets the silo for
- * everyone; the player who ticks it takes this from the supply.
+ * everyone; on a silo with `resetBonus`, the player who ticks it takes this
+ * from the supply. Only Energy, Rock and Water pay it: the deep, crowded raw
+ * silos are the ones that need a volunteer to reopen them, and the one-zone
+ * upgrade silos reset on every bump anyway.
  */
 export const RESET_BONUS: Terms = [t("energy", 1)]
 
@@ -176,19 +184,20 @@ export const RESET_BONUS: Terms = [t("energy", 1)]
  * else (it no longer emits any), and Energy's top zone runs on water rather
  * than refined goods.
  *
- * Second pass (2026-09-09): the five D/E silos with a recipe (D makes a thing
- * you own — machine, polymer, worker; E builds or trains) are one zone each, 2 ticks and payable with time (see `timeTicks`), and every price was
- * roughly halved. Construction and Specialist put their refined input at 1 so
- * the reduced price drops it. Their 2-tick duration is a draft, not a decision.
+ * Second pass (2026-09-09): the five D/E silos (D makes a thing you own —
+ * machine, polymer, worker; E builds or trains) are one zone each, 1 tick
+ * like everything else, and payable with time (see `timeTicks`) for a second
+ * tick. Every price was roughly halved. Construction and Specialist put their
+ * refined input at 1 so the reduced price drops it.
  *
- * Special Projects lists its shape and no zones. `netValue` is the check for
- * anything that yields goods.
+ * `netValue` is the check for anything that yields goods.
  */
 export const SILOS: readonly Silo[] = [
   {
     id: "A",
     name: "Energy",
     maxZones: 4,
+    resetBonus: true,
     zones: [
       goods([], [t("energy", 4)]),
       goods([], [t("energy", 6)]),
@@ -200,6 +209,7 @@ export const SILOS: readonly Silo[] = [
     id: "B1",
     name: "Rock",
     maxZones: 3,
+    resetBonus: true,
     upgrade: "machinery",
     zones: [
       goods([], [t("rock", 2)]),
@@ -211,6 +221,7 @@ export const SILOS: readonly Silo[] = [
     id: "B2",
     name: "Water",
     maxZones: 3,
+    resetBonus: true,
     upgrade: "machinery",
     zones: [
       goods([t("energy", 2)], [t("water", 2)]),
@@ -253,7 +264,7 @@ export const SILOS: readonly Silo[] = [
     name: "Machinery",
     maxZones: 1,
     zones: [
-      effect("machinery", [t("metal", 2), t("energy", 2)], 2, 1)
+      effect("machinery", [t("metal", 2), t("energy", 2)], 1, 1)
     ]
   },
   {
@@ -261,7 +272,7 @@ export const SILOS: readonly Silo[] = [
     name: "Polymers",
     maxZones: 1,
     zones: [
-      effect("polymers", [t("chemical", 2), t("energy", 2)], 2, 1)
+      effect("polymers", [t("chemical", 2), t("energy", 2)], 1, 1)
     ]
   },
   {
@@ -269,7 +280,7 @@ export const SILOS: readonly Silo[] = [
     name: "Recruit",
     maxZones: 1,
     zones: [
-      effect("worker", [t("food", 2), t("energy", 2)], 2, 1)
+      effect("worker", [t("food", 2), t("energy", 2)], 1, 1)
     ]
   },
   {
@@ -277,7 +288,7 @@ export const SILOS: readonly Silo[] = [
     name: "Construction",
     maxZones: 1,
     zones: [
-      effect("annex", [t("rock", 2), t("metal", 1), t("energy", 3)], 2, 1)
+      effect("bay", [t("rock", 2), t("metal", 1), t("energy", 3)], 1, 1)
     ]
   },
   {
@@ -285,10 +296,9 @@ export const SILOS: readonly Silo[] = [
     name: "Specialist",
     maxZones: 1,
     zones: [
-      effect("specialist", [t("water", 2), t("food", 1), t("energy", 3)], 2, 1)
+      effect("specialist", [t("water", 2), t("food", 1), t("energy", 3)], 1, 1)
     ]
-  },
-  { id: "F1", name: "Special Projects", maxZones: 1, zones: [] }
+  }
 ]
 
 /** The tallest silo; the board sheet sizes its rows from this. */

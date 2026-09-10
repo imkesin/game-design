@@ -75,17 +75,20 @@ function ClearingLabel({ clearing }: { clearing: GenClearing }) {
       <div className={labelBody}>
         <span className={clearingName}>{clearing.name}</span>
         <div className={slotGrid} style={{ gridTemplateColumns: `repeat(${cols}, auto)` }}>
-          {clearing.slots.map((slot, i) => (
-            <ClearingSlotIcon
-              key={i}
-              shape={slot.shape as SlotShape}
-              cost={slot.cost}
-              size={15}
-              color="green"
-              // Triangle base: the last of three slots spans both columns, centred below the pair.
-              style={n === 3 && i === 2 ? { gridColumn: "1 / -1" } : undefined}
-            />
-          ))}
+          {clearing.slots.map((slot, i) => {
+            // Triangle base: the last of three slots spans both columns, centred below the pair.
+            const span = n === 3 && i === 2 ? { style: { gridColumn: "1 / -1" } } : {}
+            return (
+              <ClearingSlotIcon
+                key={i}
+                shape={slot.shape as SlotShape}
+                cost={slot.cost}
+                size={15}
+                color="green"
+                {...span}
+              />
+            )
+          })}
         </div>
       </div>
     </foreignObject>

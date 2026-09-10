@@ -4,7 +4,7 @@ import { css } from "~/generated/styled-system/css"
 
 /**
  * The silo board: three portrait letter sheets of two tall silos each, then
- * two landscape sheets for the single-zone silos (all of D; E plus F1). Print
+ * two landscape sheets for the single-zone silos (all of D; both of E). Print
  * at 100% with no margins so the zones hold a meeple. Mixed orientation uses a
  * named page; Chrome honours it, other browsers may need the two landscape
  * sheets printed separately.
@@ -49,7 +49,7 @@ const note = css({
 
 const silos = (ids: string[]) => ids.map((id) => SILOS.find((s) => s.id === id)!)
 const PORTRAIT = [["A", "B1"], ["B2", "C1"], ["C2", "C3"]].map(silos)
-const LANDSCAPE = [["D1", "D2", "D3"], ["E1", "E2", "F1"]].map(silos)
+const LANDSCAPE = [["D1", "D2", "D3"], ["E1", "E2"]].map(silos)
 
 const shadow = css({ boxShadow: "0 8px 24px rgba(0,0,0,0.4)", flex: "none" })
 

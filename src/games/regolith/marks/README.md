@@ -12,6 +12,9 @@ energy.svg   rock.svg   water.svg   metal.svg   chemical.svg   food.svg
 
 Plus `time.svg`, the time-token mark, which is not a good and is fetched by name.
 
+Plus `worker.svg`, the worker mark, also fetched by name: `WorkerTile` draws it with a "+1" badge
+for the Recruit yield and an up-chevron badge for the Specialist yield, so one file covers both.
+
 A file here is the _only_ source of that good's mark — there are no built-ins (see
 `../components/resourceMarks.ts`). A good with no file draws an obvious dashed placeholder, so a
 missing mark shows up on the board rather than silently borrowing something that reads wrong.
