@@ -241,8 +241,8 @@ const SCORING: readonly React.ReactNode[] = [
   </>,
   <>
     <strong>One animal:</strong>{" "}
-    The game-ender locks their top animal; the rest draft by highest track position (ties → more of it in sanctuary; else
-    shared).
+    The game-ender locks their top animal; the rest draft by highest track position (ties → more of it in sanctuary;
+    else shared).
   </>,
   <>
     <strong>Score</strong> = your animal's disc network (discs linked by its color's paths) × Elephant number.

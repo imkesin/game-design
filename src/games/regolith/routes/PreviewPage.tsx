@@ -1,12 +1,25 @@
 import { Fragment } from "react"
 import { ResourceTile } from "~/games/regolith/components/ResourceTile"
-import { GOODS, netValue, reducedCost, SILOS, VALUE } from "~/games/regolith/domain"
-import type { Silo, Terms } from "~/games/regolith/domain"
+import {
+  BUILDING_VP,
+  BUILDINGS,
+  CONTRIBUTION_VP,
+  CONTRIBUTIONS,
+  contributionValuePerVp,
+  CYCLES,
+  GOODS,
+  netValue,
+  TIERS,
+  TRACKS,
+  VALUE,
+  valueOf
+} from "~/games/regolith/domain"
+import type { Terms, Track } from "~/games/regolith/domain"
 import { css } from "~/generated/styled-system/css"
 
 /**
- * Sanity table for the silo redesign: every silo's zones with cost, outcome,
- * ticks and net value, read straight from the domain. Not a print page.
+ * Sanity table for the track design: every track's spaces with cost, outcome
+ * and net value, read straight from the domain. Not a print page.
  */
 
 const page = css({
@@ -21,11 +34,11 @@ const page = css({
 
 const title = css({ fontSize: "24px", fontWeight: 800, letterSpacing: "0.12em", textTransform: "uppercase" })
 
-const meta = css({ color: "#a3a3a3", fontSize: "13px", maxWidth: "520px", textAlign: "center", lineHeight: 1.5 })
+const meta = css({ color: "#a3a3a3", fontSize: "13px", maxWidth: "560px", textAlign: "center", lineHeight: 1.5 })
 
 const grid = css({
   display: "grid",
-  gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))",
+  gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))",
   gap: "16px",
   width: "100%",
   maxWidth: "1100px"
@@ -33,7 +46,7 @@ const grid = css({
 
 const card = css({
   display: "grid",
-  gridTemplateColumns: "auto 1fr auto 1fr auto auto",
+  gridTemplateColumns: "auto 1fr auto 1fr auto",
   gridAutoRows: "min-content",
   columnGap: "8px",
   rowGap: "4px",
@@ -57,7 +70,7 @@ const head = css({
 const dim = css({ color: "#a3a3a3" })
 const arrow = css({ color: "#737373" })
 const net = css({ color: "#86efac", fontVariantNumeric: "tabular-nums" })
-const todo = css({ gridColumn: "1 / -1", color: "#737373", fontStyle: "italic" })
+const cost = css({ color: "#fcd34d", fontVariantNumeric: "tabular-nums" })
 const links = css({ display: "flex", gap: "20px" })
 const link = css({ color: "#e5e5e5", fontSize: "15px", textDecoration: "underline" })
 // White because the tiles are print components: black on white is what they are for.
@@ -83,37 +96,28 @@ function terms(ts: Terms) {
   return ts.map((x) => `${x.qty} ${x.good}`).join(" + ")
 }
 
-function SiloCard({ silo }: { silo: Silo }) {
-  // Top zone first so the card reads like the silo stands on the board.
-  const rows = silo.zones.map((zone, i) => ({ zone, n: i + 1 })).reverse()
+const ROMAN = ["I", "II", "III", "IV", "V"]
+
+function TrackCard({ track }: { track: Track }) {
+  // Top space first so the card reads like the track stands on the board.
+  const rows = track.spaces.map((space, i) => ({ space, tier: i + 1 })).reverse()
   return (
     <div className={card}>
       <div className={head}>
-        <span>{silo.id} · {silo.name}</span>
-        <span className={dim}>{silo.zones.length}/{silo.maxZones} zones</span>
+        <span>{track.id} · {track.name}</span>
+        <span className={dim}>{track.spaces.length} spaces</span>
       </div>
-      {rows.length === 0 && <span className={todo}>zones undefined</span>}
-      {rows.map(({ zone, n }) => {
-        const nv = netValue(zone)
-        const cheap = reducedCost(zone)
+      {rows.map(({ space, tier }) => {
+        const nv = netValue(space)
         return (
-          <Fragment key={n}>
-            <span className={dim}>{n}</span>
-            <span>{terms(zone.cost)}</span>
+          <Fragment key={tier}>
+            <span className={dim}>{ROMAN[tier - 1]}</span>
+            <span>{terms(space.cost)}</span>
             <span className={arrow}>→</span>
-            <span>{zone.outcome.kind === "goods" ? terms(zone.outcome.goods) : zone.outcome.kind}</span>
-            <span className={dim}>{zone.ticks}t</span>
-            <span className={net}>{nv === undefined ? "" : `+${nv}`}</span>
-            {cheap && (
-              <>
-                <span />
-                <span className={dim}>or {terms(cheap)} (time / specialist)</span>
-                <span className={arrow}>→</span>
-                <span className={dim}>same</span>
-                <span className={dim}>+{zone.timeTicks}t</span>
-                <span />
-              </>
-            )}
+            <span>{space.outcome.kind === "goods" ? terms(space.outcome.goods) : space.outcome.kind}</span>
+            {nv === undefined
+              ? <span className={cost}>({valueOf(space.cost)})</span>
+              : <span className={net}>+{nv}</span>}
           </Fragment>
         )
       })}
@@ -127,12 +131,13 @@ export function PreviewPage() {
     <div className={page}>
       <span className={title}>Regolith</span>
       <span className={meta}>
-        Silo redesign, zones read from the domain. Values:{" "}
-        {values}. Zones listed top to bottom; a worker enters the lowest open zone (or a bay of its own at or below it)
-        and pays its cost on placement.
+        Track design, spaces read from the domain. Values:{" "}
+        {values}. Spaces listed top to bottom; a worker enters any empty, unlocked space and pays its cost on placement.
+        Green is net value per visit; amber is the input value of a space that yields a thing. {CYCLES} cycles of{" "}
+        {TIERS} rounds.
       </span>
       <div className={links}>
-        <a className={link} href="/regolith/print/board">Silo board (3 portrait + 2 landscape sheets) →</a>
+        <a className={link} href="/regolith/print/board">Track board (4 portrait sheets) →</a>
         <a className={link} href="/regolith/print/aid">Player aid →</a>
       </div>
       <div className={gallery}>
@@ -148,7 +153,7 @@ export function PreviewPage() {
         </div>
         <span className={galleryLabel}>Counts</span>
         <div className={tileRow}>
-          {[1, 2, 3, 4, 6, 11, 16].map((n) => <ResourceTile key={n} kind="energy" qty={n} />)}
+          {[1, 2, 3, 4, 5, 6].map((n) => <ResourceTile key={n} kind="energy" qty={n} />)}
         </div>
         <span className={galleryLabel}>Sizes</span>
         <div className={tileRow}>
@@ -156,7 +161,41 @@ export function PreviewPage() {
         </div>
       </div>
       <div className={grid}>
-        {SILOS.map((s) => <SiloCard key={s.id} silo={s} />)}
+        {TRACKS.map((t) => <TrackCard key={t.id} track={t} />)}
+        <div className={card}>
+          <div className={head}>
+            <span>Buildings</span>
+            <span className={dim}>{BUILDINGS.length} tiles</span>
+          </div>
+          {BUILDINGS.map((bd) => (
+            <Fragment key={bd.id}>
+              <span className={dim}>{bd.id}</span>
+              <span>{terms(bd.cost)}</span>
+              <span className={arrow}>→</span>
+              <span>{bd.name}: {BUILDING_VP} VP</span>
+              <span className={cost}>({valueOf(bd.cost)})</span>
+            </Fragment>
+          ))}
+        </div>
+        <div className={card}>
+          <div className={head}>
+            <span>Contributions</span>
+            <span className={dim}>value per VP</span>
+          </div>
+          {CONTRIBUTION_VP.map((_, i) => i + 1).reverse().map((step) => (
+            <Fragment key={step}>
+              <span className={dim}>{step}</span>
+              <span>{CONTRIBUTIONS.map((c) => `${c.steps[step - 1]} ${c.good}`).join(" / ")}</span>
+              <span className={arrow}>→</span>
+              <span>{CONTRIBUTION_VP[step - 1]} VP</span>
+              <span className={cost}>
+                ({CONTRIBUTIONS.map((c) =>
+                  contributionValuePerVp(c, step).toFixed(1).replace(/\.0$/, "")
+                ).join(" / ")})
+              </span>
+            </Fragment>
+          ))}
+        </div>
       </div>
     </div>
   )

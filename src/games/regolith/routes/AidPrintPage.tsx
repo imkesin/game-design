@@ -1,12 +1,23 @@
-import { ResourceTile } from "~/games/regolith/components/ResourceTile"
-import { TermList } from "~/games/regolith/components/SiloBoard"
-import { GOODS, VALUE } from "~/games/regolith/domain"
+import { TermList } from "~/games/regolith/components/TrackBoard"
+import {
+  BUILDING_VP,
+  CONTRIBUTION_VP,
+  CONTRIBUTIONS,
+  CYCLES,
+  GOODS,
+  LIFE_SUPPORT_SURCHARGE,
+  START_GOODS,
+  START_WORKERS,
+  TIERS,
+  VALUE
+} from "~/games/regolith/domain"
 import { css } from "~/generated/styled-system/css"
 
 /**
- * One-page player aid: the three turn shapes, the marker rules, paying with
- * time, bays, and the upgrade effects. Portrait letter, two columns. Rules
- * text is the DESIGN.md wording cut to table size.
+ * One-page player aid: the round, placement, contributions, the level
+ * marker, upgrades and their kickers, the goods value strip, setup and
+ * scoring. Portrait letter, two columns. Rules text is the DESIGN.md wording
+ * cut to table size.
  */
 
 const printCss = `
@@ -89,14 +100,14 @@ const h = css({
 const p = css({ margin: 0 })
 const list = css({ margin: 0, paddingLeft: "4mm", display: "flex", flexDirection: "column", gap: "1mm" })
 const b = css({ fontWeight: 800 })
-const turns = css({
+const steps = css({
   display: "grid",
   gridTemplateColumns: "auto 1fr",
   columnGap: "3mm",
   rowGap: "1mm",
   alignItems: "baseline"
 })
-const turnKey = css({
+const stepKey = css({
   fontWeight: 900,
   fontSize: "10pt",
   border: "0.3mm solid #000",
@@ -122,6 +133,20 @@ const good = css({
   padding: "1mm 0"
 })
 const goodVal = css({ fontSize: "7pt", color: "#555", fontWeight: 600 })
+// Open spaces by level: a small strip of five, so the crunch is visible.
+const levels = css({
+  display: "grid",
+  gridTemplateColumns: "repeat(5, 1fr)",
+  gap: "1mm",
+  textAlign: "center",
+  fontSize: "8pt",
+  marginTop: "1.5mm"
+})
+const level = css({ border: "0.3mm solid #000", borderRadius: "1mm", padding: "0.8mm 0" })
+const levelNum = css({ fontWeight: 900, fontSize: "10pt" })
+const levelOpen = css({ fontSize: "7pt", color: "#555" })
+
+const ROMAN = ["I", "II", "III", "IV", "V"]
 
 export function AidPrintPage() {
   return (
@@ -132,29 +157,33 @@ export function AidPrintPage() {
         <div className={`sheet ${sheet}`}>
           <div className={title}>
             <span>Regolith</span>
-            <span className={subtitle}>player aid · v0</span>
+            <span className={subtitle}>player aid · v1 · tracks</span>
           </div>
 
           <div className={col} style={{ gridArea: "left" }}>
             <section>
-              <div className={h}>Your turn: two atoms, two different silos</div>
-              <div className={turns}>
-                <span className={turnKey}>A</span>
+              <div className={h}>The round</div>
+              <div className={steps}>
+                <span className={stepKey}>1</span>
                 <span>
-                  <span className={b}>Place + Place.</span> Two workers into two different silos.
+                  <span className={b}>Place.</span> Start player first, then clockwise. On your turn place{" "}
+                  <span className={b}>as many workers as you can afford</span>, one at a time, then the next player
+                  goes. You may stop with workers in hand. Placing <span className={b}>none</span>, you may{" "}
+                  <span className={b}>contribute</span> instead.
                 </span>
-                <span className={turnKey}>B</span>
+                <span className={stepKey}>2</span>
                 <span>
-                  <span className={b}>Place + Advance.</span> One worker into a silo, one tick on a different silo.
+                  <span className={b}>Tick.</span> Move the level marker{" "}
+                  <span className={b}>up one tier</span>. Bump the row it left. Leaving tier{" "}
+                  {ROMAN[TIERS - 1]}: reset it to tier I.
                 </span>
-                <span className={turnKey}>C</span>
+                <span className={stepKey}>3</span>
                 <span>
-                  <span className={b}>Advance + Advance.</span> One tick each on two different silos.
+                  <span className={b}>Pass the start marker</span> clockwise.
                 </span>
               </div>
               <p className={p} style={{ marginTop: "1.5mm" }}>
-                Both atoms of a turn must touch <span className={b}>different</span>{" "}
-                silos. Never place and tick the same silo, never double-tick one.
+                The game is <span className={b}>{CYCLES} cycles</span> of {TIERS} rounds: {CYCLES * TIERS} rounds.
               </p>
             </section>
 
@@ -162,77 +191,74 @@ export function AidPrintPage() {
               <div className={h}>Place</div>
               <ul className={list}>
                 <li>
-                  Your worker enters the{" "}
-                  <span className={b}>lowest unlocked zone whose base slot is empty</span>, or any empty, unlocked{" "}
-                  <span className={b}>bay of yours</span> at or below it. Never climb past an empty base slot.
+                  Into <span className={b}>any empty, unlocked space</span>{" "}
+                  on any track. Nothing forces you up; higher pays more and waits longer.
                 </li>
                 <li>
-                  <span className={b}>Pay the zone's cost now</span>, in full, from your supply. Can't pay, can't place.
-                  For each machine or polymer on the zone that isn't yours, also pay its owner{" "}
-                  <span className={b}>1 energy</span> (1 of any good if you have no energy).
+                  <span className={b}>Pay the space's cost now</span>, in full, from your supply. Can't pay, can't
+                  place.
                 </li>
                 <li>
-                  Zones the marker has already passed are <span className={b}>locked</span> until it resets.
+                  Rows{" "}
+                  <span className={b}>below the level marker are locked</span>. A space with a life support has two
+                  slots; the{" "}
+                  <span className={b}>
+                    second worker pays <TermList terms={LIFE_SUPPORT_SURCHARGE} size={4.5} /> extra
+                  </span>{" "}
+                  to the supply. Both bump together.
                 </li>
-                <li>A silo with no open, empty zone above the marker is closed.</li>
+                <li>
+                  If you own the machine, battery or life support on a space, you enter it{" "}
+                  <span className={b}>free</span>.
+                </li>
               </ul>
             </section>
 
             <section>
-              <div className={h}>Advance</div>
+              <div className={h}>Contribute · instead of placing</div>
               <ul className={list}>
                 <li>
-                  Move the silo's time marker <span className={b}>one tick</span> up its track.
+                  On your turn, if you place <span className={b}>no worker</span>{" "}
+                  — by choice, or because every worker you own is out — you may make{" "}
+                  <span className={b}>one contribution</span>. Never both.
                 </li>
                 <li>
-                  When the marker <span className={b}>leaves a zone</span> (passes its top tick), the worker there is
-                  {" "}
-                  <span className={b}>bumped</span>: it returns to its owner with the zone's outcome.
+                  Pick a track: {CONTRIBUTIONS.map((c) => c.good).join(", ")}. Pay its{" "}
+                  <span className={b}>leftmost open step</span>{" "}
+                  to the bank, put your disc on it, and take its VP now. Can't pay it, can't contribute there.
                 </li>
                 <li>
-                  Leaving the <span className={b}>top zone</span> bumps it and the marker{" "}
-                  <span className={b}>resets to the bottom tick</span> at once. Everything unlocks. On{" "}
-                  <span className={b}>Energy, Rock or Water</span> you take <span className={b}>1 energy</span>{" "}
-                  from the supply for the reset.
+                  The tracks are the table's. Steps pay <span className={b}>{CONTRIBUTION_VP.join(" / ")} VP</span>{" "}
+                  left to right, whoever fills them. Rock and Water cannot be contributed.
                 </li>
-                <li>Otherwise advancing pays you nothing directly. It is tempo — yours or someone else's.</li>
               </ul>
             </section>
 
             <section>
-              <div className={h}>Paying with time</div>
-              <p className={p}>
-                A zone with a <ResourceTile kind="time" size={4.5} /> corner can be paid with time instead: pay{" "}
-                <span className={b}>one less of every good</span> in its cost (a good at 1 becomes free) and put{" "}
-                <span className={b}>one time token</span>{" "}
-                in the zone's box. While the marker sits at that zone, an advance{" "}
-                <span className={b}>removes a token instead of moving</span>. Zones below resolve at normal speed; every
-                worker above waits too.
-              </p>
-              <p className={p} style={{ marginTop: "1mm" }}>
-                A <span className={b}>specialist</span>{" "}
-                pays the reduced price on these zones and places no token. Reductions never stack: one −1 per zone, by
-                token or by specialist.
-              </p>
-            </section>
-
-            <section>
-              <div className={h}>Bays</div>
+              <div className={h}>The level marker</div>
               <ul className={list}>
                 <li>
-                  The grey square beside a zone is a{" "}
-                  <span className={b}>bay</span>: a second slot, dead until built. Built by Construction; the owner's
-                  marker sits in it.
+                  When the marker <span className={b}>leaves a row</span>, every worker on that row is{" "}
+                  <span className={b}>bumped</span>: home to its owner with the space's yield (or its upgrade placed).
+                  That row is locked until the reset.
                 </li>
                 <li>
-                  <span className={b}>Owner only.</span>{" "}
-                  Nobody else may place there. A worker in a bay pays, waits, bumps and yields{" "}
-                  <span className={b}>exactly like the base slot</span>. Locks and unlocks with the zone.
+                  A worker on tier <span className={b}>r</span> placed at level <span className={b}>L</span>{" "}
+                  comes home in <span className={b}>r − L + 1</span> rounds.
                 </li>
                 <li>
-                  Bays in a silo are built <span className={b}>bottom to top</span>: the lowest unbuilt zone first.
+                  Leaving tier {ROMAN[TIERS - 1]} bumps it and <span className={b}>resets</span>{" "}
+                  the marker to tier I. Everything unlocks. Advance the cycle counter.
                 </li>
               </ul>
+              <div className={levels}>
+                {Array.from({ length: TIERS }, (_, i) => (
+                  <div key={i} className={level}>
+                    <div className={levelNum}>{ROMAN[i]}</div>
+                    <div className={levelOpen}>{(TIERS - i) * 3} open</div>
+                  </div>
+                ))}
+              </div>
             </section>
           </div>
 
@@ -248,7 +274,7 @@ export function AidPrintPage() {
                 ))}
               </div>
               <p className={p} style={{ marginTop: "1.5mm", fontSize: "8pt", color: "#444" }}>
-                Every zone pays out more than it costs. Higher zones pay more and wait longer.
+                Every goods space pays out more than it costs. Tiers I–III ladder +4 / +5 / +6.
               </p>
             </section>
 
@@ -256,40 +282,53 @@ export function AidPrintPage() {
               <div className={h}>Upgrades resolve on bump</div>
               <ul className={list}>
                 <li>
-                  <span className={b}>Construction (E1).</span>{" "}
-                  On placement, name a silo with an unbuilt bay. On bump, put your marker in that silo's lowest unbuilt
-                  bay.
+                  <span className={b}>Machine (Phys IV).</span>{" "}
+                  On placement, name an empty machine slot on a tier I or II space. On bump, put your marker in it.{" "}
+                  <span className={b}>Everyone</span> bumped from that space takes <span className={b}>+1</span>{" "}
+                  of its yield good. <span className={b}>Kicker:</span> you enter it free.
                 </li>
                 <li>
-                  <span className={b}>Recruit (D3).</span> On bump, take a new worker.
+                  <span className={b}>Battery (Chem V).</span>{" "}
+                  Same as a machine, for a tier III or IV space: +1 of its yield — a second worker from Recruit, a
+                  second machine from Machine. <span className={b}>Kicker:</span> you enter it free.
                 </li>
                 <li>
-                  <span className={b}>Specialist (E2).</span>{" "}
-                  On bump, the worker you placed comes back as a specialist: it always pays the reduced price on any
-                  {" "}
-                  <ResourceTile kind="time" size={4.5} /> zone, no token. Ordinary everywhere else. Cannot re-enter E2.
+                  <span className={b}>Life Support (Bio V).</span>{" "}
+                  On placement, name an empty life support slot on a tier I–IV space. On bump, put your marker in it.
+                  The space now holds <span className={b}>two workers</span>, anyone's; the second pays{" "}
+                  <TermList terms={LIFE_SUPPORT_SURCHARGE} size={4.5} /> extra. <span className={b}>Kicker:</span>{" "}
+                  you enter it free.
                 </li>
                 <li>
-                  <span className={b}>Machinery (D1).</span>{" "}
-                  Choose a Rock or Water zone with a free machine slot. On bump, put your marker in it.{" "}
-                  <span className={b}>Every</span> worker there yields a bonus; anyone but you pays you{" "}
-                  <span className={b}>1 energy</span> to place there.
+                  <span className={b}>Recruit (Bio IV).</span> On bump, take a new worker. Place it from next round.
                 </li>
                 <li>
-                  <span className={b}>Polymers (D2).</span>{" "}
-                  Same, for a Metal, Chemical or Food zone with a free polymer slot. Every worker there converts better;
-                  same toll.
+                  <span className={b}>Building (Phys V).</span>{" "}
+                  On placement, put an unbuilt building tile into an empty row of the Buildings column{" "}
+                  <span className={b}>at once</span>. It is now a space: anyone places there, pays its recipe, and is
+                  bumped with <span className={b}>{BUILDING_VP} VP</span>. No owner, no kicker, no slots.
+                </li>
+                <li>
+                  No tolls. A machine, battery or life support is for the whole table; only the free entry is yours. A
+                  building is nobody's.
                 </li>
               </ul>
             </section>
 
             <section>
-              <div className={h}>Setup · v0 (pencil in)</div>
+              <div className={h}>Setup · v1</div>
               <ul className={list}>
-                <li>Every marker disc on its silo's bottom tick. Every bay empty.</li>
-                <li>Workers per player: ____ &nbsp; Starting goods: ____</li>
-                <li>Game ends: ____ &nbsp; Score: ____ (nothing scores yet — note what players race for)</li>
-                <li>Bonus for machinery / polymer markers: ____</li>
+                <li>Level marker on tier I, cycle counter on 1. Every slot empty.</li>
+                <li>
+                  Each player: <span className={b}>{START_WORKERS} workers</span>,{" "}
+                  <TermList terms={START_GOODS} size={4.5} />, nothing else.
+                </li>
+                <li>Choose a start player.</li>
+                <li>Five building tiles beside the board, unbuilt. Contribution board empty. VP tokens in a pile.</li>
+                <li>
+                  <span className={b}>Score:</span> most VP after {CYCLES * TIERS}{" "}
+                  rounds — building visits plus your discs on the contribution board. Tie: more goods by value.
+                </li>
               </ul>
             </section>
           </div>

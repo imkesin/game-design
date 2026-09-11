@@ -109,8 +109,8 @@ the leftover paper is an even margin.
 > **On node degree (superseded).** An earlier plan prescribed a "dense core" of 2–3 degree-4/5 hubs
 > plus a degree-4/5 marquee. That was a flawed target: on a 20+ node board kept strictly
 > crossing-free, forcing high-degree nodes fights the planar layout and buys nothing the slot
-> structure doesn't already give. Degree is now treated as **emergent** — let the graph settle into a
-> flat, even mesh (avg ~2.4), keep peninsulas rare, and define the heart by slots. Don't chase a
+> structure doesn't already give. Degree is now treated as **emergent** — let the graph settle into
+> a flat, even mesh (avg ~2.4), keep peninsulas rare, and define the heart by slots. Don't chase a
 > degree-4 node.
 
 ## 6. How the graph is managed (workflow)
@@ -157,11 +157,12 @@ This is what keeps four boards from becoming four times the hand-work.
 
 ## 9. Implementation status (what's built)
 
-Built and stable: the pipeline `map/spec.ts` → `map/layout.ts` → `map/build.ts` / `map/paint.node.ts`;
-per-count graph modules under `boards/` (`2p.ts`, `3p.ts`, shared `types.ts`); and **Sheet 1**
-composed two-up (`3p-split` + `2p-split`) by CSS in `BoardPrintSheet1`. Live variants — `2p-split`,
-`3p-split`, `2p-solo` — are defined in `spec.ts` `VARIANTS`. **The graph modules are the source of
-truth for clearing/path/slot counts** — read them there rather than mirroring numbers into this doc.
+Built and stable: the pipeline `map/spec.ts` → `map/layout.ts` → `map/build.ts` /
+`map/paint.node.ts`; per-count graph modules under `boards/` (`2p.ts`, `3p.ts`, shared `types.ts`);
+and **Sheet 1** composed two-up (`3p-split` + `2p-split`) by CSS in `BoardPrintSheet1`. Live
+variants — `2p-split`, `3p-split`, `2p-solo` — are defined in `spec.ts` `VARIANTS`. **The graph
+modules are the source of truth for clearing/path/slot counts** — read them there rather than
+mirroring numbers into this doc.
 
 - **Geometry gate is wired** (hard build failure): `crossings == 0` and `minNodeGap` /
   `minPathClear` / `minCubeSlack` / `minGrasslandClear` ≥ thresholds. **Structural lint stays

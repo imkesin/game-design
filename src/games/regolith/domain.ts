@@ -2,17 +2,17 @@
  * Regolith's rules data. Plan of record is DESIGN.md; this file encodes what
  * that document has settled and leaves obvious holes where it has not.
  *
- * Two layers. `VALUE` is the yardstick every recipe is written against. `SILOS`
- * is the board: each silo's zones from the bottom up, with what a worker pays
- * to enter, what it brings home when bumped, and how many ticks of the time
- * marker it sits through. Nothing here is a standing income — every number is
- * per visit, paid on placement and collected on bump.
+ * Two layers. `VALUE` is the yardstick every recipe is written against.
+ * `TRACKS` is the board: three tracks of five spaces from the bottom up, with
+ * what a worker pays to enter and what it brings home when the level marker
+ * passes its space. Nothing here is a standing income — every number is per
+ * visit, paid on placement and collected on bump.
  */
 
 /**
  * The six goods a player holds, in chain order. Energy is a good like the
- * others here (unlike the previous design, where it was a separate currency):
- * it sits in supply and is spent as a secondary input to most processes.
+ * others: it sits in supply and is spent as a secondary input to most
+ * processes.
  */
 export type Good = "energy" | "rock" | "water" | "metal" | "chemical" | "food"
 
@@ -21,8 +21,8 @@ export const GOODS: readonly Good[] = ["energy", "rock", "water", "metal", "chem
 /**
  * What a unit of each good is worth, in one abstract currency. Recipes are
  * checked by adding up each side; the rule the set holds to is that every
- * zone runs positive, and a silo's zones ladder +4 / +6 / +8 / +10 as they
- * climb. Values are a design tool, not a printed number.
+ * goods space runs positive, and a track's first three tiers ladder
+ * +4 / +5 / +6 as they climb. Values are a design tool, not a printed number.
  */
 export const VALUE: Record<Good, number> = {
   energy: 1,
@@ -38,7 +38,7 @@ export interface Term {
   qty: number
 }
 
-/** A side of a recipe. Empty means "nothing", which is a real cost on the bottom zone of a free silo. */
+/** A side of a recipe. Empty means "nothing", which is a real cost on a free space. */
 export type Terms = readonly Term[]
 
 export function valueOf(terms: Terms): number {
@@ -51,265 +51,203 @@ function t(good: Good, qty: number): Term {
 }
 
 /**
- * What a bumped worker brings home. Goods for the extraction and refining
- * silos; a board effect for the upgrade silos. The effect variants carry no
- * data because their targets are chosen at the table — see DESIGN.md, Upgrades.
+ * What a bumped worker brings home. Goods for tiers I–III (and Chem IV, which
+ * pays goods too); a thing you own for the rest. The effect variants carry no
+ * data because their targets are chosen at the table — see DESIGN.md,
+ * Upgrades. `vp` is what a special building pays out: flat victory points.
  */
 export type Outcome =
   | { kind: "goods"; goods: Terms }
-  | { kind: "bay" }
+  | { kind: "machine" }
+  | { kind: "building" }
+  | { kind: "battery" }
   | { kind: "worker" }
-  | { kind: "machinery" }
-  | { kind: "polymers" }
-  | { kind: "specialist" }
+  | { kind: "lifeSupport" }
+  | { kind: "vp"; vp: number }
 
-export interface Zone {
+export interface Space {
   /** Paid in full on placement. */
   cost: Terms
-  /**
-   * Paying with time, where the zone offers it: the worker pays one less of
-   * every good in `cost` (see `reducedCost`) and puts this many time tokens
-   * in the zone's box. While the marker sits at that zone, an advance removes
-   * a token instead of moving it, so the zone takes `ticks + timeTicks`
-   * advances to clear. Workers below resolve at normal speed; every worker
-   * above waits too. Only the D and E silos offer it — raw and refining zones
-   * have one price. Every zone on the board is 1 tick; a token is the only
-   * thing that makes one take 2.
-   *
-   * A specialist takes the same reduction on the same zones and places no
-   * token. Reductions never stack: at 1 the zone is reduced once, by a token
-   * or by a specialist. (At 2, a specialist would cover one and a token the
-   * other; no zone prints 2 yet.)
-   */
-  timeTicks?: number
-  /** Collected when the marker passes the zone. */
+  /** Collected when the level marker passes the space. */
   outcome: Outcome
-  /**
-   * How many marker ticks the zone spans. A worker is bumped when the marker
-   * exits the zone upward, so a 2-tick zone waits twice as long as a 1-tick one.
-   */
-  ticks: number
 }
 
-/** Which permanent upgrade a silo's zones accept. Machinery goes on B zones, polymers on C zones; nothing else takes either. */
-export type Upgrade = "machinery" | "polymers"
+export type TrackId = "P" | "C" | "B"
 
-export interface Silo {
+export interface Track {
+  id: TrackId
+  name: string
+  /** Bottom space (tier I) first; always `TIERS` long. */
+  spaces: readonly Space[]
+}
+
+/** Every track is this tall, and the level marker climbs this many rounds before it resets. */
+export const TIERS = 5
+
+/** How many times the marker climbs I→V before the game ends: 4 cycles is 20 rounds. */
+export const CYCLES = 4
+
+/** What each player starts with. Three energy keeps a first round from soft-locking on Water. */
+export const START_WORKERS = 2
+export const START_GOODS: Terms = [t("energy", 3)]
+
+/**
+ * A booster sits on a space and adds `BOOSTER_BONUS` to its yield for every
+ * worker bumped from it: one more of the yield good, or a second copy of the
+ * thing (two workers from Recruit, two machines from Machine). Its owner
+ * enters that space free (no cost at all); everyone else pays the printed
+ * cost. No toll. Machines boost tiers I–II, batteries tiers III–IV; one
+ * booster slot per space.
+ */
+export type Booster = "machine" | "battery"
+export const BOOSTER_TIERS: Record<Booster, readonly number[]> = { machine: [1, 2], battery: [3, 4] }
+export const BOOSTER_BONUS = 1
+
+/**
+ * A life support system sits on any space but tier V and gives it a second
+ * worker slot, open to anyone. The second worker on the space pays the
+ * surcharge to the supply on top of the cost — running two crews is not
+ * free. The owner enters that space free, surcharge included. One per space,
+ * one booster per space, so a boosted space holds at most two workers.
+ */
+export const LIFE_SUPPORT_TIERS: readonly number[] = [1, 2, 3, 4]
+export const LIFE_SUPPORT_SURCHARGE: Terms = [t("energy", 2)]
+
+/**
+ * The five special buildings. Phys V builds one onto the board: the builder
+ * picks the building and an empty row of the Buildings column, and the tile
+ * goes there at once. It is then a space like any other — anyone places
+ * there, pays the recipe, and is bumped with `BUILDING_VP`. Nobody owns a
+ * building and nobody enters it free; no booster or life support slots. Each
+ * is built at most once, so Phys V is dead after five.
+ *
+ * Every recipe is goods from two different tracks plus energy, tuned so each
+ * VP costs 12 in value. Names are provisional.
+ */
+export interface Building {
   id: string
   name: string
-  /** Bottom zone first. Shorter than `maxZones` while the silo is still being designed. */
-  zones: readonly Zone[]
-  /** How tall the silo is. Every zone is open from setup; nothing on the board is gated. */
-  maxZones: number
-  /** Every zone in this silo prints `UPGRADE_SLOTS_PER_ZONE` slots for this upgrade. Absent: none. */
-  upgrade?: Upgrade
-  /** The reset tick on this silo pays its advancer `RESET_BONUS`. Only the raw-goods silos do. */
-  resetBonus?: true
+  cost: Terms
 }
 
-function goods(cost: Terms, yields: Terms, ticks = 1): Zone {
-  return { cost, outcome: { kind: "goods", goods: yields }, ticks }
-}
+export const BUILDING_VP = 1
 
-function effect(kind: Exclude<Outcome["kind"], "goods">, cost: Terms, ticks: number, timeTicks?: number): Zone {
-  return timeTicks === undefined ? { cost, outcome: { kind }, ticks } : { cost, timeTicks, outcome: { kind }, ticks }
+export const BUILDINGS: readonly Building[] = [
+  { id: "B1", name: "Habitat", cost: [t("metal", 1), t("food", 1), t("energy", 2)] },
+  { id: "B2", name: "Biolab", cost: [t("chemical", 1), t("food", 1), t("energy", 1)] },
+  { id: "B3", name: "Pump Station", cost: [t("metal", 1), t("water", 2), t("energy", 2)] },
+  { id: "B4", name: "Foundry", cost: [t("metal", 1), t("chemical", 1), t("energy", 3)] },
+  { id: "B5", name: "Greenhouse", cost: [t("food", 1), t("rock", 2), t("energy", 2)] }
+]
+
+/** A built building as the space it becomes. */
+export function buildingSpace(building: Building): Space {
+  return { cost: building.cost, outcome: { kind: "vp", vp: BUILDING_VP } }
 }
 
 /**
- * The reduced price on a zone that offers one: one less of every good in the
- * zone's cost. A good at 1 drops out entirely — which is why Construction and
- * Specialist carry a single metal and a single food: reduced, they need
- * neither. Paid by a worker with a time token, or by a specialist for free.
- * Undefined for a zone that does not offer it.
+ * Contributions: the other way to score, and the only thing a player can do
+ * on a turn without placing a worker. Four tracks shared by the table, one
+ * per storable good, each `CONTRIBUTION_VP.length` steps long. A step is
+ * filled by paying its quantity of the track's good to the bank; steps fill
+ * from step 1 up whoever pays, and the filler takes that step's VP at once.
+ * One contribution per turn, only by a player who places no worker that
+ * turn. Rock and water are intermediate goods and cannot be contributed.
+ *
+ * The board prints each track as a route of stations running left to right on
+ * a sheet of its own, so a track's length is free of the level track's.
  */
-export function reducedCost(zone: Zone): Terms | undefined {
-  if (zone.timeTicks === undefined) return undefined
-  return zone.cost.flatMap((x) => (x.qty > 1 ? [{ good: x.good, qty: x.qty - 1 }] : []))
+export interface ContributionTrack {
+  good: Good
+  /** Quantity of `good` each step takes, step 1 first. */
+  steps: readonly number[]
+}
+
+export const CONTRIBUTION_VP: readonly number[] = [1, 1, 2, 3, 5]
+
+export const CONTRIBUTIONS: readonly ContributionTrack[] = [
+  { good: "energy", steps: [5, 10, 15, 20, 25] },
+  { good: "metal", steps: [2, 3, 4, 5, 6] },
+  { good: "chemical", steps: [2, 3, 4, 5, 6] },
+  { good: "food", steps: [2, 3, 4, 5, 6] }
+]
+
+/** Goods value paid per VP at a step (1-based). The yardstick for comparing tracks to buildings. */
+export function contributionValuePerVp(track: ContributionTrack, step: number): number {
+  return (track.steps[step - 1]! * VALUE[track.good]) / CONTRIBUTION_VP[step - 1]!
+}
+
+function goods(cost: Terms, yields: Terms): Space {
+  return { cost, outcome: { kind: "goods", goods: yields } }
+}
+
+function effect(kind: Exclude<Outcome["kind"], "goods" | "vp">, cost: Terms): Space {
+  return { cost, outcome: { kind } }
 }
 
 const ROMAN = ["I", "II", "III", "IV", "V"]
 
-/** The printed name of a zone: "Water III". Zones number from 1 at the bottom. */
-export function zoneName(silo: Silo, zone: number): string {
-  return `${silo.name} ${ROMAN[zone - 1]}`
+/** The printed name of a space: "Physical III". Tiers number from 1 at the bottom. */
+export function spaceName(track: Track, tier: number): string {
+  return `${track.name} ${ROMAN[tier - 1]}`
 }
 
-/** Value a zone adds per visit at its full price. Undefined for zones whose outcome is not goods. */
-export function netValue(zone: Zone): number | undefined {
-  if (zone.outcome.kind !== "goods") return undefined
-  return valueOf(zone.outcome.goods) - valueOf(zone.cost)
+/** Value a space adds per visit. Undefined for spaces whose outcome is not goods. */
+export function netValue(space: Space): number | undefined {
+  if (space.outcome.kind !== "goods") return undefined
+  return valueOf(space.outcome.goods) - valueOf(space.cost)
+}
+
+/** Which booster a space takes, or undefined for tier V. */
+export function boosterFor(tier: number): Booster | undefined {
+  return (Object.keys(BOOSTER_TIERS) as Booster[]).find((b) => BOOSTER_TIERS[b].includes(tier))
 }
 
 /**
- * Bays: every zone has room for extra worker slots beside it, built via
- * Construction (E1) from the bottom of a silo up. This many are printed on
- * the board, which is the 2–3 player count; 4 players wants two per zone and
- * a second square. A bay is its owner's alone: nobody else may place there.
- * A worker in one pays, waits and yields exactly as in the base slot.
- */
-export const BAYS_PER_ZONE = 1
-
-/**
- * Machinery and polymer markers sit in printed slots on the zone they claim:
- * this many per zone, so at most this many players can upgrade one zone.
- * Only the B silos take machinery and only the C silos take polymers. An
- * upgrade boosts every worker on its zone; anyone but its owner pays
- * `UPGRADE_TOLL` to the owner on placement, per upgrade there that is not
- * theirs — 1 of any good if they hold no energy, and no placement if they
- * hold nothing.
- */
-export const UPGRADE_SLOTS_PER_ZONE = 2
-export const UPGRADE_TOLL: Terms = [t("energy", 1)]
-
-/**
- * The advance that carries a marker past its top zone resets the silo for
- * everyone; on a silo with `resetBonus`, the player who ticks it takes this
- * from the supply. Only Energy, Rock and Water pay it: the deep, crowded raw
- * silos are the ones that need a volunteer to reopen them, and the one-zone
- * upgrade silos reset on every bump anyway.
- */
-export const RESET_BONUS: Terms = [t("energy", 1)]
-
-/**
- * The board. Zone counts fall as the chain deepens: raw goods have deep silos
- * where crowding is cheap to enter and slow to leave; the upgrade silos hold
- * one worker each and turn over fast.
+ * The board. Three tracks, one per engineering discipline, each five spaces
+ * tall and shaped the same way: tiers I–III extract or refine goods and
+ * ladder +4 / +5 / +6; tier IV makes a thing you own for about 6 in inputs;
+ * tier V builds something for about 10. Chemical IV is the exception: it is
+ * the only source of chemicals, pays goods at +8, and the track's thing
+ * comes at V.
  *
- * Retuned after the first playtest (2026-09-08), which took forty minutes to
- * reach one machine apiece: every silo lost its top zone, every cover tile
- * went, and the ladder steepened to +4 / +6 / +8 / +10. Higher is now strictly
- * better in every silo; placement is forced into the lowest open zone, so the
- * later a worker arrives the better its deal and the longer its wait. Rock is
- * the one free silo all the way up. Chemical consumes energy like everything
- * else (it no longer emits any), and Energy's top zone runs on water rather
- * than refined goods.
- *
- * Second pass (2026-09-09): the five D/E silos (D makes a thing you own —
- * machine, polymer, worker; E builds or trains) are one zone each, 1 tick
- * like everything else, and payable with time (see `timeTicks`) for a second
- * tick. Every price was roughly halved. Construction and Specialist put their
- * refined input at 1 so the reduced price drops it.
- *
- * `netValue` is the check for anything that yields goods.
+ * Redesigned 2026-09-11 from eleven silos with per-silo time markers to three
+ * tracks under one global level marker: the round is the tick, and rows
+ * below the marker are locked until it resets. `netValue` is the check for
+ * anything that yields goods.
  */
-export const SILOS: readonly Silo[] = [
+export const TRACKS: readonly Track[] = [
   {
-    id: "A",
-    name: "Energy",
-    maxZones: 4,
-    resetBonus: true,
-    zones: [
-      goods([], [t("energy", 4)]),
-      goods([], [t("energy", 6)]),
-      goods([t("water", 1)], [t("energy", 11)]),
-      goods([t("water", 2)], [t("energy", 16)])
-    ]
-  },
-  {
-    id: "B1",
-    name: "Rock",
-    maxZones: 3,
-    resetBonus: true,
-    upgrade: "machinery",
-    zones: [
+    id: "P",
+    name: "Physical",
+    spaces: [
       goods([], [t("rock", 2)]),
-      goods([], [t("rock", 3)]),
-      goods([], [t("rock", 4)])
+      goods([t("energy", 1)], [t("rock", 3)]),
+      goods([t("rock", 1)], [t("metal", 2)]),
+      effect("machine", [t("metal", 1), t("energy", 2)]),
+      effect("building", [t("metal", 1), t("rock", 2), t("energy", 2)])
     ]
   },
   {
-    id: "B2",
-    name: "Water",
-    maxZones: 3,
-    resetBonus: true,
-    upgrade: "machinery",
-    zones: [
-      goods([t("energy", 2)], [t("water", 2)]),
-      goods([t("energy", 3)], [t("water", 3)]),
-      goods([t("energy", 4)], [t("water", 4)])
-    ]
-  },
-  {
-    id: "C1",
-    name: "Metal",
-    maxZones: 2,
-    upgrade: "polymers",
-    zones: [
-      goods([t("rock", 1), t("energy", 2)], [t("metal", 2)]),
-      goods([t("rock", 2), t("energy", 2)], [t("metal", 3)])
-    ]
-  },
-  {
-    id: "C2",
+    id: "C",
     name: "Chemical",
-    maxZones: 2,
-    upgrade: "polymers",
-    zones: [
-      goods([t("water", 1), t("rock", 1), t("energy", 1)], [t("chemical", 2)]),
-      goods([t("water", 1), t("rock", 1), t("energy", 4)], [t("chemical", 3)])
+    spaces: [
+      goods([], [t("energy", 4)]),
+      goods([], [t("energy", 5)]),
+      goods([], [t("energy", 6)]),
+      goods([t("rock", 1), t("water", 1), t("energy", 2)], [t("chemical", 3)]),
+      effect("battery", [t("rock", 1), t("water", 1), t("chemical", 1)])
     ]
   },
   {
-    id: "C3",
-    name: "Food",
-    maxZones: 2,
-    upgrade: "polymers",
-    zones: [
-      goods([t("water", 2), t("energy", 2)], [t("food", 2)]),
-      goods([t("water", 3), t("energy", 3)], [t("food", 3)])
-    ]
-  },
-  {
-    id: "D1",
-    name: "Machinery",
-    maxZones: 1,
-    zones: [
-      effect("machinery", [t("metal", 2), t("energy", 2)], 1, 1)
-    ]
-  },
-  {
-    id: "D2",
-    name: "Polymers",
-    maxZones: 1,
-    zones: [
-      effect("polymers", [t("chemical", 2), t("energy", 2)], 1, 1)
-    ]
-  },
-  {
-    id: "D3",
-    name: "Recruit",
-    maxZones: 1,
-    zones: [
-      effect("worker", [t("food", 2), t("energy", 2)], 1, 1)
-    ]
-  },
-  {
-    id: "E1",
-    name: "Construction",
-    maxZones: 1,
-    zones: [
-      effect("bay", [t("rock", 2), t("metal", 1), t("energy", 3)], 1, 1)
-    ]
-  },
-  {
-    id: "E2",
-    name: "Specialist",
-    maxZones: 1,
-    zones: [
-      effect("specialist", [t("water", 2), t("food", 1), t("energy", 3)], 1, 1)
+    id: "B",
+    name: "Bio",
+    spaces: [
+      goods([t("energy", 2)], [t("water", 2)]),
+      goods([t("energy", 4)], [t("water", 3)]),
+      goods([t("water", 2)], [t("food", 2)]),
+      effect("worker", [t("food", 1)]),
+      effect("lifeSupport", [t("food", 1), t("water", 1), t("energy", 1)])
     ]
   }
 ]
-
-/** The tallest silo; the board sheet sizes its rows from this. */
-export const MAX_ZONES = Math.max(...SILOS.map((s) => s.maxZones))
-
-/**
- * A turn is two atoms on two different silos. Listed so the player aid and any
- * future simulator read the same three shapes.
- */
-export const TURNS = [
-  { id: "A", atoms: ["place", "place"] },
-  { id: "B", atoms: ["place", "advance"] },
-  { id: "C", atoms: ["advance", "advance"] }
-] as const

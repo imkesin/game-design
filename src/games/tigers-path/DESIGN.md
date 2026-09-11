@@ -15,9 +15,9 @@ This makes **contesting** a reassignment, not a theft — a stronger animal take
 jungle's order allows, and no band loses anything it owned. A band's lasting stake is its **engine
 tracks**: how deeply it has come to know each animal.
 
-At game end, each band **aligns with a single animal type** (its highest track) and is judged by that
-animal's network across the jungle — however that network was built, and by whoever. Every band helps
-grow every animal's presence; each is scored on just one.
+At game end, each band **aligns with a single animal type** (its highest track) and is judged by
+that animal's network across the jungle — however that network was built, and by whoever. Every band
+helps grow every animal's presence; each is scored on just one.
 
 ## The Animals
 
@@ -136,16 +136,16 @@ players contend for the same animal T:
 
 1. **Higher T-track position** claims T.
 2. **Tie → more of animal T in supply** (sanctuary) claims T.
-3. **Still tied → both score T.** Each reads the same T-network off the board, but scores it
-   × their own Elephant number — so a differing Elephant still separates them. Only if that is also
-   equal do they place equally.
+3. **Still tied → both score T.** Each reads the same T-network off the board, but scores it × their
+   own Elephant number — so a differing Elephant still separates them. Only if that is also equal do
+   they place equally.
 
 ### Score ties
 
-Normally the draft assigns every player a **distinct** animal, so a final-score tie resolves by rank:
-the player scoring the **higher-ranked animal** wins (T > E > M > B > S — e.g. **Monkey beats Boar**).
-The sole exception is the shared-animal case (draft step 3): those two are on the same animal, so rank
-can't separate them and they place equally.
+Normally the draft assigns every player a **distinct** animal, so a final-score tie resolves by
+rank: the player scoring the **higher-ranked animal** wins (T > E > M > B > S — e.g. **Monkey beats
+Boar**). The sole exception is the shared-animal case (draft step 3): those two are on the same
+animal, so rank can't separate them and they place equally.
 
 ## Design Tensions to Watch
 
@@ -170,9 +170,9 @@ can't separate them and they place equally.
   slots ever get filled before the game naturally ends, given Boar has to be leveled to reach them.
 - **Network clustering incentive:** score is a single animal's **disc count** within one component
   of same-color paths — so discs pay off only when linked into an existing color network, not
-  scattered. Watch whether this over-rewards turtling in one region (build where you already control)
-  versus contesting to splice a rival's paths into your own color, and whether Elephant (the
-  multiplier) or Network size ends up the dominant lever.
+  scattered. Watch whether this over-rewards turtling in one region (build where you already
+  control) versus contesting to splice a rival's paths into your own color, and whether Elephant
+  (the multiplier) or Network size ends up the dominant lever.
 - **Jungle bag as shared economy:** action (D) gifts every non-kept-type animal to the Grasslands
   zone (0 on a lucky all-one-type draw, more on a mixed one); contesting gifts the full N contested
   animals **plus** the +1 premium to the Jungle bag. Aggression leaks much harder than drawing does

@@ -45,7 +45,7 @@ const board = css({
 const labelCell = css({
   display: "grid",
   gridTemplateColumns: "auto 1fr",
-  gridTemplateAreas: '"symbol name" "power power"',
+  gridTemplateAreas: "\"symbol name\" \"power power\"",
   alignItems: "center",
   columnGap: "2",
   rowGap: "1",
