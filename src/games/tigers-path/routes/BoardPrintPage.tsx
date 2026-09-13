@@ -178,6 +178,11 @@ export function BoardPrintSplit3() {
   return <BoardSheet map={maps["3p-split"]!} />
 }
 
+/** 4P (North) — the whole Arch-C 24×18 sheet, landscape, 23×17 of board. */
+export function BoardPrint4P() {
+  return <BoardSheet map={maps["4p-north"]!} />
+}
+
 export function BoardPrintSolo() {
   return <BoardSheet map={maps["2p-solo"]!} />
 }

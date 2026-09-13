@@ -2077,5 +2077,1111 @@
       "anchorScale": 0.6,
       "attempt": 0
     }
+  },
+  "4p-north": {
+    "width": 2208,
+    "height": 1632,
+    "unitsPerInch": 96,
+    "cubeSize": 38,
+    "clearings": [
+      {
+        "id": "bharal-ledge",
+        "name": "Bharal Ledge",
+        "x": 1991.34,
+        "y": 278.31,
+        "r": 50,
+        "slots": [
+          {
+            "shape": "triangle",
+            "cost": 3
+          }
+        ]
+      },
+      {
+        "id": "monal-crag",
+        "name": "Monal Crag",
+        "x": 1208,
+        "y": 235.85,
+        "r": 50,
+        "slots": [
+          {
+            "shape": "circle",
+            "cost": 3
+          }
+        ]
+      },
+      {
+        "id": "juniper-scree",
+        "name": "Juniper Scree",
+        "x": 152.9,
+        "y": 245.02,
+        "r": 50,
+        "slots": [
+          {
+            "shape": "triangle",
+            "cost": 3
+          }
+        ]
+      },
+      {
+        "id": "birch-line",
+        "name": "Birch Line",
+        "x": 487.84,
+        "y": 274.49,
+        "r": 65,
+        "slots": [
+          {
+            "shape": "circle",
+            "cost": 2
+          },
+          {
+            "shape": "triangle",
+            "cost": 3
+          }
+        ]
+      },
+      {
+        "id": "tahr-notch",
+        "name": "Tahr Notch",
+        "x": 1750.5,
+        "y": 353.09,
+        "r": 65,
+        "slots": [
+          {
+            "shape": "circle",
+            "cost": 3
+          },
+          {
+            "shape": "triangle",
+            "cost": 4
+          }
+        ]
+      },
+      {
+        "id": "blue-pine-bowl",
+        "name": "Blue Pine Bowl",
+        "x": 986.79,
+        "y": 434.71,
+        "r": 65,
+        "slots": [
+          {
+            "shape": "circle",
+            "cost": 2
+          },
+          {
+            "shape": "triangle",
+            "cost": 3
+          }
+        ]
+      },
+      {
+        "id": "snow-pine-rise",
+        "name": "Snow Pine Rise",
+        "x": 1437.86,
+        "y": 454.44,
+        "r": 74,
+        "slots": [
+          {
+            "shape": "triangle",
+            "cost": 3
+          },
+          {
+            "shape": "square",
+            "cost": 3
+          },
+          {
+            "shape": "pentagon",
+            "cost": 4
+          }
+        ]
+      },
+      {
+        "id": "chir-ridge",
+        "name": "Chir Ridge",
+        "x": 256.16,
+        "y": 475.78,
+        "r": 65,
+        "slots": [
+          {
+            "shape": "triangle",
+            "cost": 3
+          },
+          {
+            "shape": "square",
+            "cost": 4
+          }
+        ]
+      },
+      {
+        "id": "kharsu-oak",
+        "name": "Kharsu Oak",
+        "x": 689.34,
+        "y": 510.82,
+        "r": 65,
+        "slots": [
+          {
+            "shape": "circle",
+            "cost": 2
+          },
+          {
+            "shape": "triangle",
+            "cost": 3
+          }
+        ]
+      },
+      {
+        "id": "goral-step",
+        "name": "Goral Step",
+        "x": 1942.49,
+        "y": 590.88,
+        "r": 65,
+        "slots": [
+          {
+            "shape": "circle",
+            "cost": 2
+          },
+          {
+            "shape": "triangle",
+            "cost": 3
+          }
+        ]
+      },
+      {
+        "id": "walnut-bench",
+        "name": "Walnut Bench",
+        "x": 1622.96,
+        "y": 656.46,
+        "r": 65,
+        "slots": [
+          {
+            "shape": "triangle",
+            "cost": 3
+          },
+          {
+            "shape": "square",
+            "cost": 3
+          }
+        ]
+      },
+      {
+        "id": "moss-spring",
+        "name": "Moss Spring",
+        "x": 907.74,
+        "y": 749.6,
+        "r": 74,
+        "slots": [
+          {
+            "shape": "triangle",
+            "cost": 3
+          },
+          {
+            "shape": "square",
+            "cost": 3
+          },
+          {
+            "shape": "pentagon",
+            "cost": 4
+          }
+        ]
+      },
+      {
+        "id": "sambar-wallow",
+        "name": "Sambar Wallow",
+        "x": 1329.09,
+        "y": 766.52,
+        "r": 65,
+        "slots": [
+          {
+            "shape": "circle",
+            "cost": 2
+          },
+          {
+            "shape": "triangle",
+            "cost": 3
+          }
+        ]
+      },
+      {
+        "id": "langur-bluff",
+        "name": "Langur Bluff",
+        "x": 345.62,
+        "y": 817.91,
+        "r": 50,
+        "slots": [
+          {
+            "shape": "triangle",
+            "cost": 3
+          }
+        ]
+      },
+      {
+        "id": "barbet-copse",
+        "name": "Barbet Copse",
+        "x": 688.47,
+        "y": 880.68,
+        "r": 50,
+        "slots": [
+          {
+            "shape": "triangle",
+            "cost": 3
+          }
+        ]
+      },
+      {
+        "id": "yew-thicket",
+        "name": "Yew Thicket",
+        "x": 1755.32,
+        "y": 944.13,
+        "r": 74,
+        "slots": [
+          {
+            "shape": "triangle",
+            "cost": 3
+          },
+          {
+            "shape": "square",
+            "cost": 3
+          },
+          {
+            "shape": "pentagon",
+            "cost": 4
+          }
+        ]
+      },
+      {
+        "id": "musk-deer-hollow",
+        "name": "Musk Deer Hollow",
+        "x": 1107.83,
+        "y": 1032.27,
+        "r": 74,
+        "slots": [
+          {
+            "shape": "triangle",
+            "cost": 3
+          },
+          {
+            "shape": "square",
+            "cost": 3
+          },
+          {
+            "shape": "pentagon",
+            "cost": 4
+          }
+        ]
+      },
+      {
+        "id": "serow-ledge",
+        "name": "Serow Ledge",
+        "x": 331.03,
+        "y": 1074.2,
+        "r": 65,
+        "slots": [
+          {
+            "shape": "triangle",
+            "cost": 3
+          },
+          {
+            "shape": "square",
+            "cost": 4
+          }
+        ]
+      },
+      {
+        "id": "alder-bend",
+        "name": "Alder Bend",
+        "x": 1445.72,
+        "y": 1094.23,
+        "r": 65,
+        "slots": [
+          {
+            "shape": "triangle",
+            "cost": 3
+          },
+          {
+            "shape": "square",
+            "cost": 3
+          }
+        ]
+      },
+      {
+        "id": "ash-ford",
+        "name": "Ash Ford",
+        "x": 663.78,
+        "y": 1176.16,
+        "r": 74,
+        "slots": [
+          {
+            "shape": "triangle",
+            "cost": 3
+          },
+          {
+            "shape": "square",
+            "cost": 3
+          },
+          {
+            "shape": "pentagon",
+            "cost": 4
+          }
+        ]
+      },
+      {
+        "id": "willow-spit",
+        "name": "Willow Spit",
+        "x": 1761.95,
+        "y": 1195.65,
+        "r": 50,
+        "slots": [
+          {
+            "shape": "triangle",
+            "cost": 3
+          }
+        ]
+      },
+      {
+        "id": "crane-shallows",
+        "name": "Crane Shallows",
+        "x": 431.71,
+        "y": 1344.39,
+        "r": 50,
+        "slots": [
+          {
+            "shape": "triangle",
+            "cost": 3
+          }
+        ]
+      }
+    ],
+    "paths": [
+      {
+        "id": "juniper-scree--chir-ridge",
+        "a": "juniper-scree",
+        "b": "chir-ridge",
+        "d": "M 152.9 245.02 Q 232.22 348.01 256.16 475.78",
+        "cubes": [
+          {
+            "x": 204.22,
+            "y": 325.02,
+            "angle": 1.09
+          },
+          {
+            "x": 225.28,
+            "y": 370.35,
+            "angle": 1.18
+          }
+        ]
+      },
+      {
+        "id": "juniper-scree--birch-line",
+        "a": "juniper-scree",
+        "b": "birch-line",
+        "d": "M 152.9 245.02 Q 323.91 219.57 487.84 274.49",
+        "cubes": [
+          {
+            "x": 239.42,
+            "y": 237.27,
+            "angle": -0.03
+          },
+          {
+            "x": 289.41,
+            "y": 237.55,
+            "angle": 0.04
+          },
+          {
+            "x": 339.25,
+            "y": 241.38,
+            "angle": 0.11
+          },
+          {
+            "x": 388.69,
+            "y": 248.74,
+            "angle": 0.18
+          }
+        ]
+      },
+      {
+        "id": "birch-line--chir-ridge",
+        "a": "birch-line",
+        "b": "chir-ridge",
+        "d": "M 487.84 274.49 Q 396.15 402.94 256.16 475.78",
+        "cubes": [
+          {
+            "x": 420.5,
+            "y": 354.81,
+            "angle": 2.35
+          },
+          {
+            "x": 384.07,
+            "y": 389.04,
+            "angle": 2.43
+          },
+          {
+            "x": 345.09,
+            "y": 420.33,
+            "angle": 2.5
+          }
+        ]
+      },
+      {
+        "id": "chir-ridge--langur-bluff",
+        "a": "chir-ridge",
+        "b": "langur-bluff",
+        "d": "M 256.16 475.78 Q 259.83 657.58 345.62 817.91",
+        "cubes": [
+          {
+            "x": 266.29,
+            "y": 586.18,
+            "angle": 1.41
+          },
+          {
+            "x": 276.13,
+            "y": 635.2,
+            "angle": 1.34
+          },
+          {
+            "x": 289.26,
+            "y": 683.43,
+            "angle": 1.27
+          },
+          {
+            "x": 305.63,
+            "y": 730.67,
+            "angle": 1.2
+          }
+        ]
+      },
+      {
+        "id": "langur-bluff--serow-ledge",
+        "a": "langur-bluff",
+        "b": "serow-ledge",
+        "d": "M 345.62 817.91 Q 307.57 944.3 331.03 1074.2",
+        "cubes": [
+          {
+            "x": 325.78,
+            "y": 912.75,
+            "angle": 1.69
+          },
+          {
+            "x": 322.24,
+            "y": 962.61,
+            "angle": 1.6
+          }
+        ]
+      },
+      {
+        "id": "serow-ledge--crane-shallows",
+        "a": "serow-ledge",
+        "b": "crane-shallows",
+        "d": "M 331.03 1074.2 Q 413.79 1197.21 431.71 1344.39",
+        "cubes": [
+          {
+            "x": 381.51,
+            "y": 1164.34,
+            "angle": 1.14
+          },
+          {
+            "x": 400.29,
+            "y": 1210.66,
+            "angle": 1.23
+          },
+          {
+            "x": 415.16,
+            "y": 1258.39,
+            "angle": 1.31
+          }
+        ]
+      },
+      {
+        "id": "crane-shallows--ash-ford",
+        "a": "crane-shallows",
+        "b": "ash-ford",
+        "d": "M 431.71 1344.39 Q 567.93 1288.12 663.78 1176.16",
+        "cubes": [
+          {
+            "x": 527.69,
+            "y": 1294.68,
+            "angle": -0.57
+          },
+          {
+            "x": 568.71,
+            "y": 1266.12,
+            "angle": -0.65
+          }
+        ]
+      },
+      {
+        "id": "ash-ford--barbet-copse",
+        "a": "ash-ford",
+        "b": "barbet-copse",
+        "d": "M 663.78 1176.16 Q 640.67 1025.46 688.47 880.68",
+        "cubes": [
+          {
+            "x": 656.39,
+            "y": 1065.03,
+            "angle": -1.55
+          },
+          {
+            "x": 659.49,
+            "y": 1015.14,
+            "angle": -1.47
+          },
+          {
+            "x": 666.61,
+            "y": 965.66,
+            "angle": -1.39
+          }
+        ]
+      },
+      {
+        "id": "barbet-copse--moss-spring",
+        "a": "barbet-copse",
+        "b": "moss-spring",
+        "d": "M 688.47 880.68 Q 782.37 788.83 907.74 749.6",
+        "cubes": [
+          {
+            "x": 759.33,
+            "y": 821.94,
+            "angle": -0.61
+          },
+          {
+            "x": 801.65,
+            "y": 795.35,
+            "angle": -0.51
+          }
+        ]
+      },
+      {
+        "id": "moss-spring--blue-pine-bowl",
+        "a": "moss-spring",
+        "b": "blue-pine-bowl",
+        "d": "M 907.74 749.6 Q 985.05 601.64 986.79 434.71",
+        "cubes": [
+          {
+            "x": 953.48,
+            "y": 641.01,
+            "angle": -1.26
+          },
+          {
+            "x": 967.14,
+            "y": 592.92,
+            "angle": -1.33
+          },
+          {
+            "x": 977.22,
+            "y": 543.96,
+            "angle": -1.4
+          }
+        ]
+      },
+      {
+        "id": "blue-pine-bowl--kharsu-oak",
+        "a": "blue-pine-bowl",
+        "b": "kharsu-oak",
+        "d": "M 986.79 434.71 Q 828.93 437.07 689.34 510.82",
+        "cubes": [
+          {
+            "x": 882.37,
+            "y": 444.43,
+            "angle": 2.97
+          },
+          {
+            "x": 833.5,
+            "y": 454.92,
+            "angle": 2.89
+          },
+          {
+            "x": 785.59,
+            "y": 469.19,
+            "angle": 2.81
+          }
+        ]
+      },
+      {
+        "id": "kharsu-oak--birch-line",
+        "a": "kharsu-oak",
+        "b": "birch-line",
+        "d": "M 689.34 510.82 Q 560.23 416.84 487.84 274.49",
+        "cubes": [
+          {
+            "x": 608.28,
+            "y": 441.51,
+            "angle": -2.35
+          },
+          {
+            "x": 574.41,
+            "y": 404.75,
+            "angle": -2.28
+          },
+          {
+            "x": 543.47,
+            "y": 365.49,
+            "angle": -2.2
+          }
+        ]
+      },
+      {
+        "id": "blue-pine-bowl--monal-crag",
+        "a": "blue-pine-bowl",
+        "b": "monal-crag",
+        "d": "M 986.79 434.71 Q 1073.53 308.73 1208 235.85",
+        "cubes": [
+          {
+            "x": 1054.87,
+            "y": 351.46,
+            "angle": -0.8
+          },
+          {
+            "x": 1091.08,
+            "y": 317.01,
+            "angle": -0.72
+          },
+          {
+            "x": 1129.95,
+            "y": 285.59,
+            "angle": -0.64
+          }
+        ]
+      },
+      {
+        "id": "monal-crag--snow-pine-rise",
+        "a": "monal-crag",
+        "b": "snow-pine-rise",
+        "d": "M 1208 235.85 Q 1296.7 372.73 1437.86 454.44",
+        "cubes": [
+          {
+            "x": 1266.93,
+            "y": 314.15,
+            "angle": 0.85
+          },
+          {
+            "x": 1301.18,
+            "y": 350.57,
+            "angle": 0.78
+          },
+          {
+            "x": 1338.07,
+            "y": 384.3,
+            "angle": 0.7
+          }
+        ]
+      },
+      {
+        "id": "snow-pine-rise--sambar-wallow",
+        "a": "snow-pine-rise",
+        "b": "sambar-wallow",
+        "d": "M 1437.86 454.44 Q 1420.92 623.53 1329.09 766.52",
+        "cubes": [
+          {
+            "x": 1415.83,
+            "y": 573.26,
+            "angle": 1.84
+          },
+          {
+            "x": 1400.81,
+            "y": 620.94,
+            "angle": 1.91
+          },
+          {
+            "x": 1382.38,
+            "y": 667.41,
+            "angle": 1.98
+          }
+        ]
+      },
+      {
+        "id": "sambar-wallow--musk-deer-hollow",
+        "a": "sambar-wallow",
+        "b": "musk-deer-hollow",
+        "d": "M 1329.09 766.52 Q 1186.57 872.84 1107.83 1032.27",
+        "cubes": [
+          {
+            "x": 1238.84,
+            "y": 845.69,
+            "angle": 2.34
+          },
+          {
+            "x": 1205.32,
+            "y": 882.77,
+            "angle": 2.27
+          },
+          {
+            "x": 1174.45,
+            "y": 922.09,
+            "angle": 2.2
+          }
+        ]
+      },
+      {
+        "id": "musk-deer-hollow--alder-bend",
+        "a": "musk-deer-hollow",
+        "b": "alder-bend",
+        "d": "M 1107.83 1032.27 Q 1284.21 1022.7 1445.72 1094.23",
+        "cubes": [
+          {
+            "x": 1260.12,
+            "y": 1039.54,
+            "angle": 0.15
+          },
+          {
+            "x": 1309.23,
+            "y": 1048.86,
+            "angle": 0.22
+          }
+        ]
+      },
+      {
+        "id": "alder-bend--yew-thicket",
+        "a": "alder-bend",
+        "b": "yew-thicket",
+        "d": "M 1445.72 1094.23 Q 1582.5 982.03 1755.32 944.13",
+        "cubes": [
+          {
+            "x": 1543.55,
+            "y": 1026.14,
+            "angle": -0.53
+          },
+          {
+            "x": 1587.6,
+            "y": 1002.51,
+            "angle": -0.46
+          },
+          {
+            "x": 1633.2,
+            "y": 982.01,
+            "angle": -0.39
+          }
+        ]
+      },
+      {
+        "id": "yew-thicket--willow-spit",
+        "a": "yew-thicket",
+        "b": "willow-spit",
+        "d": "M 1755.32 944.13 Q 1728.45 1070.68 1761.95 1195.65",
+        "cubes": [
+          {
+            "x": 1743.36,
+            "y": 1057.44,
+            "angle": 1.57
+          },
+          {
+            "x": 1745.83,
+            "y": 1107.36,
+            "angle": 1.47
+          }
+        ]
+      },
+      {
+        "id": "yew-thicket--goral-step",
+        "a": "yew-thicket",
+        "b": "goral-step",
+        "d": "M 1755.32 944.13 Q 1891.29 789.96 1942.49 590.88",
+        "cubes": [
+          {
+            "x": 1834.34,
+            "y": 839.8,
+            "angle": -1
+          },
+          {
+            "x": 1860.14,
+            "y": 796.98,
+            "angle": -1.06
+          },
+          {
+            "x": 1883.32,
+            "y": 752.68,
+            "angle": -1.12
+          },
+          {
+            "x": 1903.81,
+            "y": 707.08,
+            "angle": -1.18
+          }
+        ]
+      },
+      {
+        "id": "goral-step--tahr-notch",
+        "a": "goral-step",
+        "b": "tahr-notch",
+        "d": "M 1942.49 590.88 Q 1817.96 495.02 1750.5 353.09",
+        "cubes": [
+          {
+            "x": 1865.13,
+            "y": 521.14,
+            "angle": -2.33
+          },
+          {
+            "x": 1832.23,
+            "y": 483.5,
+            "angle": -2.25
+          },
+          {
+            "x": 1802.37,
+            "y": 443.41,
+            "angle": -2.17
+          }
+        ]
+      },
+      {
+        "id": "tahr-notch--bharal-ledge",
+        "a": "tahr-notch",
+        "b": "bharal-ledge",
+        "d": "M 1750.5 353.09 Q 1861.95 286.8 1991.34 278.31",
+        "cubes": [
+          {
+            "x": 1849.73,
+            "y": 306.75,
+            "angle": -0.33
+          },
+          {
+            "x": 1897.67,
+            "y": 292.6,
+            "angle": -0.24
+          }
+        ]
+      },
+      {
+        "id": "tahr-notch--snow-pine-rise",
+        "a": "tahr-notch",
+        "b": "snow-pine-rise",
+        "d": "M 1750.5 353.09 Q 1606.34 441.29 1437.86 454.44",
+        "cubes": [
+          {
+            "x": 1651.69,
+            "y": 403.55,
+            "angle": 2.75
+          },
+          {
+            "x": 1604.86,
+            "y": 421.02,
+            "angle": 2.82
+          },
+          {
+            "x": 1556.87,
+            "y": 435.03,
+            "angle": 2.89
+          }
+        ]
+      },
+      {
+        "id": "bharal-ledge--goral-step",
+        "a": "bharal-ledge",
+        "b": "goral-step",
+        "d": "M 1991.34 278.31 Q 1929.41 428.73 1942.49 590.88",
+        "cubes": [
+          {
+            "x": 1959.46,
+            "y": 375.47,
+            "angle": 1.81
+          },
+          {
+            "x": 1949.33,
+            "y": 424.43,
+            "angle": 1.74
+          },
+          {
+            "x": 1942.94,
+            "y": 474,
+            "angle": 1.66
+          }
+        ]
+      },
+      {
+        "id": "serow-ledge--ash-ford",
+        "a": "serow-ledge",
+        "b": "ash-ford",
+        "d": "M 331.03 1074.2 Q 485.17 1165.11 663.78 1176.16",
+        "cubes": [
+          {
+            "x": 439.24,
+            "y": 1127.01,
+            "angle": 0.37
+          },
+          {
+            "x": 486.39,
+            "y": 1143.62,
+            "angle": 0.3
+          },
+          {
+            "x": 534.57,
+            "y": 1156.96,
+            "angle": 0.24
+          }
+        ]
+      },
+      {
+        "id": "ash-ford--musk-deer-hollow",
+        "a": "ash-ford",
+        "b": "musk-deer-hollow",
+        "d": "M 663.78 1176.16 Q 868.54 1050.93 1107.83 1032.27",
+        "cubes": [
+          {
+            "x": 806.78,
+            "y": 1103.41,
+            "angle": -0.39
+          },
+          {
+            "x": 853.49,
+            "y": 1085.58,
+            "angle": -0.34
+          },
+          {
+            "x": 901.05,
+            "y": 1070.17,
+            "angle": -0.29
+          },
+          {
+            "x": 949.34,
+            "y": 1057.22,
+            "angle": -0.24
+          }
+        ]
+      },
+      {
+        "id": "kharsu-oak--moss-spring",
+        "a": "kharsu-oak",
+        "b": "moss-spring",
+        "d": "M 689.34 510.82 Q 769.88 656.42 907.74 749.6",
+        "cubes": [
+          {
+            "x": 749.35,
+            "y": 601.99,
+            "angle": 0.91
+          },
+          {
+            "x": 781.46,
+            "y": 640.29,
+            "angle": 0.84
+          },
+          {
+            "x": 816.33,
+            "y": 676.12,
+            "angle": 0.76
+          }
+        ]
+      },
+      {
+        "id": "moss-spring--musk-deer-hollow",
+        "a": "moss-spring",
+        "b": "musk-deer-hollow",
+        "d": "M 907.74 749.6 Q 973.86 914.95 1107.83 1032.27",
+        "cubes": [
+          {
+            "x": 963.37,
+            "y": 861.16,
+            "angle": 1.02
+          },
+          {
+            "x": 990.82,
+            "y": 902.94,
+            "angle": 0.95
+          },
+          {
+            "x": 1021.1,
+            "y": 942.72,
+            "angle": 0.89
+          }
+        ]
+      },
+      {
+        "id": "walnut-bench--snow-pine-rise",
+        "a": "walnut-bench",
+        "b": "snow-pine-rise",
+        "d": "M 1622.96 656.46 Q 1506.17 577.67 1437.86 454.44",
+        "cubes": [
+          {
+            "x": 1538.84,
+            "y": 587.86,
+            "angle": -2.36
+          },
+          {
+            "x": 1504.78,
+            "y": 551.28,
+            "angle": -2.28
+          }
+        ]
+      },
+      {
+        "id": "walnut-bench--sambar-wallow",
+        "a": "walnut-bench",
+        "b": "sambar-wallow",
+        "d": "M 1622.96 656.46 Q 1462.82 676.23 1329.09 766.52",
+        "cubes": [
+          {
+            "x": 1516.87,
+            "y": 678.13,
+            "angle": 2.86
+          },
+          {
+            "x": 1469.42,
+            "y": 693.86,
+            "angle": 2.78
+          },
+          {
+            "x": 1423.31,
+            "y": 713.16,
+            "angle": 2.71
+          }
+        ]
+      },
+      {
+        "id": "walnut-bench--yew-thicket",
+        "a": "walnut-bench",
+        "b": "yew-thicket",
+        "d": "M 1622.96 656.46 Q 1654.62 816.18 1755.32 944.13",
+        "cubes": [
+          {
+            "x": 1651.11,
+            "y": 757.69,
+            "angle": 1.22
+          },
+          {
+            "x": 1669.95,
+            "y": 804,
+            "angle": 1.15
+          },
+          {
+            "x": 1692.23,
+            "y": 848.74,
+            "angle": 1.07
+          }
+        ]
+      },
+      {
+        "id": "willow-spit--alder-bend",
+        "a": "willow-spit",
+        "b": "alder-bend",
+        "d": "M 1761.95 1195.65 Q 1616 1106.99 1445.72 1094.23",
+        "cubes": [
+          {
+            "x": 1664.07,
+            "y": 1145.85,
+            "angle": -2.75
+          },
+          {
+            "x": 1617.24,
+            "y": 1128.36,
+            "angle": -2.82
+          },
+          {
+            "x": 1569.27,
+            "y": 1114.29,
+            "angle": -2.89
+          }
+        ]
+      }
+    ],
+    "grassland": {
+      "cx": 1104,
+      "cy": 1632,
+      "radius": 374
+    },
+    "stats": {
+      "crossings": 0,
+      "minNodeGap": 127.60959391961956,
+      "minPathClear": 143.7261217915149,
+      "minCubeSlack": 15.701382977013935,
+      "minGrasslandClear": 65.74347502440048,
+      "anchorScale": 1,
+      "attempt": 0
+    }
   }
 }

@@ -1,4 +1,5 @@
 export { BOARD_2P } from "./2p.ts"
 export { BOARD_3P } from "./3p.ts"
+export { BOARD_4P } from "./4p.ts"
 export { boardCapacity, lintBoard } from "./lint.ts"
 export type { BoardGraph, Clearing, ClearingSlotSpec, Path } from "./types.ts"

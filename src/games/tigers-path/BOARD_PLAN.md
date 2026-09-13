@@ -31,6 +31,11 @@ In board parts (holding 40:60 paths:slots, ~1.8 slots/clearing, avg degree ~2.4)
 
 The 2P row reproduces the current board exactly — the calibration check.
 
+**Built boards come in under these targets on purpose.** 3P landed at 56 (18 clearings) and 4P at
+**70** (22 clearings) rather than the proportional ~59/~75: the first 3P draft at 63 actions played
+loose, and the §10 learning is that a board is easier to grow than to trim. Treat the table as a
+ceiling and let playtest push a board up.
+
 ## 2. Board relationship: independent, shared language
 
 - **Independent graphs.** Each count's graph is designed and tuned on its own; a larger board is
@@ -67,7 +72,7 @@ the leftover paper is an even margin.
 | Sheet | Size  | Contents                                             | Grassland          |
 | ----- | ----- | ---------------------------------------------------- | ------------------ |
 | 1     | 24×18 | **3P** (West, left half) + **2P** (East, right half) | **one per half**   |
-| 2     | 24×18 | **4P**, full sheet                                   | own, bottom-center |
+| 2     | 24×18 | **4P** (North), full sheet, **landscape**            | own, bottom-center |
 | 3     | 24×18 | **5P**, full sheet                                   | own, bottom-center |
 
 - **2P/3P share Sheet 1** because each fits comfortably in an 11.5×17 half (~195 sq in > the old
@@ -80,7 +85,10 @@ the leftover paper is an even margin.
   corner instead of its own centre.
 - **2P renders spread out** into its half (no longer cramped onto letter), with its on-board
   Grassland — no separate component needed.
-- **4P/5P each take a full sheet** to preserve breathing room.
+- **4P/5P each take a full sheet** to preserve breathing room. 4P is the first board authored
+  **landscape-native** (23×17 of board inside a 0.5in margin) — anchors are in the same frame as the
+  render box, so a landscape box just means landscape anchors, no rotation. Its Grassland is bigger
+  (3.9in radius vs 2.9in on a half-sheet); the radius is now per-variant in `spec.ts`.
 
 ## 4. Grassland requirements (all boards)
 
@@ -97,10 +105,15 @@ the leftover paper is an even margin.
 
 ## 5. Structure per board
 
-- **Marquee:** exactly one clearing is the contested heart, defined by **slots**: the only 4-slot
-  clearing, its levels skewed high (late-game climax rather than early land-grab). Give it enough
-  approaches that it can't be walled off, but connectivity is emergent, not a target — see the
-  degree note below.
+- **Marquee:** the contested heart is defined by **slots** — the board's biggest clearing, its
+  levels skewed high (late-game climax rather than early land-grab). Give it enough approaches that
+  it can't be walled off, but connectivity is emergent, not a target — see the degree note below.
+  **How many hearts scales with player count.** 2P/3P have one (3P's Gaur Meadow is a 3-slot, not a
+  4-slot — the 4-slot cap in `lint.ts` is a ceiling, not a requirement). **4P has two**, a diagonal
+  pair of 3-slot clearings (Monal Crag north-centre, Sambar Wallow centre-east), each reached by one
+  4-cube commitment: with four players a single prize means two of them lose the fight and
+  disengage, where two prizes give two contests of two. 4P has **no 4-slot clearing at all**. Expect
+  5P to want two hearts as well, possibly three.
 - **Slots:** cap 4 (marquee only); all others ≤3, mostly 1–2; avg ~1.8/clearing. Keep **minimal
   degree-1 peninsulas** — uncontested "safe" spaces undercut defense.
 - **Paths:** skew 2–3 cubes for cheap blocking; reserve 4-cube paths for real commitments / marquee
@@ -224,14 +237,19 @@ and Sheet 1 uses two independent Grasslands rather than one shared (§3).
 
 In priority order:
 
-1. **4P (North) and 5P (South) full-sheet boards.** New graph modules + variants at ~75 / ~90
-   actions, each with a slot-defined marquee (the sole 4-slot clearing) over a flat, even mesh
-   (§4–5); let degree stay emergent.
-2. **3P balance pass** (playtest) — the 20-clearing graph is a first draft: confirm real placement
+1. **4P (North) is a first draft — needs a playtest.** `boards/4p.ts` / variant `4p-north`: 22
+   clearings, 29 paths (8×len-2, 17×len-3, 4×len-4 = 83 cubes), 41 slots = **70 actions**. Two
+   3-slot hearts, no 4-slot, degrees 2–4 with no peninsulas, solved crossing-free on the first
+   attempt with ~1.4in clearances. Open questions for the table: does 70 run too tight for four
+   players; do the two hearts actually split the field; is the long eastern ring (Goral Step → Snow
+   Pine → Bharal → Blue Pine → Musk Deer → Yew → Crane → Willow → Sambar) a corridor or a dead loop.
+2. **5P (South) full-sheet board.** Same shape of job at ~85–90 actions (start low, ~26–28
+   clearings), two or three hearts, a flat even mesh (§4–5); let degree stay emergent.
+3. **3P balance pass** (playtest) — the 20-clearing graph is a first draft: confirm real placement
    counts land near 59 actions, the marquee stays the contested heart, and the frontier loop (Cobra
    Rocks / Deodar / Nilgai) isn't a dead pocket.
-3. **Grassland peak-cube number** (playtest) — sizes the semicircle; keep ≤ ~30 so the dotted field
+4. **Grassland peak-cube number** (playtest) — sizes the semicircle; keep ≤ ~30 so the dotted field
    stays countable. Provisional radius today: 2.9in.
-4. **Cube economy scaling** — decide whether the 150-cube bag changes per player count (§7).
-5. **Optional later:** the structural lint (§6/§10); portrait anchor re-tuning if a composition
+5. **Cube economy scaling** — decide whether the 150-cube bag changes per player count (§7).
+6. **Optional later:** the structural lint (§6/§10); portrait anchor re-tuning if a composition
    reads awkwardly; verifying real print output across orientations.

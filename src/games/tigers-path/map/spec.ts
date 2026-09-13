@@ -1,4 +1,4 @@
-import { BOARD_2P, BOARD_3P, lintBoard } from "../boards/index.ts"
+import { BOARD_2P, BOARD_3P, BOARD_4P, lintBoard } from "../boards/index.ts"
 import type { BoardGraph } from "../boards/types.ts"
 import { shapeForLevel } from "../domain.ts"
 import { type MapSpec, UNITS_PER_INCH } from "./layout.ts"
@@ -26,21 +26,26 @@ import { type MapSpec, UNITS_PER_INCH } from "./layout.ts"
  *  - `3p-split`: the West (left) half of the shared Sheet 1 — same 11.5×17
  *    portrait box as `2p-split`, its own on-board Grassland. The two split
  *    halves render side by side on one 24×18 sheet (see `BoardPrintSheet1`).
+ *  - `4p-north`: a whole Arch-C 24×18 sheet, LANDSCAPE — 23×17 of board inside
+ *    a 0.5in margin, with a bigger on-board Grassland at the bottom centre.
+ *    Its graph is the first authored landscape-native (see `boards/4p.ts`).
  */
-export type BoardVariant = "2p-split" | "2p-solo" | "3p-split"
+export type BoardVariant = "2p-split" | "2p-solo" | "3p-split" | "4p-north"
 
-type VariantConfig = { wIn: number; hIn: number; grass: boolean; graph: BoardGraph }
+/** Grassland zone radius on a split half-sheet — a semicircle on the bottom edge. */
+const SPLIT_GRASS_RADIUS_IN = 2.9
+
+/** `grass`: Grassland semicircle radius in inches, or `false` for an off-board zone. */
+type VariantConfig = { wIn: number; hIn: number; grass: number | false; graph: BoardGraph }
 const VARIANTS: Record<BoardVariant, VariantConfig> = {
-  "2p-split": { wIn: 11.5, hIn: 17.0, grass: true, graph: BOARD_2P },
+  "2p-split": { wIn: 11.5, hIn: 17.0, grass: SPLIT_GRASS_RADIUS_IN, graph: BOARD_2P },
   "2p-solo": { wIn: 8.0, hIn: 10.5, grass: false, graph: BOARD_2P },
-  "3p-split": { wIn: 11.5, hIn: 17.0, grass: true, graph: BOARD_3P }
+  "3p-split": { wIn: 11.5, hIn: 17.0, grass: SPLIT_GRASS_RADIUS_IN, graph: BOARD_3P },
+  "4p-north": { wIn: 23.0, hIn: 17.0, grass: 3.9, graph: BOARD_4P }
 }
 
 /** Every variant, in display order — what `build.ts` bakes into `maps.json` for the UI toggle. */
 export const ALL_VARIANTS = Object.keys(VARIANTS) as BoardVariant[]
-
-/** Grassland zone radius on the split sheet — a semicircle on the bottom edge. */
-const GRASS_RADIUS = Math.round(2.9 * UNITS_PER_INCH)
 
 /**
  * Clearing bounding-disc radius, in — enough for a name line plus the 15mm slot
@@ -85,6 +90,8 @@ export function buildSpec(variant: BoardVariant = "2p-split"): MapSpec {
       cap: p.length,
       ...(p.bend ? { bend: p.bend } : {})
     })),
-    ...(cfg.grass ? { grassland: { cx: Math.round(WIDTH / 2), cy: HEIGHT, radius: GRASS_RADIUS } } : {})
+    ...(cfg.grass
+      ? { grassland: { cx: Math.round(WIDTH / 2), cy: HEIGHT, radius: Math.round(cfg.grass * UNITS_PER_INCH) } }
+      : {})
   }
 }

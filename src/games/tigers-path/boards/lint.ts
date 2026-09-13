@@ -16,6 +16,11 @@ import type { BoardGraph } from "./types.ts"
  *    so the cheapest clearing anywhere costs 5 cubes to establish (2-path +
  *    cost-3 slot, or 3-path + cost-2 circle) — never 4.
  *  - Marquee: at most one 4-slot clearing (§5), never more than 4 slots.
+ *
+ * A graph flagged `sketch` is mid-design — paths are going in a few at a time.
+ * Only the opener *quota* is skipped for one (it's a whole-board budget that
+ * can't balance until the network is finished); the matching, cost-floor and
+ * marquee rules still hold on every path that exists.
  */
 export function lintBoard(graph: BoardGraph, label = "board"): void {
   const byId = new Map(graph.clearings.map((c) => [c.id, c]))
@@ -29,7 +34,9 @@ export function lintBoard(graph: BoardGraph, label = "board"): void {
 
   const openers = graph.paths.filter((p) => p.length === 2)
   const quota = 2 * graph.players
-  if (openers.length !== quota) {
+  // A sketch is mid-design: the opener quota is a whole-board budget and can't
+  // be met until the network is finished. Every local rule below still applies.
+  if (!graph.sketch && openers.length !== quota) {
     problems.push(`${openers.length} length-2 paths; expected ${quota} (2 × ${graph.players} players)`)
   }
 

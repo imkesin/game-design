@@ -64,6 +64,12 @@ export type Path = {
 export type BoardGraph = {
   /** Player count the board is tuned for; sizes the opener quota (`lint.ts`: 2 × players length-2 paths). */
   players: number
+  /**
+   * Design in progress — the network is being drawn a few paths at a time, so
+   * `lint.ts` skips the whole-board budget (the opener quota) while still
+   * enforcing every local rule. Drop the flag once the board is complete.
+   */
+  sketch?: boolean
   clearings: readonly Clearing[]
   paths: readonly Path[]
 }

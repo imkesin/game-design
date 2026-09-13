@@ -3,16 +3,18 @@ import mapsData from "~/games/tigers-path/map/maps.json"
 import { css } from "~/generated/styled-system/css"
 
 /**
- * Blank hand-drawing template for the 3P board — a letter (8.5×11) sheet showing
- * the West-half board box at its true 11.5×17 aspect, the Grassland semicircle
- * and its dashed moat buffer (both to scale), and a faint 0–100 anchor grid with
- * labelled axes. Pencil in clearings/paths over a contour sketch, then read each
- * clearing's `target` straight off the grid (x % across, y % down, origin
- * top-left) and transcribe into `boards/3p.ts`.
+ * Blank hand-drawing templates — a letter sheet showing a board's box at its
+ * true aspect, the Grassland semicircle and its dashed moat buffer (both to
+ * scale), and a faint 0–100 anchor grid with labelled axes. Pencil in
+ * clearings/paths over a contour sketch, then read each clearing's `target`
+ * straight off the grid (x % across, y % down, origin top-left) and transcribe
+ * into the matching `boards/*.ts`.
  *
- * Geometry is driven off the baked `3p-split` map so it always matches the real
- * board; the only added number is the Grassland moat (`GRASS_MOAT` = 0.9in in
- * `map/layout.ts`), which the map output doesn't carry.
+ * The sheet is oriented to the board: 3P's 11.5×17 half prints letter portrait,
+ * 4P's 23×17 full sheet prints letter landscape. Geometry is driven off the
+ * baked map so a template always matches the real board; the only added number
+ * is the Grassland moat (`GRASS_MOAT` = 0.9in in `map/layout.ts`), which the map
+ * output doesn't carry.
  */
 
 const maps = mapsData as unknown as Record<string, GeneratedMap>
@@ -50,8 +52,19 @@ const sheet = css({
   justifyContent: "center"
 })
 
-export function BoardTemplate3P() {
-  const map = maps["3p-split"]!
+type TemplateProps = {
+  map: GeneratedMap
+  /** Headline printed in the top gutter. */
+  title: string
+  /** Second line in the top gutter — the board's part budget. */
+  budget: string
+  /** Screen-only chip text. */
+  chip: string
+  sheetWIn: number
+  sheetHIn: number
+}
+
+function BlankTemplate({ map, title, budget, chip, sheetWIn, sheetHIn }: TemplateProps) {
   const W = map.width
   const H = map.height
   const upi = map.unitsPerInch
@@ -62,7 +75,7 @@ export function BoardTemplate3P() {
 
   // Label gutters (top for x-axis + title, left for y-axis) and small pads.
   const GUT_L = Math.round(0.55 * upi)
-  const GUT_T = Math.round(0.9 * upi)
+  const GUT_T = Math.round(1.15 * upi)
   const PAD_R = Math.round(0.16 * upi)
   const PAD_B = Math.round(0.5 * upi)
   const vb = `${-GUT_L} ${-GUT_T} ${W + GUT_L + PAD_R} ${H + GUT_T + PAD_B}`
@@ -73,11 +86,11 @@ export function BoardTemplate3P() {
   const semi = (r: number) => `M ${cx - r} ${cy} A ${r} ${r} 0 0 1 ${cx + r} ${cy}`
 
   const printCss = `
-    @page { size: 8.5in 11in; margin: 0; }
+    @page { size: ${sheetWIn}in ${sheetHIn}in; margin: 0; }
     @media print {
       html, body { margin: 0 !important; padding: 0 !important; background: #fff !important; }
       .screen-only { display: none !important; }
-      .print-root { background: #fff !important; padding: 0 !important; display: block !important; height: 11in !important; overflow: hidden !important; }
+      .print-root { background: #fff !important; padding: 0 !important; display: block !important; height: ${sheetHIn}in !important; overflow: hidden !important; }
       .sheet { box-shadow: none !important; margin: 0 !important; }
     }
   `
@@ -86,14 +99,18 @@ export function BoardTemplate3P() {
     <>
       <style>{printCss}</style>
       <div className={`print-root ${screen}`}>
-        <div className={`${note} screen-only`}>
-          3P blank template · letter 8.5×11 · board 11.5×17 aspect · 0–100 grid · Grassland + moat to scale
-        </div>
-        <div className={`sheet ${sheet}`} style={{ width: "8.5in", height: "11in", padding: "0.35in 0.4in" }}>
+        <div className={`${note} screen-only`}>{chip}</div>
+        <div
+          className={`sheet ${sheet}`}
+          style={{ width: `${sheetWIn}in`, height: `${sheetHIn}in`, padding: "0.35in 0.4in" }}
+        >
           <svg viewBox={vb} width="100%" height="100%" preserveAspectRatio="xMidYMid meet" fill="none">
-            {/* Title + axis caption in the top/bottom gutters. */}
-            <text x={0} y={-GUT_T + 24} fontSize={26} fill="#444" fontFamily="sans-serif" fontWeight={600}>
-              Tiger's Path — 3P blank (West half · 11.5×17 · 0–100 grid)
+            {/* Title, budget reminder, and axis caption in the top/bottom gutters. */}
+            <text x={0} y={-GUT_T + 26} fontSize={26} fill="#444" fontFamily="sans-serif" fontWeight={600}>
+              {title}
+            </text>
+            <text x={0} y={-GUT_T + 56} fontSize={22} fill="#777" fontFamily="sans-serif">
+              {budget}
             </text>
             <text
               x={W / 2}
@@ -150,6 +167,34 @@ export function BoardTemplate3P() {
         </div>
       </div>
     </>
+  )
+}
+
+/** 3P (West half, 11.5×17) — letter portrait. */
+export function BoardTemplate3P() {
+  return (
+    <BlankTemplate
+      map={maps["3p-split"]!}
+      title="Tiger's Path — 3P blank (West half · 11.5×17 · 0–100 grid)"
+      budget="Target: 18 clearings · 22 paths (6×2, 13×3, 3×4) · 34 slots = 56 actions"
+      chip="3P blank template · letter 8.5×11 · board 11.5×17 aspect · 0–100 grid · Grassland + moat to scale"
+      sheetWIn={8.5}
+      sheetHIn={11}
+    />
+  )
+}
+
+/** 4P (North, full 23×17 sheet) — letter landscape, the rotated counterpart. */
+export function BoardTemplate4P() {
+  return (
+    <BlankTemplate
+      map={maps["4p-north"]!}
+      title="Tiger's Path — 4P blank (North · 23×17 landscape · 0–100 grid)"
+      budget="Target: 22 clearings · 29 paths (8×2, 17×3, 4×4) · 41 slots = 70 actions · no 4-slot clearing"
+      chip="4P blank template · letter 11×8.5 landscape · board 23×17 aspect · 0–100 grid · Grassland + moat to scale"
+      sheetWIn={11}
+      sheetHIn={8.5}
+    />
   )
 }
 
