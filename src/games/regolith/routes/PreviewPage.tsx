@@ -1,25 +1,36 @@
 import { Fragment } from "react"
 import { ResourceTile } from "~/games/regolith/components/ResourceTile"
+import { WorkerTile } from "~/games/regolith/components/WorkerTile"
 import {
-  BUILDING_VP,
-  BUILDINGS,
-  CONTRIBUTION_VP,
-  CONTRIBUTIONS,
-  contributionValuePerVp,
-  CYCLES,
-  GOODS,
-  netValue,
-  TIERS,
-  TRACKS,
-  VALUE,
-  valueOf
+  BASE_CHARGE,
+  CARD_ACTION_CAPPED,
+  CARD_ACTION_MATERIAL,
+  CARD_ACTIONS,
+  FREE_PLACEMENTS_PER_TURN,
+  LIT_ZONES,
+  LOCATIONS_2P,
+  OUTPOST_CHARGE,
+  PATH_COST,
+  RESOURCE_BUYS,
+  RESOURCE_SYSTEM,
+  RESOURCES,
+  RINGS,
+  RIVER_SIZE,
+  ROAD_PATH_COST,
+  START_ROBOTS,
+  START_SUPPLY,
+  TICKS_PER_DAY,
+  TIME_SYMBOL_MAX,
+  TIME_SYMBOL_MIN,
+  ZONES
 } from "~/games/regolith/domain"
-import type { Terms, Track } from "~/games/regolith/domain"
 import { css } from "~/generated/styled-system/css"
 
 /**
- * Sanity table for the track design: every track's spaces with cost, outcome
- * and net value, read straight from the domain. Not a print page.
+ * What the fourth shape has actually settled, read straight from the domain,
+ * plus the tile gallery. There is no board sheet yet: the path network, the
+ * bag and the deck are all open, so there is nothing to print. Not a print
+ * page.
  */
 
 const page = css({
@@ -34,7 +45,7 @@ const page = css({
 
 const title = css({ fontSize: "24px", fontWeight: 800, letterSpacing: "0.12em", textTransform: "uppercase" })
 
-const meta = css({ color: "#a3a3a3", fontSize: "13px", maxWidth: "560px", textAlign: "center", lineHeight: 1.5 })
+const meta = css({ color: "#a3a3a3", fontSize: "13px", maxWidth: "620px", textAlign: "center", lineHeight: 1.6 })
 
 const grid = css({
   display: "grid",
@@ -46,10 +57,10 @@ const grid = css({
 
 const card = css({
   display: "grid",
-  gridTemplateColumns: "auto 1fr auto 1fr auto",
+  gridTemplateColumns: "auto 1fr",
   gridAutoRows: "min-content",
-  columnGap: "8px",
-  rowGap: "4px",
+  columnGap: "12px",
+  rowGap: "6px",
   alignItems: "baseline",
   border: "1px solid #404040",
   borderRadius: "6px",
@@ -68,11 +79,8 @@ const head = css({
 })
 
 const dim = css({ color: "#a3a3a3" })
-const arrow = css({ color: "#737373" })
-const net = css({ color: "#86efac", fontVariantNumeric: "tabular-nums" })
-const cost = css({ color: "#fcd34d", fontVariantNumeric: "tabular-nums" })
-const links = css({ display: "flex", gap: "20px" })
-const link = css({ color: "#e5e5e5", fontSize: "15px", textDecoration: "underline" })
+const num = css({ color: "#fcd34d", fontVariantNumeric: "tabular-nums" })
+
 // White because the tiles are print components: black on white is what they are for.
 const gallery = css({
   width: "100%",
@@ -89,112 +97,108 @@ const gallery = css({
   fontSize: "13px"
 })
 const galleryLabel = css({ color: "#525252", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.08em" })
-const tileRow = css({ display: "flex", flexWrap: "wrap", gap: "16px", alignItems: "center" })
+const tileRow = css({ display: "flex", flexWrap: "wrap", gap: "16px", alignItems: "flex-end" })
 
-function terms(ts: Terms) {
-  if (ts.length === 0) return "—"
-  return ts.map((x) => `${x.qty} ${x.good}`).join(" + ")
-}
-
-const ROMAN = ["I", "II", "III", "IV", "V"]
-
-function TrackCard({ track }: { track: Track }) {
-  // Top space first so the card reads like the track stands on the board.
-  const rows = track.spaces.map((space, i) => ({ space, tier: i + 1 })).reverse()
+function Row({ label, value }: { label: string; value: string }) {
   return (
-    <div className={card}>
-      <div className={head}>
-        <span>{track.id} · {track.name}</span>
-        <span className={dim}>{track.spaces.length} spaces</span>
-      </div>
-      {rows.map(({ space, tier }) => {
-        const nv = netValue(space)
-        return (
-          <Fragment key={tier}>
-            <span className={dim}>{ROMAN[tier - 1]}</span>
-            <span>{terms(space.cost)}</span>
-            <span className={arrow}>→</span>
-            <span>{space.outcome.kind === "goods" ? terms(space.outcome.goods) : space.outcome.kind}</span>
-            {nv === undefined
-              ? <span className={cost}>({valueOf(space.cost)})</span>
-              : <span className={net}>+{nv}</span>}
-          </Fragment>
-        )
-      })}
-    </div>
+    <Fragment>
+      <span className={dim}>{label}</span>
+      <span className={num}>{value}</span>
+    </Fragment>
   )
 }
 
 export function PreviewPage() {
-  const values = Object.entries(VALUE).map(([g, v]) => `${g} ${v}`).join(" · ")
+  const supply = START_SUPPLY.map((x) => `${x.qty} ${x.resource}`).join(" + ")
   return (
     <div className={page}>
       <span className={title}>Regolith</span>
       <span className={meta}>
-        Track design, spaces read from the domain. Values:{" "}
-        {values}. Spaces listed top to bottom; a worker enters any empty, unlocked space and pays its cost on placement.
-        Green is net value per visit; amber is the input value of a space that yields a thing. {CYCLES} cycles of{" "}
-        {TIERS} rounds.
+        Fourth shape: a polar map where the sun's terminator is the clock. A turn is either deploying any number of
+        robots — which does not move the clock — or taking a card, which turns the dial by its time symbol and then
+        acts. Robots earn, cards spend, and only spending moves the sun. No board sheet yet: the path network, the bag
+        and the deck are all open. See DESIGN.md.
       </span>
-      <div className={links}>
-        <a className={link} href="/regolith/print/board">Track board (4 portrait sheets) →</a>
-        <a className={link} href="/regolith/print/aid">Player aid →</a>
-      </div>
       <div className={gallery}>
         <span className={galleryLabel}>Tiles · 12mm</span>
         <div className={tileRow}>
-          {GOODS.map((g) => <ResourceTile key={g} kind={g} qty={VALUE[g]} />)}
+          {RESOURCES.map((r) => <ResourceTile key={r} kind={r} qty={2} />)}
           <ResourceTile kind="time" qty={1} />
+          <WorkerTile />
         </div>
         <span className={galleryLabel}>Bare</span>
         <div className={tileRow}>
-          {GOODS.map((g) => <ResourceTile key={g} kind={g} />)}
+          {RESOURCES.map((r) => <ResourceTile key={r} kind={r} />)}
           <ResourceTile kind="time" />
         </div>
         <span className={galleryLabel}>Counts</span>
         <div className={tileRow}>
           {[1, 2, 3, 4, 5, 6].map((n) => <ResourceTile key={n} kind="energy" qty={n} />)}
         </div>
+        <span className={galleryLabel}>Charge</span>
+        <div className={tileRow}>
+          <WorkerTile label={`+${BASE_CHARGE}`} />
+          <WorkerTile label={`+${OUTPOST_CHARGE}`} />
+        </div>
         <span className={galleryLabel}>Sizes</span>
         <div className={tileRow}>
-          {[8, 10, 12, 16].map((n) => <ResourceTile key={n} kind="water" qty={2} size={n} />)}
+          {[8, 10, 12, 16].map((n) => <ResourceTile key={n} kind="rock" qty={2} size={n} />)}
         </div>
       </div>
       <div className={grid}>
-        {TRACKS.map((t) => <TrackCard key={t.id} track={t} />)}
         <div className={card}>
           <div className={head}>
-            <span>Buildings</span>
-            <span className={dim}>{BUILDINGS.length} tiles</span>
+            <span>Resources</span>
+            <span className={dim}>one system each</span>
           </div>
-          {BUILDINGS.map((bd) => (
-            <Fragment key={bd.id}>
-              <span className={dim}>{bd.id}</span>
-              <span>{terms(bd.cost)}</span>
-              <span className={arrow}>→</span>
-              <span>{bd.name}: {BUILDING_VP} VP</span>
-              <span className={cost}>({valueOf(bd.cost)})</span>
+          {RESOURCES.map((r) => (
+            <Fragment key={r}>
+              <span className={num}>{RESOURCE_SYSTEM[r]}</span>
+              <span>
+                {r} — {RESOURCE_BUYS[r]}
+              </span>
             </Fragment>
           ))}
         </div>
         <div className={card}>
           <div className={head}>
-            <span>Contributions</span>
-            <span className={dim}>value per VP</span>
+            <span>Board</span>
+            <span className={dim}>2 players</span>
           </div>
-          {CONTRIBUTION_VP.map((_, i) => i + 1).reverse().map((step) => (
-            <Fragment key={step}>
-              <span className={dim}>{step}</span>
-              <span>{CONTRIBUTIONS.map((c) => `${c.steps[step - 1]} ${c.good}`).join(" / ")}</span>
-              <span className={arrow}>→</span>
-              <span>{CONTRIBUTION_VP[step - 1]} VP</span>
-              <span className={cost}>
-                ({CONTRIBUTIONS.map((c) =>
-                  contributionValuePerVp(c, step).toFixed(1).replace(/\.0$/, "")
-                ).join(" / ")})
+          <Row label="Zones" value={String(ZONES)} />
+          <Row label="Rings" value={String(RINGS)} />
+          <Row label="Locations" value={`${LOCATIONS_2P} · 1–3 per zone, irregular`} />
+          <Row label="Lit at once" value={`${LIT_ZONES} contiguous zones`} />
+          <Row label="One day" value={`${TICKS_PER_DAY} ticks`} />
+          <Row label="Path cost" value={`${PATH_COST} energy · ${ROAD_PATH_COST} with a road`} />
+        </div>
+        <div className={card}>
+          <div className={head}>
+            <span>Cards</span>
+            <span className={dim}>river of {RIVER_SIZE}</span>
+          </div>
+          {CARD_ACTIONS.map((a) => (
+            <Fragment key={a}>
+              <span className={num}>{a}</span>
+              <span>
+                {CARD_ACTION_MATERIAL[a] === undefined ? "—" : `${CARD_ACTION_MATERIAL[a]} each`}
+                {CARD_ACTION_CAPPED[a] ? " · size is a cap" : " · extras cost distance"}
               </span>
             </Fragment>
           ))}
+          <Row label="Time symbol" value={`${TIME_SYMBOL_MIN}–${TIME_SYMBOL_MAX} ticks, turned before the action`} />
+          <Row label="Size" value="how many uses are spatially free" />
+        </div>
+        <div className={card}>
+          <div className={head}>
+            <span>Start</span>
+            <span className={dim}>provisional</span>
+          </div>
+          <Row label="Robots" value={String(START_ROBOTS)} />
+          <Row label="Supply" value={supply} />
+          <Row label="Base" value="any location, covers it, distance 0" />
+          <Row label="Charge" value={`+${BASE_CHARGE} base · +${OUTPOST_CHARGE} outpost, on bump`} />
+          <Row label="Free placements" value={`${FREE_PLACEMENTS_PER_TURN} per turn, any distance`} />
         </div>
       </div>
     </div>

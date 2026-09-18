@@ -1,18 +1,18 @@
 import type { CSSProperties, ReactNode } from "react"
 import { markFor, markNamed } from "~/games/regolith/components/resourceMarks"
-import type { Good } from "~/games/regolith/domain"
+import type { Resource } from "~/games/regolith/domain"
 import { css } from "~/generated/styled-system/css"
 
 /**
- * One good as a printed tile: a square, the good's mark filling it, and a
+ * One resource as a printed tile: a square, its mark filling it, and a
  * quantity badge riding the top-right corner. This is the unit every recipe
  * on the board is built from, so its size is a fixed physical dimension in
  * millimetres and everything inside scales off that one number.
  *
- * Shape code: goods are cubes, so the tile is a square; time is discs, so the
- * `time` variant is a circle of the same size. The badge is a rounded square
- * whichever shape it sits on — it is a count, not a component, and a circular
- * badge on a goods tile would read as time.
+ * Shape code: resources are cubes, so the tile is a square; time is discs, so
+ * the `time` variant is a circle of the same size. The badge is a rounded
+ * square whichever shape it sits on — it is a count, not a component, and a
+ * circular badge on a resource tile would read as time.
  */
 
 // 1mm in CSS px, for the SVG marks, whose `size` is a pixel width.
@@ -102,13 +102,13 @@ export function badgeSize(tileMm: number): number {
 }
 
 export interface ResourceTileProps {
-  /** A good, or `"time"` for the time-token disc. */
-  kind: Good | "time"
-  /** Shown in the badge; omit for a bare tile (the goods value strip, a legend). */
+  /** A resource, or `"time"` for the time-token disc. */
+  kind: Resource | "time"
+  /** Shown in the badge; omit for a bare tile (a legend, a bag-token face). */
   qty?: number
   /** Tile edge in mm. */
   size?: number
-  /** Print the badge as "+n": a gain rather than a count, e.g. the reset bonus on a tick. */
+  /** Print the badge as "+n": a gain rather than a count, e.g. a charge yield. */
   signed?: boolean
   style?: CSSProperties
 }
