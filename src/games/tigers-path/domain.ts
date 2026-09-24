@@ -65,7 +65,7 @@ export const ANIMALS: readonly Animal[] = [
     color: "purple",
     rank: 4,
     jungleCount: 32,
-    power: "Clearing slots you can fill (this shape & smaller)",
+    power: "Clearing slots you can fill (this shape & previous)",
     trackValues: [2, 3, 3, 4, 4, 5, 5, 5]
   },
   {

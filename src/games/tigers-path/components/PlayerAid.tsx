@@ -241,7 +241,7 @@ const SCORING: readonly React.ReactNode[] = [
   </>,
   <>
     <strong>One animal:</strong>{" "}
-    The game-ender locks their top animal; the rest draft by highest track position (ties → more of it in sanctuary;
+    The game-ender locks their top animal; the rest settled by highest track position (ties → more of it in sanctuary;
     else shared).
   </>,
   <>
