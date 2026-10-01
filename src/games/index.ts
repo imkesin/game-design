@@ -4,6 +4,7 @@ import { graft } from "./graft"
 import { meepleSyrup } from "./meeple-syrup"
 import { regolith } from "./regolith"
 import { relativism } from "./relativism"
+import { romantasy } from "./romantasy"
 import { tigersPath } from "./tigers-path"
 
 /** Registry of all games. Add a game module here to mount it at `/<id>/…`. */
@@ -13,5 +14,6 @@ export const games: Record<string, Game> = {
   [relativism.id]: relativism,
   [meepleSyrup.id]: meepleSyrup,
   [tigersPath.id]: tigersPath,
-  [regolith.id]: regolith
+  [regolith.id]: regolith,
+  [romantasy.id]: romantasy
 }

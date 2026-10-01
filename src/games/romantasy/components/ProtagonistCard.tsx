@@ -1,0 +1,78 @@
+import type { ProtagonistCard as ProtagonistCardData } from "~/games/romantasy/cards/domain"
+import {
+  accentOutline,
+  bleedFrame,
+  cardFrame,
+  type CardVariant,
+  indexArea,
+  nameBlock,
+  nameText,
+  textZone,
+  trimFrame
+} from "~/games/romantasy/components/cardFrame"
+import { SuitMark } from "~/games/romantasy/components/CornerIndex"
+import { css, cx } from "~/generated/styled-system/css"
+import { Guides } from "~/shared/components/Guides"
+import { paperFrame, strongRail } from "~/shared/components/paperFrame"
+
+/**
+ * A protagonist, laid out like a trait card: the two baseline symbols are
+ * stacked in the upper left with a short bar between them, the name in the
+ * upper right, and the rest is empty for art. Sex is in the data, not on the
+ * card: a name says it.
+ *
+ * No number is printed: a baseline's value is implied (`BASELINE_VALUE`), as
+ * protagonists are special enough not to need one. The bar between the symbols
+ * reads as "or". The frame is neutral: the resources are the colour on the card.
+ */
+
+// Two 12mm marks with a short bar between them.
+const baselines = css({
+  display: "flex",
+  flexDirection: "column",
+  alignItems: "center",
+  gap: "1.5"
+})
+
+const orBar = css({
+  width: "8",
+  height: "0.6mm",
+  background: "currentColor"
+})
+
+export function ProtagonistCard({
+  card,
+  variant = "bleed",
+  showGuides = false
+}: {
+  card: ProtagonistCardData
+  variant?: CardVariant
+  showGuides?: boolean
+}) {
+  return (
+    <div
+      className={cx(
+        cardFrame,
+        paperFrame({ color: "neutral" }),
+        variant === "bleed" ? bleedFrame : trimFrame,
+        variant === "trim" && accentOutline,
+        variant === "trim" && strongRail({ color: "neutral" })
+      )}
+    >
+      <div className={indexArea}>
+        <div className={baselines}>
+          <SuitMark resource={card.resources[0]} />
+          <span className={orBar} />
+          <SuitMark resource={card.resources[1]} />
+        </div>
+      </div>
+      <div className={nameBlock}>
+        <span className={nameText}>{card.name}</span>
+      </div>
+
+      <div className={textZone} />
+
+      {showGuides && variant === "bleed" && <Guides />}
+    </div>
+  )
+}
