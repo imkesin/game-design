@@ -1,17 +1,19 @@
-import type { TraitCard as TraitCardData } from "~/games/romantasy/cards/domain"
-import { RESOURCE_BY_ID } from "~/games/romantasy/cards/resources"
+import type { TraitCard as TraitCardData } from "~/games/fated/cards/domain"
+import { RESOURCE_BY_ID } from "~/games/fated/cards/resources"
 import {
   accentOutline,
   bleedFrame,
   cardFrame,
   type CardVariant,
   indexArea,
+  indexBox,
   nameBlock,
   nameText,
   textZone,
+  titleBox,
   trimFrame
-} from "~/games/romantasy/components/cardFrame"
-import { CornerIndex } from "~/games/romantasy/components/CornerIndex"
+} from "~/games/fated/components/cardFrame"
+import { CornerIndex } from "~/games/fated/components/CornerIndex"
 import { cx } from "~/generated/styled-system/css"
 import { Guides } from "~/shared/components/Guides"
 import { paperFrame, strongRail } from "~/shared/components/paperFrame"
@@ -43,6 +45,8 @@ export function TraitCard({
         variant === "trim" && strongRail({ color })
       )}
     >
+      <div className={indexBox} />
+      <div className={titleBox} />
       <div className={indexArea}>
         <CornerIndex value={card.value} resource={card.resource} />
       </div>

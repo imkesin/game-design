@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react"
-import { protagonistDeck } from "~/games/romantasy/cards/protagonistDeck"
-import { RESOURCE_BY_ID } from "~/games/romantasy/cards/resources"
-import { traitDeck } from "~/games/romantasy/cards/traitDeck"
-import { ProtagonistCard } from "~/games/romantasy/components/ProtagonistCard"
-import { TraitCard } from "~/games/romantasy/components/TraitCard"
+import { protagonistDeck } from "~/games/fated/cards/protagonistDeck"
+import { RESOURCE_BY_ID } from "~/games/fated/cards/resources"
+import { sceneDeck } from "~/games/fated/cards/sceneDeck"
+import { traitDeck } from "~/games/fated/cards/traitDeck"
+import { ProtagonistCard } from "~/games/fated/components/ProtagonistCard"
+import { SceneCard } from "~/games/fated/components/SceneCard"
+import { TraitCard } from "~/games/fated/components/TraitCard"
 import { css } from "~/generated/styled-system/css"
 import { ZoomControl } from "~/shared/components/ZoomControl"
 
@@ -64,15 +66,25 @@ const options = [
     id: card.id,
     label: `${card.name} (${card.sex})`,
     card
+  })),
+  ...sceneDeck.map((card) => ({
+    id: card.id,
+    label: `Scene — ${card.name}`,
+    card
   }))
 ]
 
 function CardFace(
   { card, ...props }: { card: (typeof options)[number]["card"]; variant?: "trim"; showGuides?: boolean }
 ) {
-  return card.kind === "trait"
-    ? <TraitCard card={card} {...props} />
-    : <ProtagonistCard card={card} {...props} />
+  switch (card.kind) {
+    case "trait":
+      return <TraitCard card={card} {...props} />
+    case "protagonist":
+      return <ProtagonistCard card={card} {...props} />
+    case "scene":
+      return <SceneCard card={card} {...props} />
+  }
 }
 
 export function PreviewPage() {
@@ -111,7 +123,12 @@ export function PreviewPage() {
         {protagonistDeck.map((card) => <ProtagonistCard key={card.id} variant="trim" card={card} />)}
       </div>
 
-      <a className={link} href="/romantasy/print/cards">Print sheet →</a>
+      <span className={heading}>Scenes — {sceneDeck.length} cards</span>
+      <div className={row}>
+        {sceneDeck.map((card) => <SceneCard key={card.id} variant="trim" card={card} />)}
+      </div>
+
+      <a className={link} href="/fated/print/cards">Print sheet →</a>
     </div>
   )
 }

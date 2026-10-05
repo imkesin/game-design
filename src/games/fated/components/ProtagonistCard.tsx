@@ -1,16 +1,18 @@
-import type { ProtagonistCard as ProtagonistCardData } from "~/games/romantasy/cards/domain"
+import type { ProtagonistCard as ProtagonistCardData } from "~/games/fated/cards/domain"
 import {
   accentOutline,
   bleedFrame,
   cardFrame,
   type CardVariant,
   indexArea,
+  indexBox,
   nameBlock,
   nameText,
   textZone,
+  titleBox,
   trimFrame
-} from "~/games/romantasy/components/cardFrame"
-import { SuitMark } from "~/games/romantasy/components/CornerIndex"
+} from "~/games/fated/components/cardFrame"
+import { SuitMark } from "~/games/fated/components/CornerIndex"
 import { css, cx } from "~/generated/styled-system/css"
 import { Guides } from "~/shared/components/Guides"
 import { paperFrame, strongRail } from "~/shared/components/paperFrame"
@@ -59,6 +61,8 @@ export function ProtagonistCard({
         variant === "trim" && strongRail({ color: "neutral" })
       )}
     >
+      <div className={indexBox} />
+      <div className={titleBox} />
       <div className={indexArea}>
         <div className={baselines}>
           <SuitMark resource={card.resources[0]} />
@@ -67,7 +71,7 @@ export function ProtagonistCard({
         </div>
       </div>
       <div className={nameBlock}>
-        <span className={nameText}>{card.name}</span>
+        <span className={nameText} style={{ fontSize: "calc(4 * var(--u))" }}>{card.name}</span>
       </div>
 
       <div className={textZone} />

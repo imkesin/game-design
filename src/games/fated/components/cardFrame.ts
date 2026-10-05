@@ -24,13 +24,13 @@ export const cardFrame = css({
   position: "relative",
   boxSizing: "border-box",
   display: "grid",
-  gridTemplateColumns: "var(--gutter) auto 1fr var(--gutter)",
+  gridTemplateColumns: "var(--gutter) auto calc(3 * var(--u)) 1fr var(--gutter)",
   gridTemplateRows: "var(--gutter) auto 1fr var(--zone)",
   gridTemplateAreas: `
-    ".    .     .    .   "
-    ".    index name .   "
-    ".    art   art  .   "
-    "text text  text text"
+    ".    .     .   .    .   "
+    ".    index .   name .   "
+    ".    art   art art  .   "
+    "text text  text text text"
   `,
   overflow: "hidden"
 })
@@ -73,12 +73,50 @@ export const indexArea = css({
   gap: "3"
 })
 
-/** Name (and any mark) pinned to the upper right, opposite the index. */
+/**
+ * A white panel with a soft outline from the card's corner round the gutter and
+ * the index, so the room left for art is visible. Only its right and bottom edges
+ * draw; the negative margins give the index breathing room without moving the
+ * grid tracks; the gap column does the same on the right.
+ */
+export const indexBox = css({
+  gridArea: "1 / 1 / 3 / 4",
+  marginBottom: "-3",
+  borderRight: "0.25mm solid rgba(0, 0, 0, 0.18)",
+  borderBottom: "0.25mm solid rgba(0, 0, 0, 0.18)",
+  borderBottomRightRadius: "3",
+  background: "white",
+  pointerEvents: "none"
+})
+
+/**
+ * The title panel: white, outlined on its left and bottom edges like `indexBox`,
+ * running to the card's top and right edges. Its height is the same on every
+ * card (gutter, 12mm name zone, and 3mm of breathing room) so it shows
+ * the room a name has. The 0.25mm pull left makes its edge coincide with the
+ * index box's instead of doubling the line.
+ */
+export const titleBox = css({
+  gridArea: "1 / 4 / 3 / 6",
+  alignSelf: "start",
+  height: "calc(var(--gutter) + 15 * var(--u))",
+  marginLeft: "-0.25mm",
+  borderLeft: "0.25mm solid rgba(0, 0, 0, 0.18)",
+  borderBottom: "0.25mm solid rgba(0, 0, 0, 0.18)",
+  borderBottomLeftRadius: "3",
+  background: "white",
+  pointerEvents: "none"
+})
+
+/** Name (and any mark) pinned to the upper right, opposite the index, in a fixed 12mm zone. */
 export const nameBlock = css({
   gridArea: "name",
+  alignSelf: "start",
   justifySelf: "end",
+  height: "12",
   display: "flex",
   flexDirection: "column",
+  justifyContent: "center",
   alignItems: "flex-end",
   gap: "1",
   paddingInlineStart: "3",
@@ -86,7 +124,7 @@ export const nameBlock = css({
 })
 
 export const nameText = css({
-  fontSize: "paragraph",
+  fontSize: "calc(3.2 * var(--u))",
   fontWeight: 700,
   textTransform: "uppercase",
   letterSpacing: "0.06em",

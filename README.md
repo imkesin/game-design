@@ -22,5 +22,5 @@ pnpm run dev
 - **Graft** (`/graft`) — interactive preview at `/graft`; print sheets under `/graft/print/*`.
 - **Civil Service** (`/civil-service`) — action-deck preview at `/civil-service`; print sheet at
   `/civil-service/print/cards`; one-page player reference at `/civil-service/print/reference`.
-- **Romantasy** (`/romantasy`) — protagonist and trait card preview at `/romantasy`; print sheet at
-  `/romantasy/print/cards` (120 cards). Plots not yet designed; see `src/games/romantasy/DESIGN.md`.
+- **Fated** (`/fated`) — protagonist, trait and scene card preview at `/fated`; print sheet at
+  `/fated/print/cards` (150 cards). See `src/games/fated/DESIGN.md`.

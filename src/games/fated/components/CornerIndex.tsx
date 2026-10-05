@@ -1,6 +1,5 @@
-import type { ResourceId } from "~/games/romantasy/cards/domain"
-import { RESOURCE_BY_ID } from "~/games/romantasy/cards/resources"
-import { RESOURCE_MARKS } from "~/games/romantasy/components/resourceMarks"
+import type { ResourceId, Wild } from "~/games/fated/cards/domain"
+import { suit } from "~/games/fated/components/resourceMarks"
 import { css } from "~/generated/styled-system/css"
 
 /**
@@ -32,21 +31,20 @@ const value = css({
   textBox: "trim-both cap alphabetic"
 })
 
-/** A resource's mark in its own ink: the suit of a corner index, 12mm square. */
-export function SuitMark({ resource }: { resource: ResourceId }) {
-  const { color, name } = RESOURCE_BY_ID[resource]
-  const Mark = RESOURCE_MARKS[resource]
+/** A resource's mark in its own ink: the suit of a corner index, `size` mm square. */
+export function SuitMark({ resource, size = 12 }: { resource: ResourceId | Wild; size?: number }) {
+  const { ink, name, Mark } = suit(resource)
   return (
-    <span style={{ display: "flex", color: `var(--colors-${color}-700)` }} title={name}>
-      <Mark size="calc(12 * var(--u))" strokeWidth={2} />
+    <span style={{ display: "flex", color: ink }} title={name}>
+      <Mark size={`calc(${size} * var(--u))`} strokeWidth={2} />
     </span>
   )
 }
 
-export function CornerIndex({ value: number, resource }: { value: number; resource: ResourceId }) {
+export function CornerIndex({ value: number, resource }: { value: number; resource: ResourceId | Wild }) {
   return (
     <span className={index}>
-      <span className={value} style={{ color: `var(--colors-${RESOURCE_BY_ID[resource].color}-700)` }}>
+      <span className={value} style={{ color: suit(resource).ink }}>
         {number}
       </span>
       <SuitMark resource={resource} />
