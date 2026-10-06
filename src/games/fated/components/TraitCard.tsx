@@ -1,5 +1,5 @@
 import type { TraitCard as TraitCardData } from "~/games/fated/cards/domain"
-import { RESOURCE_BY_ID } from "~/games/fated/cards/resources"
+import { QUALITY_BY_ID } from "~/games/fated/cards/qualities"
 import {
   accentOutline,
   bleedFrame,
@@ -19,9 +19,9 @@ import { Guides } from "~/shared/components/Guides"
 import { paperFrame, strongRail } from "~/shared/components/paperFrame"
 
 /**
- * A trait card, laid out like a playing card: the number and its resource in
+ * A trait card, laid out like a playing card: the number and its quality in
  * the upper-left corner index, the name in the upper right, and the rest empty
- * for art. The number is cost, capacity and energy at once, so it carries the
+ * for art. The number is cost, capacity and Drive at once, so it carries the
  * card; there is no rules text.
  */
 export function TraitCard({
@@ -33,7 +33,7 @@ export function TraitCard({
   variant?: CardVariant
   showGuides?: boolean
 }) {
-  const { color } = RESOURCE_BY_ID[card.resource]
+  const { color } = QUALITY_BY_ID[card.quality]
 
   return (
     <div
@@ -48,7 +48,7 @@ export function TraitCard({
       <div className={indexBox} />
       <div className={titleBox} />
       <div className={indexArea}>
-        <CornerIndex value={card.value} resource={card.resource} />
+        <CornerIndex value={card.value} quality={card.quality} />
       </div>
       <div className={nameBlock}>
         <span className={nameText}>{card.name}</span>

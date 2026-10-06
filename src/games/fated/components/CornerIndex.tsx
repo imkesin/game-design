@@ -1,11 +1,11 @@
-import type { ResourceId, Wild } from "~/games/fated/cards/domain"
-import { suit } from "~/games/fated/components/resourceMarks"
+import type { AnyQuality, QualityId } from "~/games/fated/cards/domain"
+import { suit } from "~/games/fated/components/qualityMarks"
 import { css } from "~/generated/styled-system/css"
 
 /**
  * A playing-card corner index: 12mm wide by 24mm tall. The number is centred in the top
- * 12mm square and the resource, as its suit, is a 12mm square directly beneath it.
- * Tinted with the resource's own ink so a fanned hand reads as colour before it
+ * 12mm square and the quality, as its suit, is a 12mm square directly beneath it.
+ * Tinted with the quality's own ink so a fanned hand reads as colour before it
  * reads as text.
  *
  * `text-box` trims the number's line box to the digits' own height, so the
@@ -31,9 +31,9 @@ const value = css({
   textBox: "trim-both cap alphabetic"
 })
 
-/** A resource's mark in its own ink: the suit of a corner index, `size` mm square. */
-export function SuitMark({ resource, size = 12 }: { resource: ResourceId | Wild; size?: number }) {
-  const { ink, name, Mark } = suit(resource)
+/** A quality's mark in its own ink: the suit of a corner index, `size` mm square. */
+export function SuitMark({ quality, size = 12 }: { quality: QualityId | AnyQuality; size?: number }) {
+  const { ink, name, Mark } = suit(quality)
   return (
     <span style={{ display: "flex", color: ink }} title={name}>
       <Mark size={`calc(${size} * var(--u))`} strokeWidth={2} />
@@ -41,13 +41,13 @@ export function SuitMark({ resource, size = 12 }: { resource: ResourceId | Wild;
   )
 }
 
-export function CornerIndex({ value: number, resource }: { value: number; resource: ResourceId | Wild }) {
+export function CornerIndex({ value: number, quality }: { value: number; quality: QualityId | AnyQuality }) {
   return (
     <span className={index}>
-      <span className={value} style={{ color: suit(resource).ink }}>
+      <span className={value} style={{ color: suit(quality).ink }}>
         {number}
       </span>
-      <SuitMark resource={resource} />
+      <SuitMark quality={quality} />
     </span>
   )
 }

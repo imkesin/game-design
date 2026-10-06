@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 import { protagonistDeck } from "~/games/fated/cards/protagonistDeck"
-import { RESOURCE_BY_ID } from "~/games/fated/cards/resources"
+import { QUALITY_BY_ID } from "~/games/fated/cards/qualities"
 import { sceneDeck } from "~/games/fated/cards/sceneDeck"
 import { traitDeck } from "~/games/fated/cards/traitDeck"
 import { ProtagonistCard } from "~/games/fated/components/ProtagonistCard"
@@ -59,12 +59,12 @@ const select = css({
 const options = [
   ...traitDeck.map((card) => ({
     id: card.id,
-    label: `${RESOURCE_BY_ID[card.resource].name} ${card.value} — ${card.name}`,
+    label: `${QUALITY_BY_ID[card.quality].name} ${card.value} — ${card.name}`,
     card
   })),
   ...protagonistDeck.map((card) => ({
     id: card.id,
-    label: `${card.name} (${card.sex})`,
+    label: card.name,
     card
   })),
   ...sceneDeck.map((card) => ({

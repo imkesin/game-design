@@ -1,13 +1,13 @@
-import { RESOURCE_IDS, type ResourceId, TRAIT_VALUES, type TraitCardDefinition, type TraitValue } from "./domain"
+import { QUALITY_IDS, type QualityId, TRAIT_VALUES, type TraitCardDefinition, type TraitValue } from "./domain"
 
 type ByValue<T> = readonly [T, T, T, T, T, T, T]
 
 /**
- * Copies of each value 1–7, per resource. Allure is a third of the deck and
+ * Copies of each value 1–7, per quality. Allure is a third of the deck and
  * runs high; Prowess and Passion are the middle tier; the rest are scarce. The
  * mean card value is 4. See DESIGN.md.
  */
-const COPIES: Record<ResourceId, ByValue<number>> = {
+const COPIES: Record<QualityId, ByValue<number>> = {
   allure: [2, 4, 6, 6, 6, 4, 2],
   prowess: [1, 2, 3, 3, 3, 2, 1],
   passion: [1, 2, 3, 3, 3, 2, 1],
@@ -17,7 +17,7 @@ const COPIES: Record<ResourceId, ByValue<number>> = {
 }
 
 /** Placeholder names, rising in intensity with the value. */
-const NAMES: Record<ResourceId, ByValue<string>> = {
+const NAMES: Record<QualityId, ByValue<string>> = {
   allure: [
     "Lingering Glance",
     "Wry Smile",
@@ -77,14 +77,14 @@ const NAMES: Record<ResourceId, ByValue<string>> = {
 export const TRAIT_DECK_SIZE = 90
 
 /** The shared draw deck: one definition per printed face, 42 faces in all. */
-export const traitDeck: readonly TraitCardDefinition[] = RESOURCE_IDS.flatMap((resource) =>
+export const traitDeck: readonly TraitCardDefinition[] = QUALITY_IDS.flatMap((quality) =>
   TRAIT_VALUES.map((value: TraitValue, i) => ({
     kind: "trait" as const,
-    id: `${resource}-${value}`,
-    resource,
+    id: `${quality}-${value}`,
+    quality,
     value,
-    name: NAMES[resource][i]!,
-    copies: COPIES[resource][i]!
+    name: NAMES[quality][i]!,
+    copies: COPIES[quality][i]!
   }))
 )
 

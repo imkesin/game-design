@@ -20,12 +20,12 @@ import { paperFrame, strongRail } from "~/shared/components/paperFrame"
 /**
  * A protagonist, laid out like a trait card: the two baseline symbols are
  * stacked in the upper left with a short bar between them, the name in the
- * upper right, and the rest is empty for art. Sex is in the data, not on the
- * card: a name says it.
+ * upper right, and the rest is empty for art. Gender is neither in the
+ * data nor on the card: any two protagonists can be a couple.
  *
  * No number is printed: a baseline's value is implied (`BASELINE_VALUE`), as
  * protagonists are special enough not to need one. The bar between the symbols
- * reads as "or". The frame is neutral: the resources are the colour on the card.
+ * reads as "or". The frame is neutral: the qualities are the colour on the card.
  */
 
 // Two 12mm marks with a short bar between them.
@@ -65,9 +65,9 @@ export function ProtagonistCard({
       <div className={titleBox} />
       <div className={indexArea}>
         <div className={baselines}>
-          <SuitMark resource={card.resources[0]} />
+          <SuitMark quality={card.qualities[0]} />
           <span className={orBar} />
-          <SuitMark resource={card.resources[1]} />
+          <SuitMark quality={card.qualities[1]} />
         </div>
       </div>
       <div className={nameBlock}>

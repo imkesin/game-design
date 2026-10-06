@@ -1,6 +1,6 @@
 import type { CSSProperties } from "react"
-import { ALTERNATIVE_ACTION_NAME } from "~/games/fated/cards/alternativeActions"
 import type { SceneCard as SceneCardData } from "~/games/fated/cards/domain"
+import { MINOR_ACTION_NAME } from "~/games/fated/cards/minorActions"
 import {
   accentOutline,
   bleedFrame,
@@ -14,7 +14,7 @@ import {
   trimFrame
 } from "~/games/fated/components/cardFrame"
 import { CostSquare } from "~/games/fated/components/CostSquare"
-import { ACTION_MARKS } from "~/games/fated/components/resourceMarks"
+import { ACTION_MARKS } from "~/games/fated/components/qualityMarks"
 import { css, cx } from "~/generated/styled-system/css"
 import { Guides } from "~/shared/components/Guides"
 import { paperFrame, strongRail } from "~/shared/components/paperFrame"
@@ -22,7 +22,7 @@ import { paperFrame, strongRail } from "~/shared/components/paperFrame"
 /**
  * A scene, laid out like a trait card but lighter on the cost: the minimum cost
  * in an 18mm square in the upper left, the name in the upper right, and the
- * rest empty for art. The alternative action is a 6mm spine down the left edge,
+ * rest empty for art. The minor action is a 6mm spine down the left edge,
  * below the cost, reading bottom to top; in the bleed variant it runs on through
  * the 3mm of bleed to its left.
  */
@@ -66,7 +66,7 @@ export function SceneCard({
   variant?: CardVariant
   showGuides?: boolean
 }) {
-  const name = ALTERNATIVE_ACTION_NAME[card.action]
+  const name = MINOR_ACTION_NAME[card.action]
   const ActionMark = ACTION_MARKS[card.action]
 
   return (

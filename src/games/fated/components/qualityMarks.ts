@@ -1,7 +1,13 @@
 import { Asterisk, Compass, Crown, Eye, Flame, Heart, type LucideIcon, Moon, Sprout, Swords, Zap } from "lucide-react"
 import type { ComponentType } from "react"
-import { type AlternativeAction, type Resource, type ResourceId, WILD, type Wild } from "~/games/fated/cards/domain"
-import { RESOURCE_BY_ID } from "~/games/fated/cards/resources"
+import {
+  ANY_QUALITY,
+  type AnyQuality,
+  type MinorAction,
+  type Quality,
+  type QualityId
+} from "~/games/fated/cards/domain"
+import { QUALITY_BY_ID } from "~/games/fated/cards/qualities"
 import { fileMark } from "~/games/fated/components/FileMark"
 import { MARK_FILES } from "~/games/fated/marks"
 
@@ -17,8 +23,8 @@ function mark(name: string, builtin: LucideIcon): Mark {
   return raw === undefined ? builtin : fileMark(raw)
 }
 
-/** One Lucide mark per resource, standing in until the deck has real illustration. */
-export const RESOURCE_MARKS: Record<ResourceId, Mark> = {
+/** One Lucide mark per quality, standing in until the deck has real illustration. */
+export const QUALITY_MARKS: Record<QualityId, Mark> = {
   allure: mark("allure", Eye),
   prowess: mark("prowess", Swords),
   passion: mark("passion", Flame),
@@ -27,25 +33,25 @@ export const RESOURCE_MARKS: Record<ResourceId, Mark> = {
   mystique: mark("mystique", Moon)
 }
 
-/** Stands for "any resource" in a scene cost. */
-export const WILD_MARK: Mark = mark("any", Asterisk)
+/** Stands for "any quality" in a scene cost. */
+export const ANY_QUALITY_MARK: Mark = mark("any", Asterisk)
 
-export const ACTION_MARKS: Record<AlternativeAction, Mark> = {
+export const ACTION_MARKS: Record<MinorAction, Mark> = {
   explore: mark("explore", Compass),
   motivate: mark("motivate", Zap),
   develop: mark("develop", Sprout)
 }
 
-const KNOWN_MARKS = new Set<string>([...Object.keys(RESOURCE_MARKS), "any", ...Object.keys(ACTION_MARKS)])
+const KNOWN_MARKS = new Set<string>([...Object.keys(QUALITY_MARKS), "any", ...Object.keys(ACTION_MARKS)])
 for (const name of Object.keys(MARK_FILES)) {
   if (!KNOWN_MARKS.has(name)) console.warn(`fated/marks/${name}.svg matches no mark; see marks/README.md`)
 }
 
-const inkOf = ({ color, inkShade }: Resource) => `var(--colors-${color}-${inkShade})`
+const inkOf = ({ color, inkShade }: Quality) => `var(--colors-${color}-${inkShade})`
 
-/** The wild mark stands for any resource, so it takes the neutral ink. */
-export function suit(resource: ResourceId | Wild) {
-  return resource === WILD
-    ? { color: "neutral", ink: "var(--colors-neutral-700)", name: "Anything", Mark: WILD_MARK }
-    : { ...RESOURCE_BY_ID[resource], ink: inkOf(RESOURCE_BY_ID[resource]), Mark: RESOURCE_MARKS[resource] }
+/** The Any Quality mark stands for any quality, so it takes the neutral ink. */
+export function suit(quality: QualityId | AnyQuality) {
+  return quality === ANY_QUALITY
+    ? { color: "neutral", ink: "var(--colors-neutral-700)", name: "Any Quality", Mark: ANY_QUALITY_MARK }
+    : { ...QUALITY_BY_ID[quality], ink: inkOf(QUALITY_BY_ID[quality]), Mark: QUALITY_MARKS[quality] }
 }

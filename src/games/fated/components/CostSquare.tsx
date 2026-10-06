@@ -2,12 +2,12 @@ import { Plus } from "lucide-react"
 import { Fragment } from "react"
 import type { Requirement } from "~/games/fated/cards/domain"
 import { SuitMark } from "~/games/fated/components/CornerIndex"
-import { suit } from "~/games/fated/components/resourceMarks"
+import { suit } from "~/games/fated/components/qualityMarks"
 import { css } from "~/generated/styled-system/css"
 
 /**
  * A scene's minimum cost in an 18mm square: each requirement is a corner-index
- * style column (amount over resource mark), and a faint plus between two of
+ * style column (amount over quality mark), and a faint plus between two of
  * them says both are needed. Costs matter less on a scene than a trait's
  * number, so this is deliberately smaller than a corner index.
  */
@@ -62,7 +62,7 @@ const plusIcon = css({
 export function CostSquare({ cost }: { cost: readonly Requirement[] }) {
   return (
     <div className={square}>
-      {cost.map(({ amount: n, resource }, i) => (
+      {cost.map(({ amount: n, quality }, i) => (
         <Fragment key={i}>
           {i > 0 && (
             <span className={plus}>
@@ -70,8 +70,8 @@ export function CostSquare({ cost }: { cost: readonly Requirement[] }) {
             </span>
           )}
           <div className={column}>
-            <span className={amount} style={{ color: suit(resource).ink }}>{n}</span>
-            <SuitMark resource={resource} size={COLUMN_W} />
+            <span className={amount} style={{ color: suit(quality).ink }}>{n}</span>
+            <SuitMark quality={quality} size={COLUMN_W} />
           </div>
         </Fragment>
       ))}

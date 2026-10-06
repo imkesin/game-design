@@ -1,8 +1,8 @@
-import type { Mark } from "~/games/fated/components/resourceMarks"
+import type { Mark } from "~/games/fated/components/qualityMarks"
 
 /**
  * Turns a dropped-in `marks/<name>.svg` into a mark component. Black fills and
- * strokes become `currentColor` so the mark takes the ink of the resource it
+ * strokes become `currentColor` so the mark takes the ink of the quality it
  * stands for; the file's other colours and its own stroke widths are kept.
  */
 

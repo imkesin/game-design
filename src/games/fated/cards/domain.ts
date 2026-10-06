@@ -1,4 +1,4 @@
-export const RESOURCE_IDS = [
+export const QUALITY_IDS = [
   "allure",
   "prowess",
   "passion",
@@ -7,18 +7,18 @@ export const RESOURCE_IDS = [
   "mystique"
 ] as const
 
-export type ResourceId = (typeof RESOURCE_IDS)[number]
+export type QualityId = (typeof QUALITY_IDS)[number]
 
-/** Keys of `~/shared/components/paperFrame`'s palette that a resource may take. */
-export type ResourceColor = "blue" | "red" | "yellow" | "purple" | "green" | "zinc"
+/** Keys of `~/shared/components/paperFrame`'s palette that a quality may take. */
+export type QualityColor = "blue" | "red" | "yellow" | "purple" | "green" | "zinc"
 
-/** Which step of the colour scale a resource inks its numbers and marks in; 700 unless it needs lightening or darkening. */
+/** Which step of the colour scale a quality inks its numbers and marks in; 700 unless it needs lightening or darkening. */
 export type InkShade = 600 | 700 | 900
 
-export type Resource = {
-  readonly id: ResourceId
+export type Quality = {
+  readonly id: QualityId
   readonly name: string
-  readonly color: ResourceColor
+  readonly color: QualityColor
   readonly inkShade: InkShade
 }
 
@@ -29,59 +29,56 @@ export type TraitValue = (typeof TRAIT_VALUES)[number]
 
 /**
  * A trait. Its number does triple duty: the discards it costs to play, the
- * capacity it yields when exhausted, and the energy it is worth if discarded
- * for the power bowl.
+ * capacity it yields when exhausted, and the Drive it is worth if discarded
+ * for Motivate.
  */
 export type TraitCard = {
   readonly kind: "trait"
-  /** `<resource>-<value>`, e.g. `allure-4`. Unique per printed face. */
+  /** `<quality>-<value>`, e.g. `allure-4`. Unique per printed face. */
   readonly id: string
-  readonly resource: ResourceId
+  readonly quality: QualityId
   readonly value: TraitValue
   readonly name: string
 }
 
 export type TraitCardDefinition = TraitCard & { readonly copies: number }
 
-export type Sex = "F" | "M"
-
 /**
- * A protagonist. `resources` are its two baseline symbols: each is a pre-played
+ * A protagonist. `qualities` are its two baseline symbols: each is a pre-played
  * trait worth `BASELINE_VALUE`, exhausted and paid for like any other.
  */
 export type ProtagonistCard = {
   readonly kind: "protagonist"
   readonly id: string
-  readonly sex: Sex
   readonly name: string
-  readonly resources: readonly [ResourceId, ResourceId]
+  readonly qualities: readonly [QualityId, QualityId]
 }
 
 /** Placeholder: what number a baseline symbol carries. Implied on the card, not printed. */
 export const BASELINE_VALUE = 1
 
-/** What a scene cost may ask for in place of a specific resource: any type will do. */
-export const WILD = "any"
+/** What a scene cost may ask for in place of a specific quality: any type will do. */
+export const ANY_QUALITY = "any"
 
-export type Wild = typeof WILD
+export type AnyQuality = typeof ANY_QUALITY
 
 export const COST_AMOUNTS = [1, 2, 3, 4, 5] as const
 
 export type CostAmount = (typeof COST_AMOUNTS)[number]
 
-/** One part of a scene's cost: `amount` of `resource`, paid by a single protagonist. */
+/** One part of a scene's cost: `amount` of `quality`, paid by a single protagonist. */
 export type Requirement = {
-  readonly resource: ResourceId | Wild
+  readonly quality: QualityId | AnyQuality
   readonly amount: CostAmount
 }
 
-export const ALTERNATIVE_ACTIONS = ["explore", "motivate", "develop"] as const
+export const MINOR_ACTIONS = ["explore", "motivate", "develop"] as const
 
 /**
  * What every player who did not contend for a scene does instead. Explore draws
- * cards; Motivate adds energy and removes exhaustion; Develop plays traits.
+ * cards; Motivate adds Drive and removes exhaustion; Develop plays traits.
  */
-export type AlternativeAction = (typeof ALTERNATIVE_ACTIONS)[number]
+export type MinorAction = (typeof MINOR_ACTIONS)[number]
 
 /**
  * A scene. `cost` is the minimum to start a contention (one part or two), not
@@ -93,7 +90,7 @@ export type SceneCard = {
   readonly id: string
   readonly name: string
   readonly cost: readonly [Requirement] | readonly [Requirement, Requirement]
-  readonly action: AlternativeAction
+  readonly action: MinorAction
 }
 
 /** Trait slots per protagonist; the tableau cap. */
