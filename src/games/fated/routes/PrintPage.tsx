@@ -1,4 +1,3 @@
-import { expandFlatDeck } from "~/games/fated/cards/domain"
 import { protagonistDeck } from "~/games/fated/cards/protagonistDeck"
 import { sceneDeck } from "~/games/fated/cards/sceneDeck"
 import { traitDeck } from "~/games/fated/cards/traitDeck"
@@ -14,7 +13,7 @@ import { CardSheetPage } from "~/shared/print/CardSheetPage"
  */
 export function PrintPage() {
   const cards = [
-    ...expandFlatDeck(traitDeck),
+    ...traitDeck,
     ...protagonistDeck,
     ...sceneDeck
   ]

@@ -2,6 +2,7 @@ import { useEffect, useState } from "react"
 import { protagonistDeck } from "~/games/fated/cards/protagonistDeck"
 import { QUALITY_BY_ID } from "~/games/fated/cards/qualities"
 import { sceneDeck } from "~/games/fated/cards/sceneDeck"
+import { scoringText } from "~/games/fated/cards/sceneScoring"
 import { traitDeck } from "~/games/fated/cards/traitDeck"
 import { ProtagonistCard } from "~/games/fated/components/ProtagonistCard"
 import { SceneCard } from "~/games/fated/components/SceneCard"
@@ -69,7 +70,7 @@ const options = [
   })),
   ...sceneDeck.map((card) => ({
     id: card.id,
-    label: `Scene — ${card.name}`,
+    label: `Scene ${card.id} — ${scoringText(card.scoring)}`,
     card
   }))
 ]
@@ -112,7 +113,7 @@ export function PreviewPage() {
       {selected !== undefined && <CardFace card={selected} showGuides={showGuides} />}
 
       <span className={heading}>
-        Traits — {traitDeck.reduce((n, c) => n + c.copies, 0)} cards, {traitDeck.length} distinct
+        Traits — {traitDeck.length} cards
       </span>
       <div className={row}>
         {traitDeck.map((card) => <TraitCard key={card.id} variant="trim" card={card} />)}

@@ -1,71 +1,77 @@
-import type { CostAmount, MinorAction, QualityId, Requirement, SceneCard } from "./domain"
+import type { CostAmount, MinorAction, QualityId, SceneCard, SceneScoring, ScoringTiming } from "./domain"
 import { ANY_QUALITY } from "./domain"
 
 export const SCENE_DECK_SIZE = 30
 
-const slug = (name: string) => name.toLowerCase().replace(/[^a-z]+/g, "-").replace(/^-|-$/g, "")
+const scoring = (timing: ScoringTiming) => (love: number, amount: number, quality: QualityId): SceneScoring => ({
+  timing,
+  love,
+  amount,
+  quality
+})
 
-const scene = (
-  name: string,
-  action: MinorAction,
-  cost: SceneCard["cost"]
-): SceneCard => ({ kind: "scene", id: slug(name), name, action, cost })
+const instant = scoring("instant")
+const endGame = scoring("endGame")
 
-const need = (amount: CostAmount, quality: QualityId | typeof ANY_QUALITY): Requirement => ({ quality, amount })
-
-/** `n a + n b`: the same amount of two specific qualities. */
-const pair = (name: string, action: MinorAction, n: CostAmount, a: QualityId, b: QualityId) =>
-  scene(name, action, [need(n, a), need(n, b)])
-
-/** `n a + n any quality`. */
-const mixed = (name: string, action: MinorAction, n: CostAmount, a: QualityId) =>
-  scene(name, action, [need(n, a), need(n, ANY_QUALITY)])
-
-/** `n any quality` from one protagonist. */
-const anyQuality = (name: string, action: MinorAction, n: CostAmount) => scene(name, action, [need(n, ANY_QUALITY)])
+/** Each part of the cost is `tier` of any quality, paid by a single protagonist: 1 + 1, 2 + 2 or 3 + 3. */
+const scene = (tier: CostAmount, action: MinorAction, scoring: SceneScoring): Omit<SceneCard, "id"> => ({
+  kind: "scene",
+  cost: [{ quality: ANY_QUALITY, amount: tier }, { quality: ANY_QUALITY, amount: tier }],
+  action,
+  scoring
+})
 
 /**
- * Placeholder deck: five cost levels (1 through 5), six scenes each: two
- * specific pairs, two specific + any quality, two any-quality-only. Each level carries
- * every minor action twice and each quality appears five times across
- * the deck. Names, mix and costs are all up for playtest.
+ * One line per physical scene. Three cost tiers (1 + 1, 2 + 2, 3 + 3), ten
+ * scenes each; every tier carries each minor action 3 or 4 times (10 each
+ * overall), and each quality scores five scenes, half of them instant. Rates
+ * are placeholders: the dearer the tier, the more Love per quality.
  */
-export const sceneDeck: readonly SceneCard[] = [
-  pair("Stolen Glance", "motivate", 1, "allure", "passion"),
-  pair("Midnight Letter", "develop", 1, "devotion", "mystique"),
-  mixed("Whispered Rumor", "explore", 1, "influence"),
-  mixed("Fortune Teller's Warning", "motivate", 1, "mystique"),
-  anyQuality("Awkward Introduction", "develop", 1),
-  anyQuality("Chance Meeting", "explore", 1),
+const ENTRIES: readonly Omit<SceneCard, "id">[] = [
+  scene(1, "explore", instant(1, 3, "allure")),
+  scene(1, "motivate", endGame(1, 3, "prowess")),
+  scene(1, "develop", instant(1, 3, "passion")),
+  scene(1, "explore", endGame(1, 3, "devotion")),
+  scene(1, "motivate", instant(1, 3, "influence")),
+  scene(1, "develop", endGame(1, 3, "mystique")),
+  scene(1, "explore", endGame(1, 3, "allure")),
+  scene(1, "motivate", instant(1, 3, "prowess")),
+  scene(1, "develop", endGame(1, 3, "passion")),
+  scene(1, "explore", instant(1, 3, "devotion")),
 
-  pair("Sparring Match", "develop", 2, "prowess", "influence"),
-  pair("Rain-Soaked Confession", "explore", 2, "passion", "devotion"),
-  mixed("Borrowed Cloak", "motivate", 2, "allure"),
-  mixed("Archery Lesson", "develop", 2, "prowess"),
-  anyQuality("Morning Walk", "explore", 2),
-  anyQuality("Shared Meal", "motivate", 2),
+  scene(2, "motivate", instant(1, 2, "allure")),
+  scene(2, "develop", endGame(1, 2, "prowess")),
+  scene(2, "explore", instant(1, 2, "passion")),
+  scene(2, "motivate", endGame(1, 2, "devotion")),
+  scene(2, "develop", instant(1, 2, "influence")),
+  scene(2, "explore", endGame(1, 2, "mystique")),
+  scene(2, "motivate", endGame(1, 2, "influence")),
+  scene(2, "develop", instant(1, 2, "mystique")),
+  scene(2, "explore", endGame(1, 2, "allure")),
+  scene(2, "motivate", instant(1, 2, "prowess")),
 
-  pair("Masquerade Ball", "explore", 3, "allure", "mystique"),
-  pair("Vow at the Border", "motivate", 3, "prowess", "devotion"),
-  mixed("Forbidden Library", "develop", 3, "mystique"),
-  mixed("Snowed In", "explore", 3, "passion"),
-  anyQuality("Long Night of Talk", "motivate", 3),
-  anyQuality("Mentor's Lesson", "develop", 3),
-
-  pair("Scandalous Waltz", "motivate", 4, "influence", "passion"),
-  pair("Duel at Dawn", "develop", 4, "allure", "prowess"),
-  mixed("Dress Fitting", "explore", 4, "allure"),
-  mixed("Court Intrigue", "motivate", 4, "influence"),
-  anyQuality("Dance Lessons", "develop", 4),
-  anyQuality("Journey Through the Pass", "explore", 4),
-
-  pair("The Coronation", "develop", 5, "devotion", "influence"),
-  pair("Kiss Beneath the Eclipse", "explore", 5, "passion", "mystique"),
-  mixed("Deathbed Promise", "motivate", 5, "devotion"),
-  mixed("Trial by Combat", "develop", 5, "prowess"),
-  anyQuality("Grand Gesture", "explore", 5),
-  anyQuality("Happily Ever After", "motivate", 5)
+  scene(3, "develop", instant(1, 1, "allure")),
+  scene(3, "explore", endGame(1, 1, "prowess")),
+  scene(3, "motivate", instant(1, 1, "passion")),
+  scene(3, "develop", endGame(1, 1, "devotion")),
+  scene(3, "explore", instant(1, 1, "influence")),
+  scene(3, "motivate", endGame(1, 1, "mystique")),
+  scene(3, "develop", endGame(1, 1, "passion")),
+  scene(3, "explore", instant(1, 1, "devotion")),
+  scene(3, "motivate", endGame(1, 1, "influence")),
+  scene(3, "develop", instant(1, 1, "mystique"))
 ]
+
+/** Ids number the scenes within a tier (`scene-2-4`). */
+export const sceneDeck: readonly SceneCard[] = (() => {
+  const seen = new Map<number, number>()
+  return ENTRIES.map((entry) => {
+    const tier = entry.cost[0].amount
+    const n = (seen.get(tier) ?? 0) + 1
+    seen.set(tier, n)
+    return { ...entry, id: `scene-${tier}-${n}` }
+  })
+})()
 
 if (sceneDeck.length !== SCENE_DECK_SIZE) {
   throw new Error(`sceneDeck: wrong card total — ${sceneDeck.length}, expected ${SCENE_DECK_SIZE}`)

@@ -46,19 +46,21 @@ of the tableau. The tableau is what lets you win **scenes**.
 
 Each scene has:
 
-1. A **name**.
-2. A **minimum cost** to start contending for it (see below).
-3. A **minor action**, printed on the card: exactly one of Explore, Motivate, Develop.
+1. A **minimum cost** to start contending for it (see below).
+2. A **minor action**, printed on the card: exactly one of Explore, Motivate, Develop.
+3. **Love scoring**, printed on the card (see below).
 
-Scene **Love scoring** is end-of-game and reads your tableau's synergy, e.g. "1 Love per Devotion
-across both protagonists". Scene text is not yet written; ongoing abilities are optional.
+Scenes have **no individual identity**: no names, no unique costs. Cost tier, minor action and
+scoring are all that tell two scenes apart.
 
-**Cost shape.** A cost is one or two **requirements**, each an amount (1–5) of a specific quality or
-of **Any Quality** (wild, shown as an asterisk). Each requirement is paid by a single protagonist.
-Examples: `3 Allure + 3 Passion`; `2 Prowess + 2 Any Quality` ("Archery Lesson": the wild part is
-left to the players' imagination); `4 Any Quality` from one protagonist only. The printed cost is
-the **minimum to start**: contenders are expected to overpay, so cheap scenes are still worth
-fighting for.
+**Cost shape.** Three tiers: `1 + 1`, `2 + 2`, `3 + 3`. Each part is that amount of **Any Quality**
+(wild, shown as an asterisk), paid by a single protagonist. The printed cost is the **minimum to
+start**: contenders are expected to overpay, so cheap scenes are still worth fighting for.
+
+**Scoring.** Each scene scores Love from your tableau, counted across **both protagonists**, either
+**Instant** (once, when you win the scene) or **End Game** (when the game ends). The formula is
+`N Love per M <quality>`, e.g. "1 Love per 3 Prowess". Which qualities you have built is what makes
+a scene worth contending for, since the cost no longer names one. Ongoing abilities are optional.
 
 ### Turn arc
 
@@ -111,17 +113,18 @@ compensation.
 art and presentation (no gender label). Each carries baseline symbols in its two qualities (exact
 rules TBD). Players choose any two (pool mechanics TBD).
 
-**90 trait cards**, values 1–7 (the number is cost, capacity and Drive):
+**90 trait cards**, values 1–5 (the number is cost, capacity and Drive), spread evenly across values
+within each quality. Each card is its own entry in `cards/traitDeck.ts`.
 
-| Value                         |  1 |  2 |  3 |  4 |  5 |  6 |  7 | Total |
-| ----------------------------- | -: | -: | -: | -: | -: | -: | -: | ----: |
-| Allure                        |  2 |  4 |  6 |  6 |  6 |  4 |  2 |    30 |
-| Prowess, Passion              |  1 |  2 |  3 |  3 |  3 |  2 |  1 |    15 |
-| Devotion, Influence, Mystique |  1 |  1 |  2 |  2 |  2 |  1 |  1 |    10 |
-| **All (90)**                  |  7 | 11 | 18 | 18 | 18 | 11 |  7 |    90 |
+| Value                         |  1 |  2 |  3 |  4 |  5 | Total |
+| ----------------------------- | -: | -: | -: | -: | -: | ----: |
+| Allure                        |  6 |  6 |  6 |  6 |  6 |    30 |
+| Prowess, Passion              |  3 |  3 |  3 |  3 |  3 |    15 |
+| Devotion, Influence, Mystique |  2 |  2 |  2 |  2 |  2 |    10 |
+| **All (90)**                  | 18 | 18 | 18 | 18 | 18 |    90 |
 
 The Prowess and Passion rows apply to each of those qualities separately (30 total); likewise the
-last row applies to each of its three qualities (30 total). Mean card value is 4.0.
+last row applies to each of its three qualities (30 total). Mean card value is 3.0.
 
 **Maximum tableau** per player:
 
@@ -135,10 +138,10 @@ if you choose to spread.
 
 The 90 are **one shared draw deck**. Drive fills draw from the top of it.
 
-**30 scenes** (placeholder, `cards/sceneDeck.ts`): five cost levels (1–5), six scenes each. Per
-level: two specific pairs (`N a + N b`), two specific + Any Quality (`N a + N any`), and two Any
-Quality-only (`N any`). Each level carries every minor action twice (10 each overall), and each
-quality appears five times across the deck. Names, mix and costs are up for playtest.
+**30 scenes** (placeholder, `cards/sceneDeck.ts`, one line per card): three cost tiers (`1 + 1`,
+`2 + 2`, `3 + 3`), ten scenes each. Each tier carries every minor action 3–4 times (10 each
+overall). Each quality scores five scenes (15 Instant, 15 End Game). Placeholder rates: 1 Love per
+3, 2 or 1 of the quality at tiers 1, 2, 3. Mix and rates are up for playtest.
 
 ## Decisions
 
@@ -166,8 +169,8 @@ quality appears five times across the deck. Names, mix and costs are up for play
   deck face-down into your protagonists' Drive.
 - Some minor actions (Motivate) let you **split a discarded card's number** across effects (e.g.
   remove 1 exhaustion cube, add 3 Drive).
-- **Love replaces VP.** Each won scene scores Love at game end from the tableau (synergy across
-  traits and protagonists). Ongoing abilities are optional.
+- **Love replaces VP.** Each won scene scores Love from the tableau across both protagonists, either
+  **Instant** (when won) or **End Game**. Ongoing abilities are optional.
 - End trigger: **first player to fill their 6th scene** ends the game (provisional; finish the round
   TBD).
 - **Replacing a trait** (slots full): the replaced trait is discarded and its number is deducted
@@ -179,14 +182,13 @@ quality appears five times across the deck. Names, mix and costs are up for play
 - **Cubes stay on a lost contention:** exhaustion is a real cost to losing; only Drive is refunded.
 - **Payment at contention time; winner pays, losers get their paid Drive cards back into hand.**
 - Unchosen scene returns to deck bottom.
-- Ending: first to fill a 6th scene triggers the end (provisional); scoring is Love, per above.
+- Ending: first to fill a 6th scene triggers the end (provisional); End Game scoring is Love, per
+  above.
 
 ## Open Questions
 
-- **Wild raises:** a raise is +1 of each _required_ quality. For an Any Quality requirement, is the
-  +1 any quality? Must the two requirements of a cost be paid by different protagonists?
-- **Any Quality-only cost:** `5 Any Quality` is half the total of `5 + 5`, so single-wild scenes are
-  structurally cheaper. Intended (they are the cheap, flexible scenes) or compensate elsewhere?
+- **Raises:** a raise is +1 on each requirement, so a `1 + 1` raised once is a `2 + 2`. Must the two
+  requirements of a cost be paid by different protagonists?
 
 - **Overpay waste:** a value-2 trait against a need of 1 wastes the extra. Is that fine, or can
   surplus carry over?
@@ -201,9 +203,9 @@ quality appears five times across the deck. Names, mix and costs are up for play
 - **Shared deck drain:** trait cards played stay in tableaus and Drive cards sit face-down, so the
   deck permanently loses cards to play. Check the 90 holds at 5 players; reshuffle the discard when
   the deck is empty.
-- **Scale:** mean card value is 4, so scenes must cost much more than the earlier "2+2" examples,
-  and overpay waste (a 7 against a need of 3) becomes a core puzzle rather than a corner case.
-- **Hand limit:** playing a 4 costs 4 discards, a 7 costs 7. Is there a max hand size?
+- **Scale:** mean card value is 3 and costs top out at `3 + 3`, so overpay waste (a 5 against a need
+  of 3) is a core puzzle rather than a corner case.
+- **Hand limit:** playing a 3 costs 3 discards, a 5 costs 5. Is there a max hand size?
 - **Baseline value:** what number do a protagonist's two baseline symbols carry? (Placeholder: 1
   each, implied and not printed on the card.)
 - **Baseline "or":** the card now puts a bar between the two stacked symbols, reading as "or". Is a
@@ -216,9 +218,10 @@ quality appears five times across the deck. Names, mix and costs are up for play
 - **Free downgrades:** replacing a trait with an equal or lower number costs nothing, so quality
   respec is free. Intended flexibility or a loophole?
 - **Scene abilities:** ongoing triggers vs. static discounts; keep the list small at first.
-- **Love formulas:** the catalog of scene scoring rules (per-quality counts, sets, balance between
-  protagonists). Do cheap scenes score less, or is cost independent of Love?
+- **Love formulas:** only `N Love per M <quality>` exists so far. Other shapes (sets, balance
+  between protagonists)? Do Instant scenes pay more than End Game, since the tableau is smaller when
+  won? Does the placeholder rate by tier (3, 2, 1 per) hold up?
 - **Contention vs. scoring:** scenes score from the tableau, so contention price and Love value can
   drift apart. Watch for dominant cheap high-Love scenes.
-- **Theme:** what the traits and scenes actually are. Title is "Fated: The Art of the Love Story"
-  (short: Fated).
+- **Theme:** what the traits and scenes actually are (scenes are now anonymous, so theme lives in
+  the art and scoring text). Title is "Fated: The Art of the Love Story" (short: Fated).

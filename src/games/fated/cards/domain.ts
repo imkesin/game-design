@@ -22,8 +22,8 @@ export type Quality = {
   readonly inkShade: InkShade
 }
 
-/** Trait numbers run 1 through 7. */
-export const TRAIT_VALUES = [1, 2, 3, 4, 5, 6, 7] as const
+/** Trait numbers run 1 through 5. */
+export const TRAIT_VALUES = [1, 2, 3, 4, 5] as const
 
 export type TraitValue = (typeof TRAIT_VALUES)[number]
 
@@ -40,8 +40,6 @@ export type TraitCard = {
   readonly value: TraitValue
   readonly name: string
 }
-
-export type TraitCardDefinition = TraitCard & { readonly copies: number }
 
 /**
  * A protagonist. `qualities` are its two baseline symbols: each is a pre-played
@@ -62,7 +60,7 @@ export const ANY_QUALITY = "any"
 
 export type AnyQuality = typeof ANY_QUALITY
 
-export const COST_AMOUNTS = [1, 2, 3, 4, 5] as const
+export const COST_AMOUNTS = [1, 2, 3] as const
 
 export type CostAmount = (typeof COST_AMOUNTS)[number]
 
@@ -80,28 +78,34 @@ export const MINOR_ACTIONS = ["explore", "motivate", "develop"] as const
  */
 export type MinorAction = (typeof MINOR_ACTIONS)[number]
 
+/** `instant` scores once, when the scene is won; `endGame` scores when the game ends. */
+export const SCORING_TIMINGS = ["instant", "endGame"] as const
+
+export type ScoringTiming = (typeof SCORING_TIMINGS)[number]
+
 /**
- * A scene. `cost` is the minimum to start a contention (one part or two), not
- * the price: contenders overpay to outbid each other. Scene VP and abilities
- * are deliberately undefined.
+ * How a scene scores: `love` per `amount` of `quality`, counted across both
+ * protagonists' traits (e.g. 1 Love per 3 Prowess).
+ */
+export type SceneScoring = {
+  readonly timing: ScoringTiming
+  readonly love: number
+  readonly amount: number
+  readonly quality: QualityId
+}
+
+/**
+ * A scene. `cost` is the minimum to start a contention, not the price:
+ * contenders overpay to outbid each other. Scenes have no identity beyond
+ * their cost tier, minor action and scoring.
  */
 export type SceneCard = {
   readonly kind: "scene"
   readonly id: string
-  readonly name: string
-  readonly cost: readonly [Requirement] | readonly [Requirement, Requirement]
+  readonly cost: readonly [Requirement, Requirement]
   readonly action: MinorAction
+  readonly scoring: SceneScoring
 }
 
 /** Trait slots per protagonist; the tableau cap. */
 export const TRAIT_SLOTS = 4
-
-/**
- * Expand a flat-copy catalog into the physical deck: one entry per printed
- * copy, in catalog order.
- */
-export function expandFlatDeck<T extends { readonly copies: number }>(
-  source: readonly T[]
-): ReadonlyArray<Omit<T, "copies">> {
-  return source.flatMap(({ copies, ...card }) => Array.from({ length: copies }, () => card))
-}

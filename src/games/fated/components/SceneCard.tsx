@@ -1,6 +1,7 @@
 import type { CSSProperties } from "react"
 import type { SceneCard as SceneCardData } from "~/games/fated/cards/domain"
 import { MINOR_ACTION_NAME } from "~/games/fated/cards/minorActions"
+import { SCORING_TIMING_NAME, scoringText } from "~/games/fated/cards/sceneScoring"
 import {
   accentOutline,
   bleedFrame,
@@ -21,8 +22,8 @@ import { paperFrame, strongRail } from "~/shared/components/paperFrame"
 
 /**
  * A scene, laid out like a trait card but lighter on the cost: the minimum cost
- * in an 18mm square in the upper left, the name in the upper right, and the
- * rest empty for art. The minor action is a 6mm spine down the left edge,
+ * in an 18mm square in the upper left, the scoring (timing, then Love) in the
+ * upper right, and the rest empty for art. The minor action is a 6mm spine down the left edge,
  * below the cost, reading bottom to top; in the bleed variant it runs on through
  * the 3mm of bleed to its left.
  */
@@ -53,6 +54,14 @@ const actionStrip = css({
 const actionName = css({
   writingMode: "vertical-rl",
   transform: "rotate(180deg)"
+})
+
+const timingText = css({
+  fontSize: "calc(2.2 * var(--u))",
+  fontWeight: 500,
+  textTransform: "uppercase",
+  letterSpacing: "0.06em",
+  color: "neutral.500"
 })
 
 const ACTION_STRIP_W = 6
@@ -89,7 +98,8 @@ export function SceneCard({
         <CostSquare cost={card.cost} />
       </div>
       <div className={nameBlock}>
-        <span className={nameText} style={{ fontSize: "calc(2.8 * var(--u))" }}>{card.name}</span>
+        <span className={timingText}>{SCORING_TIMING_NAME[card.scoring.timing]}</span>
+        <span className={nameText} style={{ fontSize: "calc(2.8 * var(--u))" }}>{scoringText(card.scoring)}</span>
       </div>
 
       {/* The 3mm of bleed to the left is part of the strip, so a cut never shows paper. */}
