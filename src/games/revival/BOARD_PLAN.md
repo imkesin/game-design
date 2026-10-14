@@ -90,9 +90,19 @@ authored; geography is decoration).
   (4mm all round was far too round).
 - **Links**: one bold 3mm line centre to centre, drawn under the neighborhoods (their white fill
   hides the ends).
-- **Sheet**: Letter for now (two neighborhoods, one link) to test the look at true scale.
-- **Editor**: drag to move (2mm snap); columns, names and links are edited in `skyline/map.json`;
-  Save writes it back (`/__revival-skyline`).
+- **Board**: **2×2 Letter tiles**, each a landscape sheet's printable area (10.5×8in), so a
+  **21×16in** board (close to the 17×23in area of the 18×24 sheet), quicker to iterate on. On
+  screen: the whole board with dashed cut lines; a neighborhood (tag included) within 3mm of a cut
+  line, or off the board, shows red. In print: one Letter page per tile with crop marks just outside
+  its corners; trim and butt together. Tile count and orientation are constants in
+  `SkylinePage.tsx`.
+- **Grid**: plots snap to a 24mm grid (screen-only faint lines), with a cell centred on the board,
+  so margins match and the 2×2 cut lines run down the middle of a row/column of cells (street only).
+  Off-grid saved positions are snapped on load.
+- **Editor**: drag to move (snaps to the grid); click to select and edit name, columns (keeping the
+  bottom and remaining columns in place) and links in a side panel; shift-click another to
+  link/unlink; "+ Neighborhood" adds one mid-view; Delete, ⌘Z undo, Esc. Edits live in
+  `skyline/edit.ts`. Save writes `skyline/map.json` (`/__revival-skyline`).
 
 ## 6. Open
 

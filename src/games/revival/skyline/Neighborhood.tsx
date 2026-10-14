@@ -78,7 +78,7 @@ export function Neighborhood(
   { name, columns, onGrab }: {
     name: string
     columns: readonly number[]
-    onGrab?: (event: PointerEvent<HTMLDivElement>) => void
+    onGrab?: ((event: PointerEvent<HTMLDivElement>) => void) | undefined
   }
 ) {
   const { width, height, top, outline, tallest: [first, last] } = shape(columns)

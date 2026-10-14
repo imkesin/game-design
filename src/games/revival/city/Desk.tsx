@@ -4,11 +4,13 @@ import { css } from "~/generated/styled-system/css"
 /**
  * Screen shell for true-size paper sheets: a title, a zoom slider (screen
  * only), and print rules that pin `--u` to 1mm and drop everything but the
- * sheets. Print with Margins = None and Scale = 100%.
+ * sheets (`.print-only` is the reverse of `.screen-only`). Print with
+ * Margins = None and Scale = 100%.
  */
 
 const printCss = (pageSize: string) => `
   @page { size: ${pageSize}; margin: 0; }
+  @media screen { .print-only { display: none !important; } }
   @media print {
     :root { --u: 1mm !important; }
     html, body { margin: 0 !important; padding: 0 !important; background: #fff !important; }

@@ -94,3 +94,26 @@ export function shape(columns: readonly number[]): Shape {
   const tallest: [number, number] = [heights.indexOf(top), heights.lastIndexOf(top)]
   return { width, height, top, outline: rounded(points, RADIUS), tallest }
 }
+
+/** The plot grid: its lines run at `x` and `y` plus multiples of `PLOT`. */
+export type Grid = { x: number; y: number }
+
+const mod = (v: number, m: number) => ((v % m) + m) % m
+
+/**
+ * The grid with a cell centred on the board: margins match on opposite sides,
+ * and a 2×2 tiling's cut lines run down the middle of a row or column of cells,
+ * which then can only be street.
+ */
+export function centredGrid(width: number, height: number): Grid {
+  return { x: mod(width / 2 - PLOT / 2, PLOT), y: mod(height / 2 - PLOT / 2, PLOT) }
+}
+
+/** The nearest place for a neighborhood's box that puts each plot in a grid cell. */
+export function snapToGrid(grid: Grid, { x, y }: { x: number; y: number }) {
+  const snap = (v: number, line: number) => line + Math.round((v - line) / PLOT) * PLOT
+  return { x: round(snap(x + SIDE, grid.x) - SIDE), y: round(snap(y + SIDE, grid.y) - SIDE) }
+}
+
+/** Keeps saved positions free of float noise. */
+export const round = (v: number) => Math.round(v * 100) / 100
