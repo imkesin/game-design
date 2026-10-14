@@ -1,5 +1,5 @@
 import type { ReactNode } from "react"
-import { mm } from "~/games/revival/city/mm"
+import { mm } from "~/games/revival/skyline/mm"
 import { css } from "~/generated/styled-system/css"
 
 /**

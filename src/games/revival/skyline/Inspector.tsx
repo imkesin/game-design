@@ -1,6 +1,6 @@
 import type { FocusEvent } from "react"
 import { css } from "~/generated/styled-system/css"
-import { isLinked, LIMIT } from "./edit.ts"
+import { LIMIT } from "./edit.ts"
 import type { NeighborhoodSpec, SkylineFile } from "./skyline.ts"
 import { Tally } from "./Tally.tsx"
 
@@ -13,7 +13,7 @@ const panel = css({
   zIndex: 1,
   width: "280px",
   display: "grid",
-  gridTemplateAreas: `"tally" "name" "columns" "links" "remove" "hint"`,
+  gridTemplateAreas: `"tally" "name" "columns" "neighbors" "remove" "hint"`,
   gap: "14px",
   padding: "14px",
   background: "white",
@@ -53,27 +53,27 @@ const count = css({ fontSize: "16px", fontWeight: 700 })
 
 const side = css({ gridRow: "1 / -1" })
 
-const linkList = css({ display: "grid", gap: "4px" })
-
-const linkRow = css({ display: "grid", gridTemplateColumns: "1fr auto", alignItems: "center" })
+const muted = css({ color: "#777" })
 
 const hint = css({ gridArea: "hint", color: "#777", fontSize: "12px" })
 
 export function Inspector(
-  { file, selected, onRename, onColumns, onToggleLink, onRemove }: {
+  { file, selected, neighbors, onRename, onColumns, onRemove }: {
     file: SkylineFile
     selected: NeighborhoodSpec | undefined
+    /** The selected neighborhood's neighbors, across a street or a bridge. */
+    neighbors: readonly string[]
     /** Returns why the name was refused, if it was. */
     onRename: (to: string) => string | undefined
     onColumns: (columns: number[], shift?: number) => void
-    onToggleLink: (other: string) => void
     onRemove: () => void
   }
 ) {
   const help = (
     <div className={hint}>
-      Click a neighborhood to edit it, drag to move it, shift-click another to link or unlink it. Delete removes, ⌘Z
-      undoes, Esc deselects.
+      Click a neighborhood to edit it, drag to move it. Water (W), Bridge (B) and Ground (G) paint grid cells: a stroke
+      starting on water (or a bridge) clears it; a Ground stroke grows the territory it starts in, or clears ground when
+      it starts on unheld land. Grow fills the rest. Delete removes, ⌘Z undoes, Esc stops painting.
     </div>
   )
   const tally = (
@@ -91,8 +91,6 @@ export function Inspector(
   }
 
   const { name, columns } = selected
-  const links = file.links.flatMap(([a, b]) => (a === name ? [b] : b === name ? [a] : []))
-  const others = file.neighborhoods.map((n) => n.name).filter((n) => n !== name && !isLinked(file, name, n))
   const set = (i: number, plots: number) => onColumns(columns.map((c, k) => (k === i ? plots : c)))
   const drop = (i: number) => onColumns(columns.filter((_, k) => k !== i), i === 0 ? -1 : 0)
   const full = columns.length >= LIMIT.columns
@@ -162,28 +160,11 @@ export function Inspector(
           </button>
         </div>
       </div>
-      <div className={field} style={{ gridArea: "links" }}>
-        <span className={label}>Links</span>
-        <div className={linkList}>
-          {links.map((other) => (
-            <div key={other} className={linkRow}>
-              {other}
-              <button type="button" className={button} title="Unlink" onClick={() => onToggleLink(other)}>×</button>
-            </div>
-          ))}
-          {others.length > 0 && (
-            <select
-              className={input}
-              value=""
-              onChange={(event) => {
-                if (event.currentTarget.value !== "") onToggleLink(event.currentTarget.value)
-              }}
-            >
-              <option value="">Link to…</option>
-              {others.map((other) => <option key={other} value={other}>{other}</option>)}
-            </select>
-          )}
-        </div>
+      <div className={field} style={{ gridArea: "neighbors" }}>
+        <span className={label}>Neighbors ({neighbors.length})</span>
+        <span className={neighbors.length === 0 ? muted : undefined}>
+          {neighbors.length === 0 ? "None: paint or grow its territory up to another." : neighbors.join(", ")}
+        </span>
       </div>
       <button type="button" className={button} style={{ gridArea: "remove", justifySelf: "start" }} onClick={onRemove}>
         Delete neighborhood

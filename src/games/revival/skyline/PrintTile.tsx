@@ -1,7 +1,7 @@
-import { mm } from "~/games/revival/city/mm"
-import { Paper } from "~/games/revival/city/Paper"
+import { mm } from "~/games/revival/skyline/mm"
+import { Paper } from "~/games/revival/skyline/Paper"
 import { css } from "~/generated/styled-system/css"
-import { type DrawnLink, type Placed, SkylineMap } from "./SkylineMap.tsx"
+import { type MapLayers, SkylineMap } from "./SkylineMap.tsx"
 
 /**
  * One printed tile of a map split across Letter sheets: the window of the map
@@ -30,7 +30,7 @@ export function PrintTile(
     /** The tile (printable area) size, in mm. */
     width: number
     height: number
-    map: { width: number; height: number; placed: readonly Placed[]; links: readonly DrawnLink[] }
+    map: MapLayers
   }
 ) {
   const label = `Tile ${row * cols + col + 1} of ${cols * rows} · row ${row + 1}, column ${col + 1}`

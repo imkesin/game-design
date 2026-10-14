@@ -1,5 +1,5 @@
 import { type PointerEvent, useId } from "react"
-import { mm } from "~/games/revival/city/mm"
+import { mm } from "~/games/revival/skyline/mm"
 import { css, cx } from "~/generated/styled-system/css"
 import { BASE, CLAIM, PLOT, shape, SIDE, TAG, TAG_GAP } from "./skyline.ts"
 

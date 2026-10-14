@@ -6,7 +6,8 @@
  * claim circle under each column; elsewhere the outline runs `SIDE` out from
  * the columns, outer corners slightly rounded. The name floats above the
  * outline on a dark tag, centred over the tallest column (or the span of tied
- * tallest columns). Neighborhoods connect only through explicit links.
+ * tallest columns). Water, bridges and each neighborhood's territory are
+ * painted on the plot grid (`water.ts`, `territory.ts`).
  * All in mm.
  */
 
@@ -32,12 +33,15 @@ export type NeighborhoodSpec = {
   y: number
   /** Plots per column, left to right. */
   columns: number[]
+  /** Land painted to this neighborhood beyond what it stands on, as `col,row` cells. */
+  ground?: string[]
 }
 
-/** Two neighborhood names. */
-export type LinkSpec = [string, string]
-
-export type SkylineFile = { neighborhoods: NeighborhoodSpec[]; links: LinkSpec[] }
+export type SkylineFile = {
+  neighborhoods: NeighborhoodSpec[]
+  /** Land and water on the plot grid; see `water.ts`. */
+  water: string[]
+}
 
 export type Shape = {
   width: number
@@ -50,10 +54,13 @@ export type Shape = {
   tallest: [number, number]
 }
 
-type Point = [number, number]
+export type Point = readonly [number, number]
 
-/** A closed polygon with its outer corners rounded to `radius` (less where a side is too short). */
-function rounded(points: Point[], radius: number) {
+/**
+ * A closed polygon, clockwise on screen, with its outer corners rounded to
+ * `outer` and its inner ones to `inner` (less where a side is too short).
+ */
+export function rounded(points: readonly Point[], outer: number, inner = 0) {
   const n = points.length
   return points.map((p, i) => {
     const prev = points[(i + n - 1) % n]!
@@ -62,11 +69,11 @@ function rounded(points: Point[], radius: number) {
     const lenOut = Math.hypot(next[0] - p[0], next[1] - p[1])
     // Points run clockwise on screen, so a right turn is an outer corner.
     const cross = (p[0] - prev[0]) * (next[1] - p[1]) - (p[1] - prev[1]) * (next[0] - p[0])
-    if (cross <= 0) return `${i === 0 ? "M" : "L"}${p[0]} ${p[1]}`
-    const r = Math.min(radius, lenIn / 2, lenOut / 2)
+    const r = Math.min(cross > 0 ? outer : inner, lenIn / 2, lenOut / 2)
+    if (cross === 0 || r <= 0) return `${i === 0 ? "M" : "L"}${p[0]} ${p[1]}`
     const a = [p[0] - ((p[0] - prev[0]) / lenIn) * r, p[1] - ((p[1] - prev[1]) / lenIn) * r]
     const b = [p[0] + ((next[0] - p[0]) / lenOut) * r, p[1] + ((next[1] - p[1]) / lenOut) * r]
-    return `${i === 0 ? "M" : "L"}${a[0]} ${a[1]}A${r} ${r} 0 0 1 ${b[0]} ${b[1]}`
+    return `${i === 0 ? "M" : "L"}${a[0]} ${a[1]}A${r} ${r} 0 0 ${cross > 0 ? 1 : 0} ${b[0]} ${b[1]}`
   }).join("") + "Z"
 }
 

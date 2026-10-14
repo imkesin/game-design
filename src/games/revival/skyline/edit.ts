@@ -4,19 +4,6 @@ import { type Grid, type NeighborhoodSpec, PLOT, round, shape, type SkylineFile,
 
 export const LIMIT = { columns: 3, plots: 3 }
 
-const same = ([x, y]: readonly [string, string], a: string, b: string) => (x === a && y === b) || (x === b && y === a)
-
-export function isLinked(file: SkylineFile, a: string, b: string) {
-  return file.links.some((link) => same(link, a, b))
-}
-
-export function toggleLink(file: SkylineFile, a: string, b: string): SkylineFile {
-  if (a === b) return file
-  return isLinked(file, a, b)
-    ? { ...file, links: file.links.filter((link) => !same(link, a, b)) }
-    : { ...file, links: [...file.links, [a, b]] }
-}
-
 /** A new neighborhood on the grid, centred near `at`; returns its name too. */
 export function add(file: SkylineFile, grid: Grid, at: { x: number; y: number }): [SkylineFile, string] {
   const taken = new Set(file.neighborhoods.map((n) => n.name))
@@ -33,10 +20,7 @@ export function add(file: SkylineFile, grid: Grid, at: { x: number; y: number })
 }
 
 export function remove(file: SkylineFile, name: string): SkylineFile {
-  return {
-    neighborhoods: file.neighborhoods.filter((n) => n.name !== name),
-    links: file.links.filter(([a, b]) => a !== name && b !== name)
-  }
+  return { ...file, neighborhoods: file.neighborhoods.filter((n) => n.name !== name) }
 }
 
 /** Why `to` can't be a new name for `from`, if it can't. */
@@ -46,13 +30,8 @@ export function renameError(file: SkylineFile, from: string, to: string) {
   return undefined
 }
 
-/** Renames a neighborhood and every link to it. */
 export function rename(file: SkylineFile, from: string, to: string): SkylineFile {
-  const swap = (name: string) => (name === from ? to : name)
-  return {
-    neighborhoods: file.neighborhoods.map((n) => (n.name === from ? { ...n, name: to } : n)),
-    links: file.links.map(([a, b]) => [swap(a), swap(b)])
-  }
+  return { ...file, neighborhoods: file.neighborhoods.map((n) => (n.name === from ? { ...n, name: to } : n)) }
 }
 
 /**

@@ -1,20 +1,24 @@
 import { type PointerEvent, useEffect, useMemo, useRef, useState } from "react"
-import { Desk } from "~/games/revival/city/Desk"
-import { Paper } from "~/games/revival/city/Paper"
+import { Desk } from "~/games/revival/skyline/Desk"
 import * as edits from "~/games/revival/skyline/edit"
 import { Inspector } from "~/games/revival/skyline/Inspector"
 import savedMap from "~/games/revival/skyline/map.json"
+import { Paper } from "~/games/revival/skyline/Paper"
 import { PrintTile } from "~/games/revival/skyline/PrintTile"
 import { centredGrid, HEADER, shape, type SkylineFile, snapToGrid } from "~/games/revival/skyline/skyline"
 import { SkylineMap } from "~/games/revival/skyline/SkylineMap"
-import { css } from "~/generated/styled-system/css"
+import * as territory from "~/games/revival/skyline/territory"
+import * as water from "~/games/revival/skyline/water"
+import { css, cx } from "~/generated/styled-system/css"
 
 /**
- * Trial alternative to the prefab city (`/revival`): Brass-style skyline
- * neighborhoods joined by explicit links, on a board tiled from Letter
- * sheets. On screen: the whole board, with the cut lines between tiles; drag a
- * neighborhood to move it (red when it touches a cut line or leaves the board),
- * click one to edit its name, columns and links, or add new ones; Save writes
+ * The city map: Brass-style skyline neighborhoods, each in a territory of
+ * grid cells, streets between them and bridges over the water, on a board
+ * tiled from Letter sheets. On screen: the whole board, with the cut lines
+ * between tiles; drag a neighborhood to move it (red when it touches a cut
+ * line, leaves the board, stands in water or crowds another), click one to
+ * edit its name and columns, or add new ones. Water, Bridge and Ground modes
+ * paint grid cells; Grow fills unheld land from the territories. Save writes
  * `skyline/map.json`. In print: one Letter page per tile, with crop marks.
  */
 
@@ -36,9 +40,34 @@ const SEAM_CLEAR = 3
 /** Neighborhoods snap so their plots sit in this grid's cells. */
 const GRID = centredGrid(BOARD.width, BOARD.height)
 
-/** The saved map, with anything off the grid moved onto it (and so unsaved). */
-const SAVED = savedMap as SkylineFile
-const INITIAL = edits.snapAll(SAVED, GRID)
+/** Water, bridges and territories are painted on these cells. */
+const CELLS = water.cells(GRID, BOARD.width, BOARD.height)
+
+/**
+ * The saved map, with anything off the grid moved onto it, water fitted to the
+ * board and anything old dropped (and so unsaved).
+ */
+const SAVED = savedMap as Partial<SkylineFile> & Pick<SkylineFile, "neighborhoods">
+const LOADED: SkylineFile = { neighborhoods: SAVED.neighborhoods, water: water.fit(SAVED.water, CELLS) }
+const INITIAL = edits.snapAll(LOADED, GRID)
+const CHANGED_ON_LOAD = INITIAL !== LOADED || JSON.stringify(LOADED) !== JSON.stringify(SAVED)
+
+type Tool = "move" | "water" | "bridge" | "ground"
+
+const TOOLS: { tool: Tool; label: string; key?: string; title: string }[] = [
+  { tool: "move", label: "Move", title: "Select and drag neighborhoods (Esc)" },
+  { tool: "water", label: "Water", key: "w", title: "Paint water; starting on water paints land (W)" },
+  { tool: "bridge", label: "Bridge", key: "b", title: "Paint bridges on water; starting on a bridge clears it (B)" },
+  {
+    tool: "ground",
+    label: "Ground",
+    key: "g",
+    title: "Grow the territory the stroke starts in; starting on unheld land clears ground (G)"
+  }
+]
+
+/** Screen-only territory tints: a distinct light hue per neighborhood, by its place in the list. */
+const tintOf = (index: number) => `hsla(${(index * 137.508) % 360}, 75%, 62%, 0.35)`
 
 /** Undo steps kept. */
 const HISTORY = 100
@@ -64,12 +93,23 @@ const button = css({
   _disabled: { opacity: 0.35 }
 })
 
+const pressed = css({ background: "#dbeafe", borderColor: "#2563eb" })
+
+const toolbar = css({ display: "grid", gridAutoFlow: "column", gap: "4px" })
+
 const tiles = css({ display: "contents" })
+
+/** The map with the brush laid over it. */
+const stack = css({ display: "grid", gridTemplateAreas: `"map"`, "& > *": { gridArea: "map" } })
+
+const brush = css({ cursor: "crosshair", touchAction: "none" })
 
 export function SkylinePage() {
   const [file, setFile] = useState(INITIAL)
-  const [dirty, setDirty] = useState(INITIAL !== SAVED)
+  const [dirty, setDirty] = useState(CHANGED_ON_LOAD)
   const [dragging, setDragging] = useState(false)
+  const [tool, setTool] = useState<Tool>("move")
+  const [stroking, setStroking] = useState(false)
   const [past, setPast] = useState<SkylineFile[]>([])
   const [selectedName, setSelectedName] = useState<string | null>(null)
   const [status, setStatus] = useState<string | null>(() => {
@@ -90,6 +130,8 @@ export function SkylinePage() {
       moved: boolean
     }
   >(null)
+  /** The brush: what a stroke does to the cells it crosses, and the last cell it reached. */
+  const stroke = useRef<{ apply: (f: SkylineFile, run: water.Cell[]) => SkylineFile; last: water.Cell }>(null)
 
   const selectedIndex = file.neighborhoods.findIndex((n) => n.name === selectedName)
   const selected = file.neighborhoods[selectedIndex]
@@ -120,23 +162,42 @@ export function SkylinePage() {
 
   const placed = useMemo(() => file.neighborhoods.map((n) => ({ ...n, shape: shape(n.columns) })), [file])
 
-  const links = useMemo(() => {
-    const centre = new Map(placed.map((n) => [n.name, [n.x + n.shape.width / 2, n.y + n.shape.height / 2] as const]))
-    return file.links.map(([a, b]) => ({ a, b, from: centre.get(a), to: centre.get(b) }))
-  }, [placed, file.links])
-  const broken = links.filter((l) => l.from === undefined || l.to === undefined)
+  const coast = useMemo(() => water.coastline(file.water, CELLS), [file.water])
+  const held = useMemo(() => territory.holdings(file, CELLS), [file])
+  const streets = useMemo(() => territory.streets(file.water, CELLS, held), [file.water, held])
+  const { bridges, stray } = useMemo(() => water.bridges(file.water), [file.water])
+  const names = useMemo(() => file.neighborhoods.map((n) => n.name), [file.neighborhoods])
+  const neighbors = useMemo(() => territory.adjacency(names, held, bridges), [names, held, bridges])
+  const scattered = useMemo(() => territory.scattered(held), [held])
+  const pairs = [...neighbors.values()].reduce((sum, set) => sum + set.size, 0) / 2
+  const isolated = names.filter((name) => neighbors.get(name)?.size === 0)
+  const unheld = file.water.reduce(
+    (sum, row, r) =>
+      sum + [...row].filter((_, c) => water.isLand(file.water, [c, r]) && !held.has(water.key([c, r]))).length,
+    0
+  )
+
+  const tint = useMemo(() => {
+    const index = new Map(names.map((name, i) => [name, i]))
+    return [...held].map(([k, owner]) => {
+      const [c, r] = k.split(",").map(Number)
+      return { cell: [c!, r!] as const, color: tintOf(index.get(owner) ?? 0) }
+    })
+  }, [held, names])
 
   const conflicts = useMemo(() => {
+    const crowded = territory.crowded(file, CELLS)
     const out = new Set<number>()
-    placed.forEach(({ x, y, shape: { width, height } }, i) => {
+    placed.forEach(({ name, x, y, columns, shape: { width, height } }, i) => {
       const [x0, y0, x1, y1] = [x, y - HEADER, x + width, y + height]
       const offBoard = x0 < 0 || y0 < 0 || x1 > BOARD.width || y1 > BOARD.height
       const onSeam = SEAMS.xs.some((sx) => sx > x0 - SEAM_CLEAR && sx < x1 + SEAM_CLEAR) ||
         SEAMS.ys.some((sy) => sy > y0 - SEAM_CLEAR && sy < y1 + SEAM_CLEAR)
-      if (offBoard || onSeam) out.add(i)
+      const inWater = territory.occupied(CELLS, { x, y, columns }).some((cell) => water.isWater(file.water, cell))
+      if (offBoard || onSeam || inWater || crowded.has(name)) out.add(i)
     })
     return out
-  }, [placed])
+  }, [placed, file])
 
   useEffect(() => {
     if (!dirty) return
@@ -183,6 +244,28 @@ export function SkylinePage() {
   }, [dragging])
 
   useEffect(() => {
+    if (!stroking) return
+    const move = (event: globalThis.PointerEvent) => {
+      const s = stroke.current
+      const at = cellUnder(event.clientX, event.clientY)
+      if (s === null || at === undefined || (at[0] === s.last[0] && at[1] === s.last[1])) return
+      const run = water.between(s.last, at)
+      s.last = at
+      setFile((f) => s.apply(f, run))
+    }
+    const drop = () => {
+      stroke.current = null
+      setStroking(false)
+    }
+    window.addEventListener("pointermove", move)
+    window.addEventListener("pointerup", drop)
+    return () => {
+      window.removeEventListener("pointermove", move)
+      window.removeEventListener("pointerup", drop)
+    }
+  }, [stroking])
+
+  useEffect(() => {
     const key = (event: KeyboardEvent) => {
       const target = event.target
       if (target instanceof HTMLInputElement || target instanceof HTMLSelectElement) return
@@ -194,6 +277,10 @@ export function SkylinePage() {
         edit(edits.remove(file, selected.name))
       } else if (event.key === "Escape") {
         setSelectedName(null)
+        setTool("move")
+      } else if (!event.metaKey && !event.ctrlKey && !event.altKey) {
+        const picked = TOOLS.find((t) => t.key === event.key)?.tool
+        if (picked !== undefined) setTool((current) => (current === picked ? "move" : picked))
       }
     }
     window.addEventListener("keydown", key)
@@ -207,10 +294,6 @@ export function SkylinePage() {
     event.preventDefault()
     event.stopPropagation()
     blurField()
-    if (event.shiftKey && selected !== undefined) {
-      edit(edits.toggleLink(file, selected.name, from.name))
-      return
-    }
     setSelectedName(from.name)
     drag.current = {
       index,
@@ -223,6 +306,57 @@ export function SkylinePage() {
       moved: false
     }
     setDragging(true)
+  }
+
+  /** The grid cell under a point on screen, if it's on the board. */
+  function cellUnder(clientX: number, clientY: number) {
+    const bounds = mapRef.current?.getBoundingClientRect()
+    if (bounds === undefined) return undefined
+    const scale = bounds.width / BOARD.width
+    const [x, y] = [(clientX - bounds.left) / scale, (clientY - bounds.top) / scale]
+    return x < 0 || y < 0 || x > BOARD.width || y > BOARD.height ? undefined : water.cellAt(CELLS, x, y)
+  }
+
+  /** What a stroke starting on `at` does with the current tool, if anything. */
+  function brushFor(at: water.Cell): ((f: SkylineFile, run: water.Cell[]) => SkylineFile) | undefined {
+    const repaint = (f: SkylineFile, next: string[]) => (next === f.water ? f : { ...f, water: next })
+    const here = water.terrain(file.water, at)
+    switch (tool) {
+      case "water": {
+        const mark = here === water.LAND ? water.WATER : water.LAND
+        return (f, run) => repaint(f, water.paint(f.water, run, mark))
+      }
+      case "bridge": {
+        if (here === water.LAND) return undefined
+        const [from, to] = here === water.BRIDGE ? [water.BRIDGE, water.WATER] : [water.WATER, water.BRIDGE]
+        return (f, run) => repaint(f, water.paint(f.water, run, to, (current) => current === from))
+      }
+      case "ground": {
+        if (here !== water.LAND) return undefined
+        const owner = held.get(water.key(at))
+        return (f, run) => territory.paintGround(f, CELLS, run, owner)
+      }
+      case "move":
+        return undefined
+    }
+  }
+
+  function startStroke(event: PointerEvent<HTMLDivElement>) {
+    const at = cellUnder(event.clientX, event.clientY)
+    const apply = at === undefined ? undefined : brushFor(at)
+    if (at === undefined || apply === undefined) return
+    event.preventDefault()
+    event.stopPropagation()
+    blurField()
+    stroke.current = { apply, last: at }
+    edit(apply(file, [at]))
+    setStroking(true)
+  }
+
+  function growTerritories() {
+    const next = territory.grow(file, CELLS)
+    if (next === file) setStatus("Nothing to grow: every reachable cell is held.")
+    edit(next)
   }
 
   /** Adds a neighborhood in the middle of the view, clamped to the board. */
@@ -281,13 +415,40 @@ export function SkylinePage() {
         <span className={controls}>
           <button type="button" className={button} onClick={() => void save()}>Save</button>
           <button type="button" className={button} onClick={addNeighborhood}>+ Neighborhood</button>
+          <span className={toolbar}>
+            {TOOLS.map((t) => (
+              <button
+                key={t.tool}
+                type="button"
+                className={cx(button, tool === t.tool && pressed)}
+                aria-pressed={tool === t.tool}
+                title={t.title}
+                onClick={() => setTool(t.tool)}
+              >
+                {t.label}
+              </button>
+            ))}
+          </span>
+          <button
+            type="button"
+            className={button}
+            title="Fill unheld land from the territories"
+            onClick={growTerritories}
+          >
+            Grow
+          </button>
           <button type="button" className={button} disabled={past.length === 0} onClick={undo}>Undo</button>
           <span>
-            {file.neighborhoods.length} neighborhoods · {plots} plots · {file.links.length} links
-            {conflicts.size > 0 ? ` · ${conflicts.size} on a cut line or off the board` : ""}
-            {broken.length > 0 ? ` · unknown link ends: ${broken.map((l) => `${l.a}–${l.b}`).join(", ")}` : ""}
-            {dirty ? " · unsaved" : ""}
-            {status === null ? "" : ` · ${status}`}
+            {[
+              `${file.neighborhoods.length} neighborhoods · ${plots} plots · ${pairs} neighbor pairs`,
+              `${bridges.length} bridges · ${unheld} unheld cells`,
+              conflicts.size > 0 ? `${conflicts.size} misplaced` : "",
+              isolated.length > 0 ? `no neighbors: ${isolated.join(", ")}` : "",
+              scattered.size > 0 ? `in pieces: ${[...scattered].join(", ")}` : "",
+              stray.length > 0 ? `${stray.length} stray bridge cells` : "",
+              dirty ? "unsaved" : "",
+              status ?? ""
+            ].filter((part) => part !== "").join(" · ")}
           </span>
         </span>
       }
@@ -301,6 +462,7 @@ export function SkylinePage() {
         >
           <div
             ref={mapRef}
+            className={stack}
             onPointerDown={() => {
               blurField()
               setSelectedName(null)
@@ -309,25 +471,29 @@ export function SkylinePage() {
             <SkylineMap
               {...BOARD}
               placed={placed}
-              links={links}
+              cells={CELLS}
+              streets={streets}
+              coast={coast}
+              bridges={bridges}
+              {...(tool === "ground" ? { tint } : {})}
+              stray={stray}
               conflicts={conflicts}
               {...(selected === undefined ? {} : { selected: selectedIndex })}
               seams={SEAMS}
               grid={GRID}
               onGrab={grab}
             />
+            {tool !== "move" && <div className={brush} onPointerDown={startStroke} />}
           </div>
         </Paper>
       </div>
       <Inspector
         file={file}
         selected={selected}
+        neighbors={selected === undefined ? [] : [...(neighbors.get(selected.name) ?? [])].sort()}
         onRename={rename}
         onColumns={(columns, shift) => {
           if (selected !== undefined) edit(edits.reshape(file, selected.name, columns, shift))
-        }}
-        onToggleLink={(other) => {
-          if (selected !== undefined) edit(edits.toggleLink(file, selected.name, other))
         }}
         onRemove={() => {
           if (selected !== undefined) edit(edits.remove(file, selected.name))
@@ -342,7 +508,7 @@ export function SkylinePage() {
               row={row}
               {...TILES}
               {...TILE}
-              map={{ ...BOARD, placed, links }}
+              map={{ ...BOARD, cells: CELLS, placed, streets, coast, bridges }}
             />
           )))}
       </div>

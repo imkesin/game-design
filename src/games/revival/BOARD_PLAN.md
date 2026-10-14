@@ -3,69 +3,11 @@
 Plan of record for drawing the city map. Update this file rather than re-deriving; open items are
 near the bottom, abandoned approaches at the very bottom.
 
-## 1. The approach
+## 1. Skyline neighborhoods in territories (`skyline/`, `/revival`)
 
-The city is built from **prefab neighborhoods**: small, fixed, hand-designed layouts of plots and
-roads, drawn at true size. Prefabs are **placed by hand** (dragged) on a sheet, and the ground
-between them is split into **territories** by a Voronoi measured to each prefab's whole box. Each
-border between territories is drawn as a street.
-
-Why: the city's legibility comes from a small set of consistent, well-drawn neighborhoods, not from
-a solver or a painter. Geometry decisions live inside each prefab; the map only arranges them.
-
-## 2. Prefabs (`city/prefabs.ts`, `/revival/prefabs`)
-
-Fixed visual grammar, all in mm:
-
-- **Plot**: a 24mm track holding a 22mm square, 0.6mm black border.
-- **Road** inside a prefab: an 8mm track (a row or column with no plots in it).
-- **Band**: 12mm round the outside of every prefab; holds the claim markers.
-- **Plot groups**: edge-touching plots, outlined together (1mm line along their cells' outer edge).
-  No lines between plots inside a group.
-- **Claims**: a 10mm dashed circle, **one per group**, in the band on the side the group runs along,
-  centred on the group's outward-facing plots. A layout may force a side (`claimSide`).
-- **Orientation**: plots run in vertical columns. The one horizontal exception is the bare pair
-  (`PP`).
-
-Two ways to write a layout:
-
-- `grid`: rows of `P` (plot), `R` (road), `S` (square, left open); track sizes are derived.
-- `stacks`: columns left to right, each a number (a column of that many plots), a `{ wide, tall }`
-  block, or a list of groups with `"gap"` (an empty plot space); separated by `"road"`. Columns are
-  centred vertically against the tallest, on half-plot rows, so odd and even columns sit half a plot
-  apart.
-
-The prefabs page lists every layout by plot count, then by how it splits into groups (1 + 1 before
-2), with the split in each label.
-
-## 3. Territories (`city/territories.ts`)
-
-- Voronoi of each prefab's **whole box** (band included), Euclidean distance: straight borders
-  between facing edges, arcs around corners. Sampled on a 1mm grid (2mm while dragging), borders
-  stitched per pair of neighbors and simplified to within one sample of the true curve.
-- **Reach**: ground farther than this from every box is empty, which gives the city its own edge (or
-  `null`: territories fill the whole area).
-- **Drawing** (`city/TerritoryMap.tsx`): borders between neighbors are streets, black | white |
-  black (1.5 / 2 / 1.5mm). The city edge is either a single 1.5mm line or a full street (ring road).
-
-## 4. The city sheet (`/revival`, `city/city.json`)
-
-- **18×24in** print-shop sheet, portrait, with a ½in buffer: a 17×23in (431.8×584.2mm) area.
-- **5P mix**: 18 neighborhoods = 2×2, 3×3, 4×4, 4×5, 3×6, 2×7 plots = **81 plots** (the 5P budget is
-  84).
-- **Gap**: boxes at least **8mm** apart, so a street runs 4mm from each box: ~2.5mm clear of claim
-  markers, 12mm+ from plots. (12mm rarely fit all 18 on the sheet.)
-- **Editor**: drag to move (4mm snap; red when closer than 8mm or off the area); Reach slider, Fill
-  sheet, Edge style; **Shuffle** packs a fresh arrangement of the mix (`city/pack.ts`: distinct
-  layouts per size, biggest first, each nearest the centre with jitter, scaled to the sheet's
-  proportions); **Save** writes `city/city.json` through the dev-only Vite endpoint
-  (`src/shared/vite/specSave.node.ts`).
-
-## 5. Trial: skyline neighborhoods + links (`skyline/`, `/revival/skyline`)
-
-Running alongside §1–4, which stay the plan of record until one wins. Aim: a Brass / Age of
-Industry-style map: compact, framed neighborhoods joined by explicit, hand-drawn links (topology is
-authored; geography is decoration).
+Brass / Age of Industry-style neighborhoods, each sitting in a hand-painted territory of grid cells,
+so neighborhoods touch like a real city: streets between territories, water between some, bridges
+over it. Topology is authored by painting.
 
 - **Organizing principle: every Block is a vertical column** (1–3 plots); a neighborhood is 1–3
   touching columns. Claiming a column is the game's organizing idea, so nothing else marks it: no
@@ -81,15 +23,14 @@ authored; geography is decoration).
   circles looked weak.) (Tried first: claims on a roof band above each column, 12mm then 24mm; 12mm
   squeezed the circle against the outline.)
 - **Names**: light caps on a dark 8mm tag floating 2mm above the outline, centred over the tallest
-  column (or the span of tied tallest columns). Outside the outline's box, so positions and links
-  ignore it. Tried before: a 12mm plinth along the bottom, 5mm caps.
+  column (or the span of tied tallest columns). Outside the outline's box, so positions ignore it
+  (the cell it reaches into is still part of the neighborhood's footprint). Tried before: a 12mm
+  plinth along the bottom, 5mm caps.
 - **Outline**: along the base edge, 2mm out from the columns everywhere else (top, sides, steps);
   dotted ground (black 0.4mm dots on a 2mm pitch; 1.5mm was a touch dark: a halftone, never a fixed
   grey fill, for prototype printing) behind white plots and claim rings, so plots pop; 0.8mm
   dark-grey line (1.2mm black was too strong); outer corners rounded 0.75mm, inner corners sharp
   (4mm all round was far too round).
-- **Links**: one bold 3mm line centre to centre, drawn under the neighborhoods (their white fill
-  hides the ends).
 - **Board**: **2×2 Letter tiles**, each a landscape sheet's printable area (10.5×8in), so a
   **21×16in** board (close to the 17×23in area of the 18×24 sheet), quicker to iterate on. On
   screen: the whole board with dashed cut lines; a neighborhood (tag included) within 3mm of a cut
@@ -99,24 +40,52 @@ authored; geography is decoration).
 - **Grid**: plots snap to a 24mm grid (screen-only faint lines), with a cell centred on the board,
   so margins match and the 2×2 cut lines run down the middle of a row/column of cells (street only).
   Off-grid saved positions are snapped on load.
+- **Water**: painted on the plot grid (`skyline/water.ts`), saved in `map.json` as one string per
+  grid row (`~` water, `.` land, edge part-cells included). Drawn as black wavy lines (0.25mm, 2.4mm
+  apart, 6mm wavelength, 0.3mm amplitude; straight 1.6mm hatching was too busy) inside a 0.6mm grey
+  coastline, outer corners rounded 10mm, bays 6mm; cells touching only at a corner join, so rivers
+  can run diagonally; water at the edge runs off the board. A neighborhood whose plots or base band
+  stand in water shows red.
+- **Territories** (`skyline/territory.ts`): a neighborhood always holds its **footprint** (plot
+  cells, the base-band cell under each column, the cell its tag reaches into); the rest is painted
+  by hand, saved as `ground` (`"col,row"` cells) on each neighborhood. **Grow** fills every unheld
+  land cell reachable over land, a cell at a time (Manhattan flood, so borders stay on grid lines,
+  90° only); ties go to the nearer footprint. Overlapping footprints show red. **Streets**: a 1.2mm
+  black line along every cell side between different holders (or held and unheld land), running on
+  under the water to meet the rounded coast. Ground stays put when a neighborhood moves; Grow again.
+- **Adjacency**: neighbors share at least one whole cell side (24mm; a corner doesn't count), or the
+  two ends of a bridge. The side panel lists the selected neighborhood's neighbors; the status line
+  counts pairs and names neighborhoods with none or with territory in pieces. (First Grow on the
+  current map: 2–5 neighbors each.)
+- **Bridges**: painted on water cells (`=` in the water rows): a straight run along a row or column
+  with land at both ends (a single cell spans a row if land is left and right, else a column). Drawn
+  to be obvious: a 10mm white planked deck reaching 4mm onto land at each end, heavy 1.2mm black
+  rails splaying out 3mm at the ends. A run that bends or doesn't land shows red on screen and
+  connects nothing.
+- **Brushes**: Move / **Water** (W) / **Bridge** (B) / **Ground** (G), Esc back to Move. A stroke
+  paints across grid cells, one undo step per stroke. Water: paints water, or land if it starts on
+  water. Bridge: bridges water, or clears bridges if it starts on one. Ground: grows the territory
+  the stroke starts in (footprint or ground), or clears ground if it starts on unheld land; Ground
+  mode tints territories on screen.
 - **Editor**: drag to move (snaps to the grid); click to select and edit name, columns (keeping the
-  bottom and remaining columns in place) and links in a side panel; shift-click another to
-  link/unlink; "+ Neighborhood" adds one mid-view; Delete, ⌘Z undo, Esc. Edits live in
-  `skyline/edit.ts`. Save writes `skyline/map.json` (`/__revival-skyline`).
+  bottom and remaining columns in place) in a side panel; "+ Neighborhood" adds one mid-view;
+  Delete, ⌘Z undo, Esc. Edits live in `skyline/edit.ts`. Save writes `skyline/map.json`
+  (`/__revival-skyline`).
 
-## 6. Open
+## 2. Open
 
+- **Territory look**: if borders still read weakly, try territories as inset blocks (own outline
+  ~3mm in, white gaps between) or a halftone ground per territory.
 - **Rules link**: map plots and claims back to DESIGN.md (Blocks, claims, adjacency for the mayor's
-  walk and Market gates). Territory adjacency is already computed (border lengths per pair).
+  walk and Market gates).
 - **Smaller counts**: one map for all player counts, closing plots for fewer players, or separate
   sheets?
 - **Claim size**: 10mm markers need ≤ 10mm tokens.
 - **Mayor pawn** has no dedicated spot.
 - **Names** for neighborhoods aren't drawn yet.
-- **DESIGN.md is stale** on neighborhood count and sizes (now the 18-neighborhood mix above), degree
-  cap, and how claims are shown.
+- **DESIGN.md is stale** on neighborhood count and sizes, degree cap, and how claims are shown.
 
-## 7. Abandoned approaches
+## 3. Abandoned approaches
 
 - **Force-directed layout** (Tiger's Path style): ignored node size; Revival's places _are_ the
   board.
@@ -131,5 +100,19 @@ authored; geography is decoration).
   12mm internal roads (8mm reads better and packs tighter).
 - **48mm block lattice** (2×2-plot blocks, 24mm gaps, explicit straight and diagonal edges clicked
   into the gaps): tried 2026-10-14 and didn't work as well as hoped; replaced by a carved cell grid.
+- **Derived roads** (2026-10-14): one bold 2.5mm road per neighbor pair, routed at 90° through the
+  two territories across the middle of their shared border (or over the bridge), with streets
+  lightened to 0.5mm grey. "Cool, but not much better": with territories filling every cell, the
+  roads competed with streets, outlines, water and bridges instead of standing out. Reverted.
+- **Explicit links between floating neighborhoods** (2026-10-14): a bold 3mm line centre to centre.
+  Clear, but it read as separate towns (Brass), not one city; replaced by painted territories, which
+  keep authored topology but let neighborhoods touch. A true (Euclidean) Voronoi of the outlines was
+  considered and passed over for grid cells: 90° borders, and painting gives back control over the
+  graph.
 - **Carved 24mm cell grid** (solid grid on Letter, removed cells as dotted dividers, 1-cell divider
-  = adjacent): tried 2026-10-14, didn't work; replaced by skyline neighborhoods (§5).
+  = adjacent): tried 2026-10-14, didn't work; replaced by skyline neighborhoods (§1).
+- **Prefab city** (plan of record until 2026-10-14; code removed, see git history before this
+  change): small hand-designed prefab layouts of plots and 8mm internal roads, each with a 12mm
+  claim band, dragged onto an 18×24in sheet (an 81-plot, 18-neighborhood 5P mix, Shuffle packer);
+  the ground between them split by a Voronoi of their boxes, borders drawn as streets. Legible, but
+  the skyline trial read better.
