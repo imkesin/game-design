@@ -18,6 +18,11 @@ export default defineConfig({
       name: "revival:city-save",
       route: "/__revival-city",
       specPath: path("./src/games/revival/city/city.json")
+    }),
+    specSave({
+      name: "revival:skyline-save",
+      route: "/__revival-skyline",
+      specPath: path("./src/games/revival/skyline/map.json")
     })
   ],
   resolve: {

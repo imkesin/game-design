@@ -61,7 +61,40 @@ The prefabs page lists every layout by plot count, then by how it splits into gr
   proportions); **Save** writes `city/city.json` through the dev-only Vite endpoint
   (`src/shared/vite/specSave.node.ts`).
 
-## 5. Open
+## 5. Trial: skyline neighborhoods + links (`skyline/`, `/revival/skyline`)
+
+Running alongside §1–4, which stay the plan of record until one wins. Aim: a Brass / Age of
+Industry-style map: compact, framed neighborhoods joined by explicit, hand-drawn links (topology is
+authored; geography is decoration).
+
+- **Organizing principle: every Block is a vertical column** (1–3 plots); a neighborhood is 1–3
+  touching columns. Claiming a column is the game's organizing idea, so nothing else marks it: no
+  dividers, no extra spacing (a 0.5mm-in-column / 4mm-between variant looked no better). This
+  matches DESIGN.md (Blocks 1–3 plots; column count = player capacity).
+- **24mm system**: every plot is a 24mm track (a 22mm square with 1mm padding all round), so plots
+  sit 2mm apart in both directions.
+- **Skyline**: columns are bottom-aligned, so the silhouette has a flat bottom and a stepped top.
+- **Base**: a **16mm** band from the plot tracks to the flat bottom of the outline, with a 10mm
+  solid claim ring (0.6mm, plot-border weight, light grey so it recedes) under each column, centred
+  optically between the plot square and the outline's inner edge (not the band, which looked tight
+  below because plots carry 1mm padding), on a stem up to the column's bottom plot. (Dashed 0.25mm
+  circles looked weak.) (Tried first: claims on a roof band above each column, 12mm then 24mm; 12mm
+  squeezed the circle against the outline.)
+- **Names**: light caps on a dark 8mm tag floating 2mm above the outline, centred over the tallest
+  column (or the span of tied tallest columns). Outside the outline's box, so positions and links
+  ignore it. Tried before: a 12mm plinth along the bottom, 5mm caps.
+- **Outline**: along the base edge, 2mm out from the columns everywhere else (top, sides, steps);
+  dotted ground (black 0.4mm dots on a 2mm pitch; 1.5mm was a touch dark: a halftone, never a fixed
+  grey fill, for prototype printing) behind white plots and claim rings, so plots pop; 0.8mm
+  dark-grey line (1.2mm black was too strong); outer corners rounded 0.75mm, inner corners sharp
+  (4mm all round was far too round).
+- **Links**: one bold 3mm line centre to centre, drawn under the neighborhoods (their white fill
+  hides the ends).
+- **Sheet**: Letter for now (two neighborhoods, one link) to test the look at true scale.
+- **Editor**: drag to move (2mm snap); columns, names and links are edited in `skyline/map.json`;
+  Save writes it back (`/__revival-skyline`).
+
+## 6. Open
 
 - **Rules link**: map plots and claims back to DESIGN.md (Blocks, claims, adjacency for the mayor's
   walk and Market gates). Territory adjacency is already computed (border lengths per pair).
@@ -73,7 +106,7 @@ The prefabs page lists every layout by plot count, then by how it splits into gr
 - **DESIGN.md is stale** on neighborhood count and sizes (now the 18-neighborhood mix above), degree
   cap, and how claims are shown.
 
-## 6. Abandoned approaches
+## 7. Abandoned approaches
 
 - **Force-directed layout** (Tiger's Path style): ignored node size; Revival's places _are_ the
   board.
@@ -86,3 +119,7 @@ The prefabs page lists every layout by plot count, then by how it splits into gr
   (pointless; claims now sit by their group); horizontal rows (dropped for consistency);
   three-column prefabs (kept only where they read well); a courtyard ring (didn't fit the theme);
   12mm internal roads (8mm reads better and packs tighter).
+- **48mm block lattice** (2×2-plot blocks, 24mm gaps, explicit straight and diagonal edges clicked
+  into the gaps): tried 2026-10-14 and didn't work as well as hoped; replaced by a carved cell grid.
+- **Carved 24mm cell grid** (solid grid on Letter, removed cells as dotted dividers, 1-cell divider
+  = adjacent): tried 2026-10-14, didn't work; replaced by skyline neighborhoods (§5).

@@ -1,0 +1,42 @@
+{
+  "neighborhoods": [
+    {
+      "name": "Old Town",
+      "x": 20,
+      "y": 30,
+      "columns": [
+        2,
+        3,
+        1
+      ]
+    },
+    {
+      "name": "Riverside",
+      "x": 110,
+      "y": 150,
+      "columns": [
+        1,
+        2
+      ]
+    },
+    {
+      "name": "Mill Row",
+      "x": 24,
+      "y": 180,
+      "columns": [
+        2,
+        2
+      ]
+    }
+  ],
+  "links": [
+    [
+      "Old Town",
+      "Riverside"
+    ],
+    [
+      "Riverside",
+      "Mill Row"
+    ]
+  ]
+}
