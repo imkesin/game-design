@@ -1,4 +1,5 @@
-import { edgeKey, type Mesh, polygonCentroid, type Pt, ringArea, ringSegments } from "./geometry.ts"
+import { edgeKey, polygonCentroid, type Pt, ringArea, ringSegments } from "../../../shared/map/geometry.ts"
+import type { Mesh } from "./mesh.ts"
 
 /**
  * Flat-top hex grid: the map's substrate. Unlike the old Voronoi mesh, adjacency

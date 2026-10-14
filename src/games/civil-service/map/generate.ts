@@ -1,7 +1,8 @@
-import { chainToPath, type Mesh, pairKey, pointKey, type Pt, round, stitch } from "./geometry.ts"
+import { chainToPath, pairKey, pointKey, type Pt, round, stitch } from "../../../shared/map/geometry.ts"
 import { buildHexGrid, buildHexMesh } from "./hex.ts"
 import type { HexCell, HexKind, HexMapSpec } from "./hexSpec.ts"
 import { CAPITAL_RULE_SCALE, markerPath, starPath } from "./markers.ts"
+import type { Mesh } from "./mesh.ts"
 import { isResource, type Resource, RESOURCE_LABEL } from "./resources.ts"
 
 /**

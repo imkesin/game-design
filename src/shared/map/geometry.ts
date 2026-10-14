@@ -1,8 +1,9 @@
 /**
- * Planar geometry primitives shared by the map pipeline.
+ * Planar geometry primitives shared by the grid-painted maps (civil-service's
+ * hexes, Revival's squares).
  *
- * Every polygon in this map (hex cells) shares vertices exactly with its
- * neighbours, so adjacency can be found by exact key matching rather than
+ * Every polygon on such a map is a grid cell that shares vertices exactly with
+ * its neighbours, so adjacency can be found by exact key matching rather than
  * geometric tolerance — the single assumption the rest of this module rests
  * on, and the reason nothing here needs a geometry library.
  */
@@ -101,7 +102,7 @@ export function ringArea(ring: readonly Pt[]): number {
   return Math.abs(sum) / 2
 }
 
-/** Area-weighted centroid. Hex cells are convex, so this always lands inside. */
+/** Area-weighted centroid. Grid cells are convex, so for a single cell this always lands inside. */
 export function polygonCentroid(ring: readonly Pt[]): Pt {
   let twiceArea = 0
   let x = 0
@@ -116,18 +117,4 @@ export function polygonCentroid(ring: readonly Pt[]): Pt {
   }
   if (Math.abs(twiceArea) < 1e-9) return ring[0] ?? [0, 0]
   return [round(x / (3 * twiceArea)), round(y / (3 * twiceArea))]
-}
-
-export type Cell = {
-  index: number
-  centroid: Pt
-  area: number
-}
-
-export type Mesh = {
-  cells: Cell[]
-  /** Cell index -> indices of cells sharing an edge with it. */
-  neighbors: Map<number, Set<number>>
-  /** Edge key -> the segment and the one or two cells owning it. */
-  edges: Map<string, { segment: [Pt, Pt]; cells: number[] }>
 }

@@ -1,4 +1,4 @@
-import { chainToPath, xy } from "./geometry.ts"
+import { chainToPath, xy } from "../../../shared/map/geometry.ts"
 import type { HexTile } from "./hex.ts"
 
 /**
