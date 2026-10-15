@@ -13,11 +13,6 @@ export default defineConfig({
       route: "/__hex-spec",
       specPath: path("./src/games/civil-service/map/hexSpec.json"),
       build: { script: path("./src/games/civil-service/map/build.ts"), tsx: path("./node_modules/.bin/tsx") }
-    }),
-    specSave({
-      name: "revival:skyline-save",
-      route: "/__revival-skyline",
-      specPath: path("./src/games/revival/skyline/map.json")
     })
   ],
   resolve: {

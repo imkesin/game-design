@@ -1,7 +1,7 @@
-import { mm } from "~/games/revival/skyline/mm"
-import { Paper } from "~/games/revival/skyline/Paper"
+import type { ReactNode } from "react"
 import { css } from "~/generated/styled-system/css"
-import { type MapLayers, SkylineMap } from "./SkylineMap.tsx"
+import { mm } from "./mm.ts"
+import { Paper } from "./Paper.tsx"
 
 /**
  * One printed tile of a map split across Letter sheets: the window of the map
@@ -22,7 +22,7 @@ const window_ = css({ gridArea: "tile", overflow: "hidden" })
 const marks = css({ gridArea: "tile", width: "100%", height: "100%", overflow: "visible", pointerEvents: "none" })
 
 export function PrintTile(
-  { col, row, cols, rows, width, height, map }: {
+  { col, row, cols, rows, width, height, children }: {
     col: number
     row: number
     cols: number
@@ -30,7 +30,8 @@ export function PrintTile(
     /** The tile (printable area) size, in mm. */
     width: number
     height: number
-    map: MapLayers
+    /** The whole map, at true size from its top-left. */
+    children: ReactNode
   }
 ) {
   const label = `Tile ${row * cols + col + 1} of ${cols * rows} · row ${row + 1}, column ${col + 1}`
@@ -41,7 +42,7 @@ export function PrintTile(
       <div className={tile} style={{ width: mm(width), height: mm(height) }}>
         <div className={window_}>
           <div style={{ marginLeft: mm(-col * width), marginTop: mm(-row * height) }}>
-            <SkylineMap {...map} />
+            {children}
           </div>
         </div>
         <svg viewBox={`0 0 ${width} ${height}`} className={marks}>

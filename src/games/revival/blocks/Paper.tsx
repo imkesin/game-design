@@ -1,6 +1,6 @@
 import type { ReactNode } from "react"
-import { mm } from "~/games/revival/skyline/mm"
 import { css } from "~/generated/styled-system/css"
+import { mm } from "./mm.ts"
 
 /**
  * A sheet of paper with a working area centred on it, true size in mm. On
