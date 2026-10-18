@@ -1,6 +1,8 @@
 # Revival
 
-Abstract stage. Working notes; decisions are recorded as made, open questions at the bottom.
+Abstract stage. Working notes: **why** the game is the way it is; decisions are recorded as made,
+open questions at the bottom. What players do lives in `RULES.md`; the physical pieces in
+`COMPONENTS.md`.
 
 ## Premise
 
@@ -111,9 +113,10 @@ tax incentives that sway where it pays to build.
 - **Setup cards** (2026-10-17): the starting state is dealt, not printed. **8 blight cards** (every
   player count) and **8 historical (positive) cards** for 2–3P: one deck, its 3P buildings a badged
   subset of 2P's. Shuffle a deck and deal **one card to each of the 4 rows and 4 columns**, laid
-  along the city's **west** (rows) and **north** (columns) edges; entry 1 is the neighborhood
-  nearest the card. A card lists 4 entries, one per neighborhood along its line, and each
-  neighborhood takes its row card's entry and its column card's entry.
+  along the city's **west** (rows) and **north** (columns) edges; **historical cards along the east
+  and south** (2026-10-18); entry 1 is the neighborhood nearest the card. A card lists 4 entries,
+  one per neighborhood along its line, and each neighborhood takes its row card's entry and its
+  column card's entry.
   - **Blight cards** carry the **30 blight** and the **8 parking lots** (one per card): everything
     that eats the city's land goes together. **Parking lots** are dead land, not plots: never
     developed, restored, taxed or counted by "every plot developed" checks. Entries list each
@@ -205,12 +208,14 @@ tax incentives that sway where it pays to build.
 - **Building source**: the building row (above); pay the building's cost.
 - **Income/sink**: selling is the only income (plus credit income); tax and building costs are the
   sinks.
-- **Starting purse** (2026-10-17): **5 coins each, flat**. 4 is the floor for real choices (an
-  Industrial all-in, or House + House + Commercial); 5 fills all 3 cones (Commercial + Commercial +
-  House), so opening with several projects is a real alternative to build-sell-build-sell. No
-  turn-order offset: going first is worth ~1–2 coins over a game, and +1 per seat overcorrects by
-  more than that (uneven offsets like 5 / 5 / 6 / 6 / 7 aren't smooth enough). Add +1 per seat only
-  if playtests show the first seat winning more.
+- **Starting purse** (2026-10-18; was 5 flat): **4 coins for the first player, +1 per seat** (4 / 5
+  / 6 / 7 / 8). Below, the 2026-10-17 case for flat 5, kept as the thing to watch in playtests. No
+  credit marker at setup until credit is worked out. Previously: **5 coins each, flat**. 4 is the
+  floor for real choices (an Industrial all-in, or House + House + Commercial); 5 fills all 3 cones
+  (Commercial + Commercial + House), so opening with several projects is a real alternative to
+  build-sell-build-sell. No turn-order offset: going first is worth ~1–2 coins over a game, and +1
+  per seat overcorrects by more than that (uneven offsets like 5 / 5 / 6 / 6 / 7 aren't smooth
+  enough). Add +1 per seat only if playtests show the first seat winning more.
 - **Blight** (2026-10-16; 30 and the cone flow since 2026-10-17): the city starts with **30 blighted
   buildings at every player count**, dealt by the blight setup cards. Each is a **black wooden
   building** of its type standing on a single-sided **blight tile** (split black and the type's
@@ -263,36 +268,6 @@ tax incentives that sway where it pays to build.
     for the steering, so dodging walks shouldn't add much to the stall risk.
   - Credit balances itself: a step bought early pays on every remaining walk, one bought late barely
     pays back, so upgrading fades as the deck thins.
-- **Color conventions** (2026-10-17; `colors.ts`): **green** Parks, **light tan** Housing, **medium
-  brown** Commercial, **grey** Industrial, **black** anything blighted. Parking lots are a **very
-  grey blue**. Historical buildings' accent is **burgundy** (a heritage plaque; the historical setup
-  cards' header). The mayor and his agenda cards are **civic navy** (provisional). Costs are printed
-  on a **gold coin** (top-right of a row tile, and of a blighted Commercial or Industrial tile: its
-  restore price, 1 / 3, as a reminder; a blighted House restores free, so no coin). Blighted and
-  historical buildings are split diagonally (black or burgundy top-left, the type's color
-  bottom-right) under a white icon, on cards and tiles alike.
-- **V0 components** (2026-10-17): **30mm base-plate tiles** (the plot square) on sticker paper over
-  cardstock, printable at `/revival/tiles`; **wooden building tokens** are the finished buildings,
-  and every building on the board is one, blight and historical included: **3D buildings make it
-  look like a city**, which sets Revival apart from city games of pictures on flat pieces. Never
-  trade them away for setup speed; hexes, cones, coins and the mayor are bought bits. All tiles are
-  single-sided; a blight is a blight tile with a **black wooden building** on it (knocking down
-  swaps buildings, no flipping: fiddly on a tight board). Historical tiles are split burgundy and
-  type. **Park supply: 20, assumed.**
-- **Player mat** (2026-10-18): a **TGC half board turned landscape** (10 × 5in), printable one per
-  Letter page at `/revival/mats`: company band, credit track (0–3), cone yard (3 open, 2 locked),
-  and space kept for later upgrades. One design for now; company colors swap into the band later.
-- **Sale card** (2026-10-18): sale values live **only on a 6 × 4in landscape reference card**, one
-  per player (`/revival/reference`, 2 per Letter page); the board has no room and tiles keep just
-  the cost coin. Each row: the tile, what it **sells for** written
-  `base + (bonus per Park or
-  hex)` in coins, and its **side effects** with a mini-map of where the
-  bonus counts (the House's own neighborhood, or the plazas hexes are taken from), the 1 + n hex
-  cap, hexes put out, and blight rules.
-- **Rules sheet** (2026-10-18): one Letter page for the host at `/revival/rules`: setup, the
-  player-count table, a turn, the walk, the end. Playtest copy, not polished. It fixes the walk's
-  order as **visits → credit income → upgrades → reveal agenda, refill row**, and the walker places
-  incentives.
 - **Focus**: core loop first.
 
 ## Terminology

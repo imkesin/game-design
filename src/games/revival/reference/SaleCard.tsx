@@ -9,7 +9,7 @@ import { Tile } from "../tiles/Tile.tsx"
  * The sale reference card, 6×4in landscape: one row per type, its tile drawn
  * small, read across as what it sells for (base coins, plus coins per Park or
  * hex), where that counts and its limits, and the hex it puts out (DESIGN.md,
- * Payoff chart). Sale values live only here (DESIGN.md, Player mat); costs are
+ * Payoff chart). Sale values live only here (COMPONENTS.md, Sale card); costs are
  * on the tiles, so these tiles leave them off.
  */
 

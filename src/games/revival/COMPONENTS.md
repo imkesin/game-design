@@ -1,9 +1,43 @@
-# Revival — Board Plan
+# Revival — Components
 
-Plan of record for drawing the city map. Update this file rather than re-deriving; open items are
-near the bottom, abandoned approaches at the very bottom.
+Plan of record for the physical pieces: what gets printed and bought, and how the city map is drawn.
+Update this file rather than re-deriving. Rules live in `RULES.md`; the reasons behind them in
+`DESIGN.md`.
 
-## 0. Ring neighborhoods on a quad-fold board (2026-10-17, trial)
+## Pieces
+
+- **Color conventions** (2026-10-17; `colors.ts`): **green** Parks, **light tan** Housing, **medium
+  brown** Commercial, **grey** Industrial, **black** anything blighted. Parking lots are a **very
+  grey blue**. Historical buildings' accent is **burgundy** (a heritage plaque; the historical setup
+  cards' header). The mayor and his agenda cards are **civic navy** (provisional). Costs are printed
+  on a **gold coin** (top-right of a row tile, and of a blighted Commercial or Industrial tile: its
+  restore price, 1 / 3, as a reminder; a blighted House restores free, so no coin). Blighted and
+  historical buildings are split diagonally (black or burgundy top-left, the type's color
+  bottom-right) under a white icon, on cards and tiles alike.
+- **V0 components** (2026-10-17): **30mm base-plate tiles** (the plot square) on sticker paper over
+  cardstock, printable at `/revival/tiles`; **wooden building tokens** are the finished buildings,
+  and every building on the board is one, blight and historical included: **3D buildings make it
+  look like a city**, which sets Revival apart from city games of pictures on flat pieces. Never
+  trade them away for setup speed; hexes, cones, coins and the mayor are bought bits. All tiles are
+  single-sided; a blight is a blight tile with a **black wooden building** on it (knocking down
+  swaps buildings, no flipping: fiddly on a tight board). Historical tiles are split burgundy and
+  type. **Park supply: 20, assumed.**
+- **Player mat** (2026-10-18): a **TGC half board turned landscape** (10 × 5in), printable one per
+  Letter page at `/revival/mats`: company band, credit track (0–3), cone yard (3 open, 2 locked),
+  and space kept for later upgrades. One design for now; company colors swap into the band later.
+- **Sale card** (2026-10-18): sale values live **only on a 6 × 4in landscape reference card**, one
+  per player (`/revival/reference`, 2 per Letter page); the board has no room and tiles keep just
+  the cost coin. Each row: the tile, what it **sells for** written
+  `base + (bonus per Park or
+  hex)` in coins, and its **side effects** with a mini-map of where the
+  bonus counts (the House's own neighborhood, or the plazas hexes are taken from), the 1 + n hex
+  cap, hexes put out, and blight rules.
+
+## Board
+
+Open items are near the bottom, abandoned approaches at the very bottom.
+
+### 0. Ring neighborhoods on a quad-fold board (2026-10-17, trial)
 
 Supersedes parts of §1; §1 still describes the look (dots, edge, streets, labels).
 
@@ -27,7 +61,7 @@ Supersedes parts of §1; §1 still describes the look (dots, edge, streets, labe
   cards onto fixed halves of each ring (DESIGN.md, Setup cards), so the board prints nothing about
   setup.
 
-## 1. Rectangular blocks (`blocks/`, `/revival`)
+### 1. Rectangular blocks (`blocks/`, `/revival`)
 
 A matrix of rectangular neighborhoods with white streets between them. Plan of record since
 2026-10-14; the user: "It seems like a city right away", solving the parsing problem.
@@ -84,7 +118,7 @@ A matrix of rectangular neighborhoods with white streets between them. Plan of r
   decision-speed win over shortest paths on a free graph. The matrix makes adjacency the 4
   orthogonal neighbors. Not yet in DESIGN.md.
 
-## 2. Open
+### 2. Open
 
 - **Plaza** (room per neighborhood for the mayor's pawn and demand tokens): tried 2026-10-17 as a
   strip right of the plots ("doesn't look that good"), then a plot-tall strip above them, white and
@@ -99,7 +133,7 @@ A matrix of rectangular neighborhoods with white streets between them. Plan of r
 - **No editor**: the city is edited in `city.ts`.
 - **DESIGN.md is stale** on neighborhood count and sizes, degree cap, and how claims are shown.
 
-## 3. Abandoned approaches
+### 3. Abandoned approaches
 
 - **Skyline neighborhoods in painted territories** (plan of record 2026-10-14; code removed
   2026-10-15, last at commit 7d6c908 plus later uncommitted work): Brass-style skyline outlines
