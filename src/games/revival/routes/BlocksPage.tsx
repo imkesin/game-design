@@ -1,52 +1,52 @@
-import { axis, flipped } from "~/games/revival/blocks/blocks"
+import { useState } from "react"
+import { axis, RING_PLOTS, STREET } from "~/games/revival/blocks/blocks"
 import { CITY } from "~/games/revival/blocks/city"
 import { CityMap } from "~/games/revival/blocks/CityMap"
 import { Desk } from "~/games/revival/blocks/Desk"
+import { mm } from "~/games/revival/blocks/mm"
 import { Paper } from "~/games/revival/blocks/Paper"
 import { PrintTile } from "~/games/revival/blocks/PrintTile"
+import { pageOf, type Sheet, SHEETS } from "~/games/revival/boards/sheets"
 import { css } from "~/generated/styled-system/css"
 
 /**
- * Rectangular blocks on a board tiled from Letter sheets: a matrix of
- * neighborhoods with streets between them, every cut line down the middle of
- * a street. On screen: the whole board with its cut lines, and anything that
- * doesn't fit called out. In print: one Letter page per tile, with crop marks.
+ * Ring neighborhoods on a board split into tiles: a matrix of neighborhoods
+ * with streets between them, every tile edge (a cut or a fold) down the middle
+ * of a street. On screen: the whole board with its tile edges, and anything
+ * that doesn't fit called out. In print: one page per tile with crop marks, or
+ * one full-bleed page for a folding board.
  */
 
 const IN = 25.4
-/** Each tile is a Letter sheet's printable area (¼in margins), landscape. */
-const TILE = { width: 10.5 * IN, height: 8 * IN }
-const TILES = { cols: CITY.widths.length, rows: CITY.heights.length }
+const SHEET = SHEETS.quadFold as Sheet
+const TILE = SHEET.tile
+const TILES = { cols: CITY.cols.length, rows: CITY.rows.length }
 const BOARD = { width: TILES.cols * TILE.width, height: TILES.rows * TILE.height }
-/** The on-screen sheet: the board plus a ¼in rim, as if the tiles were one sheet. */
-const SHEET = { width: BOARD.width + IN / 2, height: BOARD.height + IN / 2 }
+const PAGE = pageOf(SHEET, BOARD)
+/** Clear of a folding board's edges; tiles are trimmed to their edges anyway. */
+const INSET = SHEET.kind === "board" ? SHEET.safe : 0
+/** The on-screen sheet: a folding board's page, or the board plus a ¼in rim, as if the tiles were one sheet. */
+const SCREEN = SHEET.kind === "board" ? PAGE : { width: BOARD.width + IN / 2, height: BOARD.height + IN / 2 }
 
 const SEAMS = {
   xs: Array.from({ length: TILES.cols - 1 }, (_, k) => (k + 1) * TILE.width),
   ys: Array.from({ length: TILES.rows - 1 }, (_, k) => (k + 1) * TILE.height)
 }
 
-const X = axis(CITY.widths, TILE.width)
-const Y = axis(flipped(CITY.heights), TILE.height)
+const X = axis(CITY.cols, TILE.width, INSET)
+const Y = axis([...CITY.rows].reverse(), TILE.height, INSET)
+const SIZE = { cols: CITY.cols.reduce((a, b) => a + b, 0), rows: CITY.rows.reduce((a, b) => a + b, 0) }
 
 /** What's wrong with the city as written, if anything. */
 const PROBLEMS = [
-  ...X.over.map(({ tile, by }) => `tile column ${tile + 1} is ${by.toFixed(1)}mm too wide`),
-  ...Y.over.map(({ tile, by }) => `tile row ${TILES.rows - tile} (from the bottom) is ${by.toFixed(1)}mm too tall`),
-  ...(CITY.neighborhoods.length === CITY.heights.flat().length ? [] : ["block-row count doesn't match heights"]),
-  ...CITY.neighborhoods.flatMap((row, r) => {
-    const [widths, height] = [CITY.widths.flat(), CITY.heights.flat()[r] ?? 0]
-    return [
-      ...(row.length === widths.length
-        ? []
-        : [`block-row ${r + 1} has ${row.length} neighborhoods, not ${widths.length}`]),
-      ...row.flatMap((columns, c) =>
-        columns.length === widths[c] && columns.every((p) => p >= 1 && p <= height)
-          ? []
-          : [`neighborhood at row ${r + 1}, column ${c + 1} doesn't fit ${widths[c]}×${height}`]
-      )
+  ...(SHEET.kind === "board" && (SHEET.panels.cols !== TILES.cols || SHEET.panels.rows !== TILES.rows)
+    ? [
+      `city.ts groups ${TILES.cols}×${TILES.rows} tiles, the board has ${SHEET.panels.cols}×${SHEET.panels.rows} panels`
     ]
-  })
+    : []),
+  ...(SHEET.kind === "board" && SHEET.fold > STREET ? [`folds are wider than streets`] : []),
+  ...X.over.map(({ tile, by }) => `tile column ${tile + 1} is ${by.toFixed(1)}mm too wide`),
+  ...Y.over.map(({ tile, by }) => `tile row ${TILES.rows - tile} (from the bottom) is ${by.toFixed(1)}mm too tall`)
 ]
 
 const notes = css({ textTransform: "none", letterSpacing: 0, fontSize: "13px", color: "#333" })
@@ -55,42 +55,103 @@ const problem = css({ color: "#dc2626" })
 
 const tiles = css({ display: "contents" })
 
+/** A folding board's page: the board centred in its bleed, the printer's template over it on screen if toggled. */
+const bleed = css({ display: "grid", gridTemplateAreas: `"bleed"`, placeItems: "center" })
+
+const layer = css({ gridArea: "bleed" })
+
+/** Multiplied so the template's white boxes don't hide the board. */
+const template = css({ width: "100%", height: "100%", mixBlendMode: "multiply", pointerEvents: "none" })
+
+const toggle = css({ display: "grid", gridAutoFlow: "column", gap: "6px", alignItems: "center" })
+
+const TEMPLATE_KEY = "revival:template"
+
+const inches = (n: number) => `${+(n / IN).toFixed(2)}`
+
 export function BlocksPage() {
-  const neighborhoods = CITY.neighborhoods.flat()
-  const plots = neighborhoods.reduce((sum, columns) => sum + columns.reduce((a, b) => a + b, 0), 0)
+  const [showTemplate, setShowTemplate] = useState(() => {
+    try {
+      return localStorage.getItem(TEMPLATE_KEY) === "on"
+    } catch {
+      return false
+    }
+  })
+  const neighborhoods = SIZE.cols * SIZE.rows
+  const plots = neighborhoods * RING_PLOTS.length
   const map = { city: CITY, xs: X.tracks, ys: Y.tracks, ...BOARD }
+  const size = `board ${inches(BOARD.width)}×${inches(BOARD.height)}in`
+  const layout = SHEET.kind === "board"
+    ? `${SHEET.name} · ${size}`
+    : `${TILES.cols}×${TILES.rows} ${SHEET.name} tiles · ${size}`
   return (
     <Desk
-      pageSize="letter landscape"
-      title={`Revival — Blocks (${TILES.cols}×${TILES.rows} Letter tiles)`}
+      pageSize={`${PAGE.width}mm ${PAGE.height}mm`}
+      title={`Revival — Blocks (${layout})`}
       notes={
-        <span className={notes}>
-          {`${neighborhoods.length} neighborhoods · ${plots} plots`}
-          {PROBLEMS.length > 0 && <span className={problem}>{` · ${PROBLEMS.join(" · ")}`}</span>}
-        </span>
+        <>
+          {SHEET.kind === "board" && (
+            <label className={toggle}>
+              <input
+                type="checkbox"
+                checked={showTemplate}
+                onChange={(e) => {
+                  try {
+                    localStorage.setItem(TEMPLATE_KEY, e.target.checked ? "on" : "off")
+                  } catch {
+                    // Private mode: just don't remember.
+                  }
+                  setShowTemplate(e.target.checked)
+                }}
+              />
+              Template
+            </label>
+          )}
+          <span className={notes}>
+            {`${neighborhoods} neighborhoods · ${plots} plots`}
+            {PROBLEMS.length > 0 && <span className={problem}>{` · ${PROBLEMS.join(" · ")}`}</span>}
+          </span>
+        </>
       }
     >
-      <div className="screen-only">
-        <Paper
-          {...SHEET}
-          areaWidth={BOARD.width}
-          areaHeight={BOARD.height}
-          title={`${TILES.cols}×${TILES.rows} Letter tiles · board ${BOARD.width / IN}×${BOARD.height / IN}in`}
-        >
-          <CityMap {...map} seams={SEAMS} />
-        </Paper>
-      </div>
-      <div className={`${tiles} print-only`}>
-        {Array.from({ length: TILES.rows }, (_, row) =>
-          Array.from(
-            { length: TILES.cols },
-            (_, col) => (
-              <PrintTile key={`${row},${col}`} col={col} row={row} {...TILES} {...TILE}>
-                <CityMap {...map} />
-              </PrintTile>
-            )
-          ))}
-      </div>
+      {SHEET.kind === "board"
+        ? (
+          <Paper {...SCREEN} areaWidth={BOARD.width} areaHeight={BOARD.height} title={layout}>
+            <div className={bleed} style={{ width: mm(PAGE.width), height: mm(PAGE.height) }}>
+              <div className={layer}>
+                <CityMap {...map} seams={SEAMS} />
+              </div>
+              {showTemplate && <img src={SHEET.template} alt="" className={`${layer} ${template} screen-only`} />}
+            </div>
+          </Paper>
+        )
+        : (
+          <>
+            <div className="screen-only">
+              <Paper {...SCREEN} areaWidth={BOARD.width} areaHeight={BOARD.height} title={layout}>
+                <CityMap {...map} seams={SEAMS} />
+              </Paper>
+            </div>
+            <div className={`${tiles} print-only`}>
+              {Array.from({ length: TILES.rows }, (_, row) =>
+                Array.from(
+                  { length: TILES.cols },
+                  (_, col) => (
+                    <PrintTile
+                      key={`${row},${col}`}
+                      col={col}
+                      row={row}
+                      {...TILES}
+                      {...TILE}
+                      margin={SHEET.margin}
+                    >
+                      <CityMap {...map} />
+                    </PrintTile>
+                  )
+                ))}
+            </div>
+          </>
+        )}
     </Desk>
   )
 }

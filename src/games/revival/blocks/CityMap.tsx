@@ -1,13 +1,14 @@
 import { css } from "~/generated/styled-system/css"
 import { Block } from "./Block.tsx"
-import type { City, Track } from "./blocks.ts"
+import { type City, labelOf, type Track } from "./blocks.ts"
 import { mm } from "./mm.ts"
 
 /**
  * The whole city at true size, origin at the board's top-left: each
  * neighborhood in its block-row and block-column, labelled with its
- * coordinates (columns A, B, … from the left, rows 1, 2, … from the bottom)
- * except City Hall, which is named; streets and margins as empty grid tracks. Shared by the on-screen board and the printed tiles.
+ * coordinates (columns A, B, … from the left, rows 1, 2, … from the bottom);
+ * streets and margins as empty grid tracks. Shared by the on-screen board and
+ * the printed tiles.
  */
 
 const board = css({ display: "grid" })
@@ -26,9 +27,9 @@ export function CityMap(
   }
 ) {
   const area = (r: number, c: number) => `n${r}x${c}`
-  const heights = city.heights.flat()
+  const [rows, cols] = [city.rows, city.cols].map((counts) => counts.reduce((a, b) => a + b, 0)) as [number, number]
   /** Tracks count block-rows from the top; the city counts them from the bottom. */
-  const fromBottom = (block: number) => heights.length - 1 - block
+  const fromBottom = (block: number) => rows - 1 - block
   const cell = (x: Track, y: Track) =>
     y.block === undefined || x.block === undefined ? "." : area(fromBottom(y.block), x.block)
   const areas = ys.map((y) => `"${xs.map((x) => cell(x, y)).join(" ")}"`)
@@ -43,20 +44,17 @@ export function CityMap(
         gridTemplateRows: ys.map((t) => mm(t.size)).join(" ")
       }}
     >
-      {city.neighborhoods.flatMap((row, r) =>
-        row.map((columns, c) => {
-          const hall = city.hall[0] === r && city.hall[1] === c
+      {Array.from({ length: rows }, (_, r) =>
+        Array.from({ length: cols }, (_, c) => {
+          const label = labelOf(r, c)
           return (
             <Block
               key={area(r, c)}
-              columns={columns}
-              plots={heights[r]}
-              label={hall ? "CITY\nHALL" : `${String.fromCharCode(65 + c)}${r + 1}`}
+              label={label}
               style={{ gridArea: area(r, c) }}
             />
           )
-        })
-      )}
+        }))}
       {seams !== undefined && (
         <svg viewBox={`0 0 ${width} ${height}`} className={`${seamLayer} screen-only`}>
           <g stroke="#2563eb" strokeWidth={0.5} strokeDasharray="4 3">

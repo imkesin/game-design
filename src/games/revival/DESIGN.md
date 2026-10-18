@@ -5,155 +5,345 @@ Abstract stage. Working notes; decisions are recorded as made, open questions at
 ## Premise
 
 Players are competing construction companies capitalizing on the turnaround of a major city. They
-develop plots across neighborhoods; each day the mayor walks into neighborhoods and prosperity
-follows: companies activate buildings and earn coins.
+develop plots across neighborhoods and sell what they build; the mayor walks the city, trickling out
+tax incentives that sway where it pays to build.
 
 ## Decided
 
-- **City geometry**: Neighborhoods → Blocks (1+ per neighborhood) → Plots (1+ per block).
-  Neighborhood and block sizes vary a lot.
-- **Develop (claims implicitly)**: a turn is developing a single Plot. Developing in an unclaimed
-  Block **claims** it; claims are **exclusive** (only the claimer develops its plots). Block claim
-  may carry a coin cost equal to its size (e.g. 2 coins for a 2-plot block) as an experiment.
-- **No monopolies**: a player may hold **at most one Block per Neighborhood**. A Neighborhood's
-  block count is therefore its player capacity.
-- **Round shape**: the day's agenda card is revealed **before** players act. Each player then takes
-  **one action** (develop a plot). Then the mayor's day resolves. Stay near 1 action/turn.
-- **Mayor movement**: inspired by _On the Underground_. Agenda cards define the mayor's day in two
-  halves, both of which are neighborhood visits:
-  1. **AM** — visit the neighborhood with the most **undeveloped private plots** (idle claimed land;
-     read from the evolving board).
-  2. **PM** — visit a named location printed on the card (forecastable). **AM = tax only; PM =
-     activation only.** The board-steered AM stop is where idle land gets taxed; the printed PM stop
-     is where income lands (forecastable).
-- **Scale**: Blocks have **1–3 plots**; Neighborhoods average **~4 plots** with a spread of **2, 3,
-  4, 5 and 6** (≈ 21 / 18 / 15 / 12 neighborhoods at 5 / 4 / 3 / 2 players). Tax is a small printed
-  number; Houses are countable at a glance.
-- **Mayor walks; every neighborhood he _enters_ on the path is a visit** (not just the destination).
-  AM walk = tax at each neighborhood entered; PM walk = activation at each. Bigger graph ⇒ longer,
-  richer routes and more income/tax events.
-- **Park**: free filler build that **interlocks with housing**: "people want to live near parks". A
-  Park **discounts the cost of building Houses** (scope: see Open). Parks are public land and
-  **exempt from land tax**: a Park plot is not a private plot (no tax). Building a Park is a way to
-  shed tax at the cost of an earning plot.
-- **Walk**: shortest path to the target; the **active player picks among ties**.
-- **Forced progress**: every turn a player **must** develop one plot; the city always moves forward.
-  **A Park is free to build**, so the action is always affordable.
-- **Action budget** (turns per player) and **map plot budget** (breathing room ≈ 20%):
+- **City geometry** (2026-10-17): a **4 × 4 matrix of neighborhoods** on a 20 × 20in quad-fold
+  board, 2 × 2 per panel. Every neighborhood is a **ring of 8 plots** around an empty centre (the
+  plaza, labelled with its coordinates A1–D4): 128 plots, 120 after the 8 parking lots. No Blocks or
+  other groups of plots: a neighborhood is just its plots.
+- **Cones** (2026-10-17; replaced construction sites, Blocks and the Sell action): each player has
+  **construction cones** in their color. A cone on a plot is a building under construction; it's the
+  only thing a player owns on the board. Once the cone comes off, the building belongs to the city.
+  - **3 cones each** at every player count (starting point): one or two speculative holds plus a
+    working project. More players means fewer turns each, not more parallel projects. No limit per
+    neighborhood: crowding cones into one neighborhood can block rivals out, and the mayor taxes
+    every coned plot there once it's full.
+  - **No passing**: with every cone out you must finish (or knock down); with none out you must
+    start something. Breaking ground takes a tile, but **coning a blight doesn't**, so restores (3
+    tile-free turns each) let players delay the mayor. Bounded by the blight: at most ~90 such turns
+    a game, shrinking as blight is restored or cleared. Watch whether restore-heavy play drags.
+- **Actions** (2026-10-17): a turn is **one action**; **every build takes two**, so every payoff
+  compares per two actions:
+  1. **Break ground**: put a tile on an empty plot, **pay its full cost** (base and building
+     together), and put one of your cones on it:
+     - a **base tile** (Housing / Commercial / Industrial) bought from the row;
+     - a **Park** for 0 coins from the Park supply; it discards one tile from the row.
+  2. **Finish and sell**: take your cone off, put the building on (no cost), and **sell it**: you're
+     paid its sale value, read from the board **now**.
+  - **Speculation** is the point of the split: break ground on a Commercial, see a rival's House
+    coming nearby, and hold your cone until it's finished to sell higher. Only **finished**
+    buildings count toward value; a coned base shows what's coming but counts for nothing yet.
+    Holding sinks coins and a cone, and some values can fall while you wait.
+  - No Uproot: finishing costs nothing, so no one gets stuck.
+- **Mayor's role** (2026-10-15; 2026-10-17): he **turns the city around**: hands out **tax
+  incentives** (was tax breaks), clears blight the market won't, and taxes speculation that sits in
+  full neighborhoods. He **never pays anyone**: no activation, no rent.
+- **Mayor movement**: inspired by _On the Underground_. **Two agenda cards are always face up**,
+  each naming a neighborhood: **one card per neighborhood** (16; coordinates for now, names later).
+  The walker picks which one is his target; after the walk resolves, reveal a new card to make two
+  again. So the player whose build triggers a walk also steers the mayor's agenda.
+- **Scale**: one board at every player count; player count changes setup, not the map. Houses are
+  countable at a glance.
+- **Mayor walks; every neighborhood he _enters_ on the path is a visit** (not his start; the
+  destination included): up to 6 on the 4 × 4 grid. On each visit, the first that applies:
+  1. **Empty plot** there: he puts **one tax incentive** on one, always (stacking on a plot that
+     already has one). Which plot barely matters, since value is read from the whole neighborhood:
+     not meant to be a real decision. Whoever breaks ground on that plot takes it. Incentives are
+     **ramp currency, not money** (see Victory and ramp).
+  2. **No empty plot but blight**: he **knocks one blight down**, **the walker's pick**, **even one
+     a player has coned** (its black building comes off, leaving a coned base: that player's step 2
+     done for them). A blight nobody has coned is **removed from the board**, leaving an empty plot
+     (the city clears the lot). The mayor takes matters into his own hands when the market won't.
+     This also breaks the coned-blight lock on Housing once a neighborhood is full.
+  3. **Neither**: he **taxes every company speculating there**: **1 coin per coned plot** they have
+     in the neighborhood.
+  - **Can't pay**: you lose cones **in the taxed neighborhood** (the ones bankrupting you; your
+    pick) equal to the coins you can't pay, so you never go negative; you get kicked out. An
+    **abandoned project is wiped**: its tile leaves the game and the plot is empty again (the same
+    as the mayor clearing a blight nobody coned). Punitive: the coins are gone. No rival gains a
+    free building from it, and the reopened plot draws an incentive on the next visit instead of
+    tax. A coned blight can't be abandoned this way: while it stands, the mayor knocks it down
+    rather than taxing.
+- **Park**: free filler build that **interlocks with housing**: "people want to live near parks".
+  Parks **boost the sale value of Housing in their neighborhood**.
+- **Walk**: an **L-shaped path** to the target (at most one turn), or a straight line when they
+  share a row or column. The player whose build triggered the walk picks the target and the L.
+- **Build budget** (2026-10-17): **120 usable plots** (128, less 8 parking lots), the same at every
+  player count. **Built + positive = 60** (half), and **blight + empty at peak = 60**, split **30 /
+  30**: the board peaks **75% full**, leaving 30 empty plots (players feel there was more left to
+  do, and the endgame never crunches down to a few legal plots). Blight holds its plot whether
+  restored or not. (History: 100-plot board at 80% with 20 blight, builds 12 / 14 / 16 / 18; before
+  that 70%.)
 
-  | Players | Actions each | Occupied | Empty | Plots |
-  | ------- | ------------ | -------- | ----- | ----- |
-  | 5       | 14           | 70       | 14    | 84    |
-  | 4       | 15           | 60       | 12    | 72    |
-  | 3       | 17           | 51       | 9     | 60    |
-  | 2       | 19           | 38       | 10    | 48    |
+  | Players | Walk every K tiles | Builds each | Built | Walks | Agenda cards out | Positive | Blight | Empty |
+  | ------- | ------------------ | ----------- | ----- | ----- | ---------------- | -------- | ------ | ----- |
+  | 5       | 5                  | 12          | 60    | 12    | 3                | 0        | 30     | 30    |
+  | 4       | 4                  | 15          | 60    | 15    | 0                | 0        | 30     | 30    |
+  | 3       | 4                  | 16          | 48    | 12    | 3                | 12       | 30     | 30    |
+  | 2       | 3                  | 21          | 42    | 14    | 1                | 18       | 30     | 30    |
 
-  Derived at ~6 plots/neighborhood: ~14 / 12 / 10 / 8 neighborhoods. Derived end (not yet decided):
-  the game runs a fixed number of rounds, ending as the map fills to its breathing-room remainder.
-- **Tax (Georgist land tax)**: taxes land, not improvements. In each Neighborhood the mayor enters
-  in the AM, **every Company with a Block there** pays **1 coin per private plot**. Private plot =
-  any plot in your Block that is not a Park, built or not. Building never changes your tax; idle
-  plots are pure drag, so filling a Block is the cheapest way to hold it. A leader-only version
-  (most private plots pays; ties all pay) was tried and dropped: Block sizes are 1–3, so ties were
-  constant. Tax is just your Block's printed size minus Parks. Constraint: it must be quick to
-  calculate as the mayor moves. Role: thematic ("a city coming back to life collects taxes"), not a
-  tuned brake. Unpayable tax: tentatively the payer **loses control of a Block** (unresolved; see
-  Open). (A brief "zero tax" variant was floated and then withdrawn: not eliminating tax.)
-- **Prosperity = activation.** When the mayor enters a neighborhood, each company with a Block there
-  **activates all its Markets in that Block together** and is paid by cluster size.
-  - **Market**: income is read from a table by the number of Markets in your Block (agglomeration;
-    working numbers 1 / 2 / 3 Markets = 1 / 3 / 6 coins, to be tuned). Houses are **not counted at
-    activation**.
-  - **Market build gate (tiered)**: you may only develop your _k_-th Market in a neighborhood if
-    enough Houses exist in its own _and adjacent_ Neighborhoods, any owner. Working numbers: 1st
-    needs 2, 2nd needs 3, 3rd needs 4. Checked once at build time; Houses are never removed, so a
-    gate stays open. Adjacency keeps tiny Neighborhoods viable. **Tax stays Neighborhood-local.**
-  - **House**: **passive**, never activated. Exists to open Market gates; also the candidate source
-    of worker meeples (see Open).
-- **Building source**: open supply; pay the building's cost.
-- **Income/sink**: activation is the only income; tax and developing (building cost, plus optional
-  block claim cost) are the sinks. Players start with a **starting purse**.
-- **Blight**: _cosmetic only_: some plots start with grey buildings so the city looks lived-in.
-- **Focus**: core loop first. End condition deferred. Candidates floated: agenda deck runs out
-  (mayor's term ends); blight fully cleared / city revived.
+  - **Agenda deck**: **16 cards**. One is revealed at setup to place the mayor, so at most **15
+    walks**; walks = Built / K, and the extra cards are thrown out unseen.
+  - **Built** (total builds = tiles taken from the row) is a floor on play time: turns that don't
+    take a tile (open, finish, restore, sell) come on top. 10 or fewer builds per player is
+    "comically low". 4P and 5P share a setup (no positive), so 4P runs as long as 5P in tiles.
+  - **Row deck**: **78 tiles** (see Supply mix), more than the 62 any game draws, so each game sees
+    a slightly different mix.
+  - **Positive** buildings (was prefill) are **historical** parts of the city, on special base
+    tiles. They **affect the value of buildings nearby** like any building, but you get **no credit
+    for them when selling**. Capped at 18 so low counts aren't buried in setup.
+  - **Setup cost**: blight 30 × 2 (tile and black building) + parking 8 + historical 0 / 12 / 18 × 2
+    (tile and building) + a cube per historical House or Commercial (0 / 11 / 16) = **68 / 103 /
+    120** pieces (4–5 / 3 / 2 players), split across players (see Setup cards). Cut if it drags:
+    parking printed on the board (−8, but always in the same places). Not a cut: dropping wooden
+    buildings anywhere (see V0 components).
+- **Setup cards** (2026-10-17): the starting state is dealt, not printed. **8 blight cards** (every
+  player count) and **8 historical (positive) cards** for 2–3P: one deck, its 3P buildings a badged
+  subset of 2P's. Shuffle a deck and deal **one card to each of the 4 rows and 4 columns**, laid
+  along the city's **west** (rows) and **north** (columns) edges; entry 1 is the neighborhood
+  nearest the card. A card lists 4 entries, one per neighborhood along its line, and each
+  neighborhood takes its row card's entry and its column card's entry.
+  - **Blight cards** carry the **30 blight** and the **8 parking lots** (one per card): everything
+    that eats the city's land goes together. **Parking lots** are dead land, not plots: never
+    developed, restored, taxed or counted by "every plot developed" checks. Entries list each
+    piece's type (e.g. "House + Parking Lot", "2 House", "House + Commercial", "Factory"), **at most
+    3 pieces**.
+  - **Historical cards**: **at most 1** historical building per entry, its type listed: a historic
+    main street, mostly Houses and Commercial (see Supply mix). **At 2P place all 18; at 3P only the
+    12 with a burgundy "3" badge** (exactly 3 per entry position, so neither count favors a quarter
+    of the city). One deck instead of a set per count.
+  - **Where pieces go**: each line owns half of every ring. A **row** card fills the **top 3 plots**
+    (blight, parking) and the **left-middle plot** (positive); a **column** card the **bottom 3**
+    and the **right-middle**. The entry caps match, so nothing ever overflows, and every row and
+    column can be resolved at once by different players.
+  - Blight lands in **lines**: run-down avenues and hot crossings where two heavy cards meet, not
+    blobs. Simulated with lumpy cards (3300, 3210, 3100, …): ~5 clean neighborhoods and ~2–3 with 4+
+    blight per game. Where a card's weight sits sets the city's geography: heavy ends decay the
+    edges, heavy middles decay downtown. Cards are read from a fixed edge, so a set must **mix
+    front-, middle- and back-loaded cards**: an all-front-loaded set rots the north-west every game
+    (3.6 blight per neighborhood there vs. 0.1 in the south-east); a mixed set (3300, 0123, 0310,
+    0022, 3000, 0012, 0200, 0002) is as uneven with no bias. (Rejected: an epicentre stamp and a
+    street-walking automaton; both cluster more but need a spill rule in most games, and the walker
+    always rots the centre.)
+- **Building row (mayor clock)** (2026-10-15; K 2026-10-17): building base tiles (House, Market, …)
+  are bought from a face-up row of **K + 2** (K = 5 / 4 / 4 / 3 at 5 / 4 / 3 / 2 players: 7 / 6 / 6
+  / 5 tiles). A Park comes from its own open supply but discards one tile from the row. **If you
+  leave 2 tiles in the row, walk the mayor, then refill it.** So the mayor walks once per K tiles
+  taken (12 / 15 / 12 / 14 walks). Who triggers each walk, and when, varies: turns that don't take a
+  tile (finishing, restoring) interleave, and at 3P and 2P K isn't a multiple of the player count.
+  The row also pushes players into builds they didn't plan, without capping how many of one type a
+  player can build.
+- **Income = selling** (2026-10-15): companies are builders, not landlords: no rent, no activation.
+  Every type earns when it's finished and sold. Roster as a risk/reward ladder:
+  - **Housing**: low cost, low risk, low reward.
+  - **Commercial** (was Market): medium / medium.
+  - **Industrial**: highest cost to invest in, highest potential payout.
+  - **Public services**: cost money, earn **favor with the mayor**. Likely left out of the first
+    playtest.
+- **Payoff chart** (2026-10-17; replaced the 2026-10-16 excess-counting chart): cost is paid in full
+  on breaking ground; sale value is read on finishing. **Smallest numbers** that keep the
+  incentives, at about **1 coin per action** (every build is two actions):
+
+  | Type       | Cost | Sale                               | Floor | Best (cap)      |
+  | ---------- | ---- | ---------------------------------- | ----- | --------------- |
+  | Park       | 0    | 1                                  | +1    | +1              |
+  | Housing    | 1    | 3, +1 per Park in its neighborhood | +2    | more with Parks |
+  | Commercial | 2    | 2, +1 per demand cube taken        | 0     | +2 / +3 / +4 …  |
+  | Industrial | 4    | 1, +3 per Commercial cube taken    | −3    | +3 / +6 / +9 …  |
+
+  - **Cubes in the plazas** (what the hole is for): finishing a **House** puts a **demand cube** in
+    its neighborhood's plaza; finishing a **Commercial** puts a **Commercial cube** (second color)
+    in its plaza. **Historical buildings put out their cubes at setup**, so at 2P and 3P an opening
+    shop is a real option; at 4P and 5P Houses come first.
+  - **Taking cubes**: finishing a Commercial (Industrial), count the finished Commercials
+    (Industrials) in its neighborhood, itself and historical ones included: **n**. It **must** take
+    **up to 1 + n** cubes of the type below, **its own plaza first**, then **Commercial: the 4
+    adjacent plazas** (shoppers cross the street); **Industrial: its row and column** (freight
+    lines, 7 plazas). Taken cubes return to the supply. Nothing to calculate: look and pick up.
+  - **Concentration**: a neighborhood's 1st shop takes up to 2, its 2nd up to 3, its 3rd up to 4:
+    shopping districts (and industrial parks) pay, while depletion keeps shops competing for the
+    same customers. First mover gets first pick but a small cap; later movers a bigger cap but fewer
+    cubes left. A busy district can drain its neighbors' plazas.
+  - **Ladder**: floors +2 / 0 / −3, per cube +1 / +3. Housing is safe; Commercial breaks even
+    without demand and only beats a House from 3 cubes (a 2nd shop onward), so it's worth building
+    from ~2 waiting cubes; Industrial is **rare and swingy** (breaks even at 1 cube, loses 3 at
+    none), too dear to open with, and a rival's Industrial on your row or column can take the cubes
+    you were waiting for.
+  - Park +1 beats nothing; Housing +2 beats Park: the city pays you a little for Parks, Housing
+    makes money. Parks lift every House in their neighborhood (a public good) but make no demand.
+  - **Natural ratio**: balancing cube supply and demand, each level settles at **2–3 of the type
+    below per building** (2 spread out, 3+ clustered), so Houses : Commercial : Industrial ≈ 4 : 2 :
+    1 to 9 : 3 : 1; best guess **~5 : 2.5 : 1** (shops cluster, Industrials rarely share a
+    neighborhood). Leftover cubes at game end are wasted demand.
+  - **Supply mix** (2026-10-17, starting point): new construction is mostly Housing; shops and
+    factories mostly come from **converting ruins**. A player who needs Commercial or Industrial and
+    isn't seeing it in the row can always go convert a ruin.
+    - **Row deck**: 78 tiles at **9 : 3 : 1** (54 House / 18 Commercial / 6 Industrial). 4–5P draw
+      ~62 of it, 2P ~44, so the mix varies game to game.
+    - **Blight**: 30 at **8 House / 12 Commercial / 10 Industrial** (dead storefronts and
+      factories). Converting one also releases its neighborhood's Housing.
+    - **Historical**: 2P's 18 are **10 House / 6 Commercial / 2 Industrial**; 3P's badged 12 are **7
+      / 4 / 1**.
+    - Gut check, assuming **about half the blight is restored**: 5P builds ~47 / 20 / 10 (4.7 : 2 :
+      1), 2P ~44 / 22 / 10 (4.4 : 2.2 : 1), both near the natural ratio; the deck alone would be far
+      too Housing-heavy. The half-restored guess is what a simulation should pin down. Every unconed
+      blight the mayor clears is a lost conversion, so heavy clearing starves Industrial.
+  - **Blight**: Housing can't be finished while blight stands in its neighborhood; **Industrial
+    ignores blight** (run-down land is cheap); Commercial open.
+- **Building source**: the building row (above); pay the building's cost.
+- **Income/sink**: selling is the only income (plus credit income); tax and building costs are the
+  sinks.
+- **Starting purse** (2026-10-17): **5 coins each, flat**. 4 is the floor for real choices (an
+  Industrial all-in, or House + House + Commercial); 5 fills all 3 cones (Commercial + Commercial +
+  House), so opening with several projects is a real alternative to build-sell-build-sell. No
+  turn-order offset: going first is worth ~1–2 coins over a game, and +1 per seat overcorrects by
+  more than that (uneven offsets like 5 / 5 / 6 / 6 / 7 aren't smooth enough). Add +1 per seat only
+  if playtests show the first seat winning more.
+- **Blight** (2026-10-16; 30 and the cone flow since 2026-10-17): the city starts with **30 blighted
+  buildings at every player count**, dealt by the blight setup cards. Each is a **black wooden
+  building** of its type standing on a single-sided **blight tile** (split black and the type's
+  color). The game swaps buildings, it never flips tiles: a restored building stands on a tile that
+  still shows its blight past (a bit of history; no rule reads it). Its type steers what gets built
+  where. **Restoring** is **slower but cheaper** than building new, so cash-poor players restore and
+  cash-rich players build new:
+  1. **Cone a blight**: pay its type's cost **minus 1** and put your cone on it.
+  2. **Knock it down**: take the black building off; the coned tile beneath is now an ordinary coned
+     base.
+  3. **Finish** as usual: pull the cone, put the building on, sell.
+
+  Three actions to a new build's two, for 1 coin off: the worth of an action (a basic House earns +2
+  in two), so neither dominates; a blighted House restores for free, a safety valve for a broke
+  player. A restore takes no tile, so it doesn't move the mayor clock. Slow restores, and the
+  firesale's −1 on unfinished projects, make restoring an early-game move. (Half-price restores were
+  rejected: restored Commercial and Industrial would beat new ones per action.)
+  - **Housing can't be finished while any blight stands in its neighborhood** (a coned blight still
+    counts until knocked down). You may still cone a House there, speculating that someone clears
+    it. A knockdown is public: it can release every player's Housing in the neighborhood. Restores
+    chain: a blighted House can't be finished while other blight stands there.
+  - With lumpy setup cards only ~5 of 16 neighborhoods start clean, so early Housing sales are
+    confined to ~40 plots until people knock down; card lumpiness sets this. Watch in playtest.
+  - Higher player counts get crowded (few good plots); at lower counts positive buildings take up
+    the space instead.
+- **Game end** (2026-10-15; cones 2026-10-17; scoring 2026-10-17): the game ends on the **last mayor
+  walk** (agenda deck runs out: the mayor's term ends), including that walk's visits. With two cards
+  face up, the last walks use them up (the choice narrows from two to one): **every agenda card seen
+  is walked**. So walks = 15 − cards thrown out, as in the budget table. Then:
+  1. **Final sale**: every player, the one who ended the game included, may finish one coned
+     building at full value.
+  2. **Firesale**: every other coned project sells for its printed price **− 1** (never below 0).
+     Starting late costs a little but never ruins you, so construction keeps driving the end instead
+     of play stopping when the deck gets thin.
+- **Victory and ramp** (2026-10-17): **most money wins**. Two separate economies: coins are the
+  score; **tax incentives** are what your company can do.
+  - **Earning incentives**: break ground on a plot where the mayor left one; **finish a building in
+    the mayor's current neighborhood** (influence with City Hall: the mayor rewards companies he
+    sees delivering); later, Public services would pay mostly in incentives.
+  - **At each walk, every player** collects **credit income**, and **every player except the
+    walker** may **spend incentives on upgrades**: a better **credit rating** (lenders trust a
+    company in good standing with City Hall), **more cones**, later special powers. The walker
+    steers the mayor instead of upgrading: that offsets the walker's power, and gives everyone else
+    something to do during the walk.
+  - Triggering a walk costs only that walk's upgrade window (income still comes), a mild trade-off
+    for the steering, so dodging walks shouldn't add much to the stall risk.
+  - Credit balances itself: a step bought early pays on every remaining walk, one bought late barely
+    pays back, so upgrading fades as the deck thins.
+- **Color conventions** (2026-10-17; `colors.ts`): **green** Parks, **light tan** Housing, **medium
+  brown** Commercial, **grey** Industrial, **black** anything blighted. Parking lots are a **very
+  grey blue**. Historical buildings' accent is **burgundy** (a heritage plaque; the historical setup
+  cards' header). The mayor and his agenda cards are **civic navy** (provisional). Costs are printed
+  on a **gold coin** (top-right of a row tile, and of a blighted Commercial or Industrial tile: its
+  restore price, 1 / 3, as a reminder; a blighted House restores free, so no coin). Blighted and
+  historical buildings are split diagonally (black or burgundy top-left, the type's color
+  bottom-right) under a white icon, on cards and tiles alike.
+- **V0 components** (2026-10-17): **30mm base-plate tiles** (the plot square) on sticker paper over
+  cardstock, printable at `/revival/tiles`; **wooden building tokens** are the finished buildings,
+  and every building on the board is one, blight and historical included: **3D buildings make it
+  look like a city**, which sets Revival apart from city games of pictures on flat pieces. Never
+  trade them away for setup speed; cubes, cones, coins and the mayor are bought bits. All tiles are
+  single-sided; a blight is a blight tile with a **black wooden building** on it (knocking down
+  swaps buildings, no flipping: fiddly on a tight board). Historical tiles are split burgundy and
+  type. **Park supply: 20, assumed.**
+- **Focus**: core loop first.
 
 ## Terminology
 
-| Term         | Meaning                                                                             |
-| ------------ | ----------------------------------------------------------------------------------- |
-| Company      | A player; a construction company.                                                   |
-| Neighborhood | Largest map unit; contains Blocks. Sizes vary. Capacity = number of Blocks.         |
-| Block        | Claimed exclusively by one Company (max one per Neighborhood each); contains Plots. |
-| Plot         | Developed one at a time into a Building.                                            |
-| Building     | Typed (House, Market, …); what a developed Plot holds; activated for coins.         |
-| Mayor        | Pawn that moves per the Agenda each day.                                            |
-| Agenda       | Daily card: AM condition (board-driven) + PM named location.                        |
-| Tax          | Land tax: each Company with a Block pays 1 coin per private (non-Park) plot.        |
-| Prosperity   | The mayor's visit; each Company with a Block there activates its Markets together.  |
-| Activate     | Resolve a Block's Market cluster for coins (table by Market count).                 |
-| Develop      | The one player action: turn a Plot into your Building (claims its Block).           |
-| Claim        | Side effect of the first Develop in a Block; may cost coins = Block size.           |
+| Term            | Meaning                                                                                     |
+| --------------- | ------------------------------------------------------------------------------------------- |
+| Company         | A player; a construction company.                                                           |
+| Neighborhood    | A ring of 8 plots around a plaza; 16 in a 4 × 4 matrix, A1 bottom-left.                     |
+| Plot            | One square of a ring; holds one building.                                                   |
+| Plaza           | A neighborhood's empty centre: its label, and its demand and Commercial cubes.              |
+| Building        | A wooden token (House, shop, factory, tree) on a tile; typed; earns when finished and sold. |
+| Base tile       | 30mm typed tile a building stands on; bought from the row, cost on a gold coin.             |
+| Row             | The face-up building row, K + 2 tiles; the mayor walks when it's down to 2.                 |
+| Cone            | A player's marker on a building under construction (3 each); off when finished and sold.    |
+| Break ground    | Pay a tile's full cost, place it, and cone it: the first of a build's two actions.          |
+| Finish          | Take your cone off, put the building on, and sell it: the second action.                    |
+| Blight          | A black building on a blight tile; blocks Housing sales in its neighborhood.                |
+| Restore         | Cone a blight (cost − 1), knock it down, finish it: three actions.                          |
+| Knock down      | Take a blight's black building off, by a player or the mayor.                               |
+| Historical      | A building placed at setup (2–3P); burgundy split tile; counts for neighbors, not sold.     |
+| Parking lot     | Dead land from the blight cards; not a plot.                                                |
+| Demand cube     | Put in the plaza when a House is finished; taken by Commercial sales.                       |
+| Commercial cube | Put in the plaza when a Commercial is finished; taken by Industrial sales.                  |
+| Mayor           | Pawn that walks to an agenda target: hands out incentives, knocks down blight, taxes.       |
+| Agenda          | A card naming one neighborhood; two face up; the walker picks the target.                   |
+| Walker          | The player whose build triggers a walk: steers the mayor, skips that walk's upgrades.       |
+| Incentive       | Tax incentive: ramp currency (not money); spent on upgrades during walks.                   |
+| Tax             | Where no plot is empty and no blight stands: 1 coin per coned plot, per company.            |
+| Credit rating   | An upgrade track; pays its level in coins to every player at each walk.                     |
+| Upgrade         | Bought with incentives during a walk (not by the walker): credit, cones, later powers.      |
+| Firesale        | After the final sale, unfinished projects sell for their printed price − 1.                 |
 
 ## Open
 
-- Adjacency cost: Houses are read raw at build time (no dials). Fallback if it drags: a Demand dial
-  per Neighborhood, bumped +1 on itself and each adjacent Neighborhood when a House is built. Cap
-  graph degree at 3–4 either way.
-- Park discount scope and size: which Houses are cheaper (same Block / same Neighborhood / any Park
-  anyone built)? Stacking? Note a free Park cheapens Houses that also feed rivals' Markets.
-- Walk details: start point (last night's PM destination?), "active player" definition (first
-  player? rotating?), whether a path may revisit nodes.
-- Graph topology: adjacency among ~12–21 neighborhoods; map layout; 2-plot neighborhoods are 1–2
-  Blocks, so Block count per neighborhood is now 1–3 (revisit "2–4 Blocks").
-- Re-check economy now that visits are path-based (tax/yield magnitudes, build costs).
-- Quick calculation: (1) tax = own Block's private plots (size minus Parks), no comparison; (2)
-  Market gate = Houses in own + adjacent Neighborhoods, checked at build time only; income = count
-  of Markets in own Block. Plain reading should suffice (distinct House/Market silhouettes).
-  Fallback if playtests drag: monotone per-Neighborhood House counter bumped at build time; valid
-  only while Buildings are never removed (conflicts with the lose-a-Block insolvency idea).
-- **Worker meeples (prototype idea)**: the Block claim marker is a worker meeple (construction
-  overseer / property manager) assigned to the Block. Building Houses "hires local workers" and
-  grants more meeples, which raises how many Blocks you can have under construction at once; this is
-  the owner's private payoff for Houses. **Anti-lockout**: when a Block is full, take your meeple
-  back and leave a white "city employee" meeple on it. A player then always has a legal develop:
-  either an open plot in a Block they hold (Park is free), or all Blocks full and every meeple is
-  back to claim a new one. Unresolved: meeples per House, start count, whether the white meeple is
-  needed at all (building colors may show ownership; all-Park Blocks have no owner color), whether
-  the white meeple is also the score/"city revived" token, and a pass rule when no claimable Block
-  remains.
+- **Upgrade menu** (to workshop; starter for testing): credit rating 1 step (max 3) for 2 / 3 / 4
+  incentives, +1 coin per walk; +1 cone (max 5) for 3 incentives. Incentive supply: one per visited
+  neighborhood with an empty plot (~3–4 a walk early), +1 per building finished in the mayor's
+  neighborhood. Later: special powers, advanced buildings needing several cones. (Considered:
+  trading a cone in for credit; not thematic.)
+- **Restore numbers**: the 1-coin discount is provisional (restores cost 0 / 1 / 3). When the next
+  agenda card is revealed (right after each walk?).
+- **Industrial runaway**: capped by 1 + n and by Commercial cubes being scarce (one per shop), but
+  +3 a cube makes the Commercial count in the deck, blight and historical cards its strength dial.
+  Watch 2P, where historical Commercials leave Commercial cubes at setup. Fallbacks: plus-shape
+  reach (more busts), or a lower kicker.
+- **Blight and Commercial**: Housing is blocked and Industrial ignores blight (decided); Commercial:
+  lean ignore it for the first playtest (one blight rule), else a value drag.
+  - The lock: a player can cone a blight and never knock it down, holding a neighborhood's Housing
+    hostage; capped by the mayor knocking blight down once the neighborhood is full. Accepted as
+    interaction for now.
+- **Setup cards**: drafts of the 8 blight and 8 historical cards are in `setup/` (printable at
+  `/revival/cards`); street names are placeholders. Playtest them.
+- **Public services**: pay mostly in tax incentives (decided direction); costs and amounts
+  undecided.
+- Graph topology: settled as a 4 × 4 matrix with orthogonal adjacency (2026-10-17).
+- Re-check economy now that income is selling (tax magnitudes, build costs, sale values).
+- **Worker meeples (prototype idea; predates cones, which now play the claim role)**: the Block
+  claim marker is a worker meeple (construction overseer / property manager) assigned to the Block.
+  Building Houses "hires local workers" and grants more meeples, which raises how many Blocks you
+  can have under construction at once; this is the owner's private payoff for Houses.
+  **Anti-lockout**: when a Block is full, take your meeple back and leave a white "city employee"
+  meeple on it. A player then always has a legal develop: either an open plot in a Block they hold
+  (Park is free), or all Blocks full and every meeple is back to claim a new one. Unresolved:
+  meeples per House, start count, whether the white meeple is needed at all (building colors may
+  show ownership; all-Park Blocks have no owner color), whether the white meeple is also the
+  score/"city revived" token, and a pass rule when no claimable Block remains.
 - **Meeple side uses (prototype idea, not worker placement)**: some actions are worker-driven rather
   than coin-driven. First candidate: **lobbying**, placing a spare meeple on an Agenda card to force
   the mayor's day. Needs several revealed cards, a rule for ties/default, a decision on whether the
   meeple returns or is lost, and care that it's a free side action (the one action per turn stays
-  "develop"). Other candidates: tax lawyer (exempt one Block from today's AM tax), overtime (second
+  "develop"). Other candidates: tax lawyer (exempt one site from a walk's tax), overtime (second
   develop). Keep the set small so the meeple economy stays legible.
-- Insolvency: what happens when tax can't be paid (lean: lose control of a Block; designer will
-  design around it later). Does the Block's Buildings stay, go to the bank, or become blight?
-- Tax scale: max tax is 3 coins (3 private plots) vs. Market yield up to ~8. Tax is a footnote
-  unless numbers are tuned (e.g. tax per plot > 1, cheaper yields).
-- Why would anyone build a House? Theme: a city needs a minimum population to support businesses, so
-  Houses gate Markets (shared benefit, public-good problem). Leading private payoff: Houses grant
-  worker meeples (expansion). Also floated: Houses = score (population); intentional chicken game.
-- Small-Block economics: income table is superlinear but tax is linear per plot, so a 1-plot Block
-  nets 0 (1 Market = 1 coin, 1 tax). Soften the table or give small Blocks a tax break.
-- Roster beyond House/Market.
-- Agenda conditions presumably count building types ("most parks"): confirm.
-- Numbers: starting purse, building costs, activation yields.
-- Block claim cost: lean drop, since the recurring land tax already charges for land. Free vs. coins
-  = size (experiment).
-- AM target: count only claimed (private) undeveloped plots, or unclaimed ones too? Destination
-  tie-break (active player picks?) and fallback if no private undeveloped plots exist.
-- Tax is now fixed per Block (size minus Parks), so tax is a pure claim-time and Park decision.
-  Total tax per visit rises (every Company pays); needs a numbers pass vs. yields.
-- Ramp/engine, game end, victory metric (deferred until the loop is fun).
+- Supply mix: validate the starting mix (Payoff chart, Supply mix) with a quick greedy-player
+  simulation once the setup cards exist, especially the share of blight restored. Public services'
+  share; how to let a game run housing-heavy or civic-heavy without the designer fixing one ratio.
 
 ## Known tensions
 
-- Houses are a public good: the owner earns nothing, every Market in the neighborhood profits.
-  Free-riding ("let rivals build the Houses, I build the Market") is the default line.
-- Only one Building activates per Block per visit, so a second Market in the same Block is dead
-  weight; extra plots in a Block want to be Houses.
-- Tax is small (max 3 per visit) vs. Market yield, so it barely brakes anyone; build cost is the
-  main brake. If tax stays thematic this is acceptable.
-- Insolvency rule (lose a Block) only fires if tax can actually exceed a purse; at current scale it
-  almost never will. It also removes Buildings, breaking the "never removed" counter shortcuts.
+- Insolvency (lose cones) only fires if tax can actually exceed a purse; at 1 coin per coned plot it
+  rarely will. An abandoned project's tile is wiped, but it was never a finished building, so
+  finished buildings are never removed.

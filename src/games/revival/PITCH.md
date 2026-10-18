@@ -1,10 +1,6 @@
-**Pitch — Revival** _(draft; ending intentionally undefined)_
+**Pitch — Revival**
 
-1. In Revival, players are competing construction companies looking to capitalize on the turnaround
-   of a major city.
-2. Each day, the mayor's agenda is revealed and each company develops a plot—claiming its block—then
-   the mayor walks through the city, taxing the landholders of every neighborhood he enters in the
-   morning and bringing prosperity in the afternoon, when each company activates a building to earn
-   coins.
-3. The game ends when **[TBD — candidate: the city is revived, i.e. only the breathing-room plots
-   remain]**, and the company with the most **[TBD]** wins.
+1. In Revival, you manage a construction company cashing in on a city in its second act.
+2. Players take turns breaking ground on new developments, clearing blighted buildings, and scooping
+   up tax incentives from the Mayor, then selling what they build.
+3. The game ends when the Mayor's term runs out, and the company with the most money wins.
