@@ -289,6 +289,10 @@ tax incentives that sway where it pays to build.
   hex)` in coins, and its **side effects** with a mini-map of where the
   bonus counts (the House's own neighborhood, or the plazas hexes are taken from), the 1 + n hex
   cap, hexes put out, and blight rules.
+- **Rules sheet** (2026-10-18): one Letter page for the host at `/revival/rules`: setup, the
+  player-count table, a turn, the walk, the end. Playtest copy, not polished. It fixes the walk's
+  order as **visits → credit income → upgrades → reveal agenda, refill row**, and the walker places
+  incentives.
 - **Focus**: core loop first.
 
 ## Terminology
