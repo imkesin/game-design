@@ -7,3 +7,7 @@
  */
 export const CARD_TRIM_W_MM = 63
 export const CARD_TRIM_H_MM = 88
+
+/** 6×4in landscape, for player aids. */
+export const AID_TRIM_W_MM = 152.4
+export const AID_TRIM_H_MM = 101.6

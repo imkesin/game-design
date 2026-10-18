@@ -8,7 +8,8 @@ import type { TileFace } from "./tiles.ts"
  * off cut lands in white. Blight
  * and historical tiles are split diagonally (black or burgundy, and the
  * type's color); a tile a player pays to cone (a row tile, or a blight to
- * restore) has its cost on a coin in the top-right corner.
+ * restore) has its cost on a coin in the top-right corner. `size` draws it
+ * scaled, e.g. on a reference card.
  */
 
 export const TILE = 30
@@ -23,20 +24,16 @@ const tile = css({
   "& > *": { gridArea: "tile" }
 })
 
-const art = css({ display: "grid", placeItems: "center", borderRadius: "1mm", color: "white" })
+const art = css({ display: "grid", placeItems: "center", color: "white" })
 
 const coin = css({
   placeSelf: "start end",
   display: "grid",
   placeItems: "center",
-  width: "6mm",
-  height: "6mm",
-  margin: "1mm",
   borderRadius: "50%",
   boxSizing: "border-box",
   border: "0.4mm solid rgba(0, 0, 0, 0.2)",
   color: "white",
-  fontSize: "3.6mm",
   fontWeight: 700,
   lineHeight: 1
 })
@@ -48,16 +45,24 @@ const fill = ({ kind, blight, historical }: TileFace) =>
     ? split(COLORS.historical, COLORS[kind])
     : COLORS[kind]
 
-export function Tile({ face }: { face: TileFace | undefined }) {
-  const style = { width: `${TILE}mm`, height: `${TILE}mm`, padding: `${INSET}mm` }
+export function Tile({ face, size = TILE }: { face: TileFace | undefined; size?: number }) {
+  const mm = (n: number) => `${(n * size) / TILE}mm`
+  const style = { width: mm(TILE), height: mm(TILE), padding: mm(INSET) }
   if (face === undefined) return <div className={tile} style={style} />
   const Icon = ICON[face.kind]
   return (
     <div className={tile} style={style}>
-      <div className={art} style={{ background: fill(face) }}>
-        <Icon size="14mm" strokeWidth={1.75} />
+      <div className={art} style={{ background: fill(face), borderRadius: mm(1) }}>
+        <Icon size={mm(14)} strokeWidth={1.75} />
       </div>
-      {face.cost !== undefined && <span className={coin} style={{ background: COLORS.coin }}>{face.cost}</span>}
+      {face.cost !== undefined && (
+        <span
+          className={coin}
+          style={{ background: COLORS.coin, width: mm(6), height: mm(6), margin: mm(1), fontSize: mm(3.6) }}
+        >
+          {face.cost}
+        </span>
+      )}
     </div>
   )
 }

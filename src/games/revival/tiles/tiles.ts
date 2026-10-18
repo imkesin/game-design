@@ -12,8 +12,8 @@ export type TileKind = "house" | "commercial" | "industrial" | "park" | "parking
  */
 export type TileFace = { kind: TileKind; blight?: boolean; historical?: boolean; cost?: number }
 
-/** What breaking ground on each type costs (DESIGN.md, Payoff chart). */
-const COST = { house: 1, commercial: 2, industrial: 4 } as const
+/** What breaking ground on each type costs (DESIGN.md, Payoff chart); a Park is free. */
+export const COST = { park: 0, house: 1, commercial: 2, industrial: 4 } as const
 
 /** Coning a blight costs its type's cost less this (DESIGN.md, Blight); a free restore shows no coin. */
 const RESTORE_DISCOUNT = 1

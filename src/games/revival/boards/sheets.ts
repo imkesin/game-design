@@ -1,3 +1,4 @@
+import halfBoardTemplate from "./half-board.svg"
 import quadFoldTemplate from "./large-quad-fold-board.svg"
 
 /** What the city board prints on, all in mm. */
@@ -50,6 +51,18 @@ export const SHEETS = {
     template: quadFoldTemplate
   }
 } as const satisfies Record<string, Sheet>
+
+/**
+ * The Game Crafter's half board (the player mats), measured off its template
+ * (72pt to the inch): 5×10in trim, portrait, ⅛in (9pt) bleed, safe zone ⅛in
+ * inside the trim; no fold.
+ */
+export const HALF_BOARD = {
+  trim: { width: 5 * IN, height: 10 * IN },
+  bleed: IN / 8,
+  safe: IN / 8,
+  template: halfBoardTemplate
+} as const
 
 /** The printed page around a board: a tile plus its margin, or the whole board plus bleed. */
 export const pageOf = (sheet: Sheet, board: Size): Size =>

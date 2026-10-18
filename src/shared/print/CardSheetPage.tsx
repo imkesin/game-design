@@ -3,13 +3,13 @@ import { css } from "~/generated/styled-system/css"
 import { CARD_TRIM_H_MM, CARD_TRIM_W_MM } from "~/shared/print/cardSize"
 
 /**
- * Home print-and-play sheet, shared by every game. Lays cards out 3-across on US
- * Letter, trim size (63x88mm), packed 9 per page (3x3), and flows across as many
- * pages as needed. Cmd-P (or Playwright) produces one PDF with multiple pages of
- * cards.
+ * Home print-and-play sheet, shared by every game. Lays cards out on US Letter
+ * at trim size, by default poker (63x88mm) packed 9 per page (3x3), and flows
+ * across as many pages as needed. Cmd-P (or Playwright) produces one PDF with
+ * multiple pages of cards.
  *
  *   - `--u` is pinned to 1mm on `:root` so cards are exact physical size.
- *   - `@page` is Letter with zero margin; each sheet positions its own grid and
+ *   - `@page` is Letter (portrait unless the grid says landscape) with zero margin; each sheet positions its own grid and
  *     draws the cut guides, so margins are part of the layout (and the cut ticks
  *     can live in them).
  *   - Cards touch; their hairline outlines form the interior cut grid.
@@ -22,27 +22,32 @@ import { CARD_TRIM_H_MM, CARD_TRIM_W_MM } from "~/shared/print/cardSize"
  * browser shrinks everything and the 1:1 sizing is lost.
  */
 
-// US Letter and trim-card geometry, in millimetres (page geometry is in real
-// mm, independent of the `--u` card-unit zoom).
+// US Letter, in millimetres (page geometry is in real mm, independent of the
+// `--u` card-unit zoom).
 const PAGE_W = 215.9
 const PAGE_H = 279.4
-const CARD_W = CARD_TRIM_W_MM
-const CARD_H = CARD_TRIM_H_MM
-const COLS = 3
-const ROWS = 3
-const PER_PAGE = COLS * ROWS
-
-// Centre the 3x3 block on the page; the leftover becomes symmetric margins.
-const MARGIN_X = (PAGE_W - COLS * CARD_W) / 2 // 13.45mm
-const MARGIN_Y = (PAGE_H - ROWS * CARD_H) / 2 // 7.7mm
 const TICK_LEN = 4 // mm
 const TICK_W = 0.2 // mm
-
-// Page label lives in the bottom margin, below the tick zone and horizontally
-// centred so it never collides with a column tick. Small enough to ignore while
-// cutting, large enough to read from a stack of sheets.
-const LABEL_TOP = MARGIN_Y + ROWS * CARD_H + TICK_LEN
 const LABEL_SIZE = 2.6 // mm
+
+/** A card's trim size in mm, how many fit across and down a page, and whether the page is turned landscape. */
+export type CardGrid = { width: number; height: number; cols: number; rows: number; landscape?: boolean }
+
+const POKER: CardGrid = { width: CARD_TRIM_W_MM, height: CARD_TRIM_H_MM, cols: 3, rows: 3 }
+
+/**
+ * The grid centred on the page; the leftover becomes symmetric margins. The
+ * page label lives in the bottom margin, below the tick zone and horizontally
+ * centred so it never collides with a column tick.
+ */
+function layoutOf(grid: CardGrid) {
+  const [pageW, pageH] = grid.landscape === true ? [PAGE_H, PAGE_W] : [PAGE_W, PAGE_H]
+  const marginX = (pageW - grid.cols * grid.width) / 2
+  const marginY = (pageH - grid.rows * grid.height) / 2
+  return { ...grid, pageW, pageH, marginX, marginY, labelTop: marginY + grid.rows * grid.height + TICK_LEN }
+}
+
+type Layout = ReturnType<typeof layoutOf>
 
 function chunks<T>(arr: readonly T[], size: number): T[][] {
   const out: T[][] = []
@@ -50,12 +55,12 @@ function chunks<T>(arr: readonly T[], size: number): T[][] {
   return out
 }
 
-const printCss = `
+const printCss = (landscape: boolean) => `
   :root {
     --u: 1mm;
   }
   @page {
-    size: letter; margin: 0;
+    size: letter${landscape ? " landscape" : ""}; margin: 0;
   }
   @media print {
     html, body {
@@ -128,21 +133,21 @@ const gridStyle = css({
   gap: 0
 })
 
-function Ticks() {
+function Ticks({ layout: { width, height, cols, rows, marginX, marginY } }: { layout: Layout }) {
   const marks: CSSProperties[] = []
   // Vertical ticks at each column boundary, in the top and bottom margins.
-  for (let c = 0; c <= COLS; c++) {
-    const x = MARGIN_X + c * CARD_W
+  for (let c = 0; c <= cols; c++) {
+    const x = marginX + c * width
     const v = { left: `${x - TICK_W / 2}mm`, width: `${TICK_W}mm`, background: "#000", position: "absolute" as const }
-    marks.push({ ...v, top: `${MARGIN_Y - TICK_LEN}mm`, height: `${TICK_LEN}mm` })
-    marks.push({ ...v, top: `${MARGIN_Y + ROWS * CARD_H}mm`, height: `${TICK_LEN}mm` })
+    marks.push({ ...v, top: `${marginY - TICK_LEN}mm`, height: `${TICK_LEN}mm` })
+    marks.push({ ...v, top: `${marginY + rows * height}mm`, height: `${TICK_LEN}mm` })
   }
   // Horizontal ticks at each row boundary, in the left and right margins.
-  for (let r = 0; r <= ROWS; r++) {
-    const y = MARGIN_Y + r * CARD_H
+  for (let r = 0; r <= rows; r++) {
+    const y = marginY + r * height
     const h = { top: `${y - TICK_W / 2}mm`, height: `${TICK_W}mm`, background: "#000", position: "absolute" as const }
-    marks.push({ ...h, left: `${MARGIN_X - TICK_LEN}mm`, width: `${TICK_LEN}mm` })
-    marks.push({ ...h, left: `${MARGIN_X + COLS * CARD_W}mm`, width: `${TICK_LEN}mm` })
+    marks.push({ ...h, left: `${marginX - TICK_LEN}mm`, width: `${TICK_LEN}mm` })
+    marks.push({ ...h, left: `${marginX + cols * width}mm`, width: `${TICK_LEN}mm` })
   }
   return (
     <>
@@ -164,18 +169,22 @@ const labelStyle = css({
 export function CardSheetPage<T>({
   cards,
   renderCard,
-  controls
+  controls,
+  grid = POKER
 }: {
   cards: readonly T[]
   /** Renders one card at trim size. `key` is supplied ready to spread on the node. */
   renderCard: (card: T, key: string) => ReactNode
   /** Screen-only controls shown in the print note (e.g. a player-count picker). */
   controls?: ReactNode
+  /** Card size and packing; poker, 3x3, by default. */
+  grid?: CardGrid
 }) {
-  const pages = chunks(cards, PER_PAGE)
+  const layout = layoutOf(grid)
+  const pages = chunks(cards, grid.cols * grid.rows)
   return (
     <>
-      <style>{printCss}</style>
+      <style>{printCss(grid.landscape === true)}</style>
       <div className={`print-root ${screen}`}>
         <div className={`${note} screen-only`}>
           Print → Letter · Margins: None · Scale: 100% · {cards.length} cards on {pages.length} pages
@@ -186,24 +195,24 @@ export function CardSheetPage<T>({
             key={pi}
             className={`sheet ${sheetStyle}`}
             style={{
-              width: `${PAGE_W}mm`,
-              height: `${PAGE_H}mm`,
-              padding: `${MARGIN_Y}mm ${MARGIN_X}mm`
+              width: `${layout.pageW}mm`,
+              height: `${layout.pageH}mm`,
+              padding: `${layout.marginY}mm ${layout.marginX}mm`
             }}
           >
-            <Ticks />
+            <Ticks layout={layout} />
             <div
               className={gridStyle}
-              style={{ gridTemplateColumns: `repeat(${COLS}, ${CARD_W}mm)` }}
+              style={{ gridTemplateColumns: `repeat(${grid.cols}, ${grid.width}mm)` }}
             >
               {page.map((card, ci) => renderCard(card, `${pi}-${ci}`))}
             </div>
             <div
               className={labelStyle}
               style={{
-                top: `${LABEL_TOP}mm`,
+                top: `${layout.labelTop}mm`,
                 fontSize: `${LABEL_SIZE}mm`,
-                lineHeight: `${PAGE_H - LABEL_TOP}mm`
+                lineHeight: `${layout.pageH - layout.labelTop}mm`
               }}
             >
               {pi + 1} / {pages.length} · {page.length} cards

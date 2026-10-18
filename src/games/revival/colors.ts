@@ -1,5 +1,5 @@
 /**
- * Revival's color conventions, shared by the board, tiles, cubes and cards.
+ * Revival's color conventions, shared by the board, tiles, hexes and cards.
  * Anything blighted is black; historical is burgundy. A blighted or historical
  * building is split diagonally: that color top-left, its type's bottom-right.
  */
