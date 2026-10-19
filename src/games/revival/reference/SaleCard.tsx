@@ -259,7 +259,7 @@ function SaleRow({ kind, base, bonus, map: scope, effects: lines, puts }: Row) {
   return (
     <div className={`${columns} ${row}`} style={{ gridArea: kind, gridTemplateColumns: COLUMNS }}>
       <span className={tile}>
-        <Tile face={{ kind }} size={TILE_SIZE} />
+        <Tile face={{ kind, side: "finished" }} size={TILE_SIZE} />
       </span>
       <span className={expr} style={{ gridArea: "sale" }}>
         <Coin amount={base} size={COIN} />

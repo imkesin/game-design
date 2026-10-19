@@ -1,9 +1,12 @@
 import { Tile } from "~/games/revival/tiles/Tile"
 import { STICKER, type TileFace, TILES } from "~/games/revival/tiles/tiles"
+
+/** Every sticker, a tile's two sides side by side so they're cut and stuck as a pair. */
+const FACES = TILES.flatMap(({ a, b }) => (b === undefined ? [a] : [a, b]))
 import { css } from "~/generated/styled-system/css"
 
 /**
- * The tiles on Letter sticker sheets, as many as fit, butted edge to edge so
+ * The tile faces on Letter sticker sheets, as many as fit, butted edge to edge so
  * a trimmer cuts whole rows and columns; ticks in the margins mark every cut.
  * Stick each sheet on cardstock, then cut. Print at 100% with no margins.
  */
@@ -25,7 +28,7 @@ function chunks<T>(list: readonly T[], size: number) {
   return Array.from({ length: Math.ceil(list.length / size) }, (_, i) => list.slice(i * size, (i + 1) * size))
 }
 
-const sheets = chunks(TILES, PER_SHEET)
+const sheets = chunks(FACES, PER_SHEET)
 const SHEETS: readonly Sheet[] = sheets.map((faces, i) => ({ title: `Tiles ${i + 1} of ${sheets.length}`, faces }))
 
 const printCss = `

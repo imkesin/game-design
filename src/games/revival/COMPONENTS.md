@@ -9,23 +9,51 @@ Update this file rather than re-deriving. Rules live in `RULES.md`; the reasons 
 - **Color conventions** (2026-10-17; `colors.ts`): **green** Parks, **light tan** Housing, **medium
   brown** Commercial, **grey** Industrial, **black** anything blighted. Parking lots are a **very
   grey blue**. Historical buildings' accent is **burgundy** (a heritage plaque; the historical setup
-  cards' header). The mayor and his agenda cards are **civic navy** (provisional). Costs are printed
-  on a **gold coin** (top-right of a row tile, and of a blighted Commercial or Industrial tile: its
-  restore price, 1 / 3, as a reminder; a blighted House restores free, so no coin). Blighted and
-  historical buildings are split diagonally (black or burgundy top-left, the type's color
-  bottom-right) under a white icon, on cards and tiles alike.
+  cards' header; under review now that tiles flip, see below). The mayor and his agenda cards are
+  **civic navy** (provisional). Costs are printed on a **gold coin** (top-right of a row tile, and
+  of a blighted Commercial or Industrial tile: its restore price, 1 / 3, as a reminder; a blighted
+  House restores free, so no coin). Blighted and historical buildings are split diagonally (black or
+  burgundy top-left, the type's color bottom-right) under a white icon, on cards and tiles alike.
 - **V0 components** (2026-10-17): **32mm base-plate tiles** (the plot square; 30mm until 2026-10-18,
   grown to fit stock 1.25in tiles) on sticker paper over cardstock, printable at `/revival/tiles` as
   **31mm stickers** (`STICKER`, 1mm under `TILE`) for stock 1.25in tiles: butted 6 × 8 per Letter
   sheet (however many fit inside a 10mm margin) so a trimmer cuts whole rows, the outer 1mm left
-  unprinted to absorb off cuts (29mm art; widened from 0.5mm for cutting room); **wooden building
-  tokens** are the finished buildings, and every building on the board is one, blight and historical
-  included: **3D buildings make it look like a city**, which sets Revival apart from city games of
-  pictures on flat pieces. Never trade them away for setup speed; hexes, cones, coins and the mayor
-  are bought bits. All tiles are single-sided; a blight is a blight tile with a **black wooden
-  building** on it (knocking down swaps buildings, no flipping: fiddly on a tight board). Historical
-  tiles are split burgundy and type. **Park supply: 20, assumed.** Parks and parking lots are tiles
-  only, no wooden piece (2026-10-18).
+  unprinted to absorb off cuts (29mm art; widened from 0.5mm for cutting room). Cubes, workers,
+  coins and the mayor are bought bits. **Park supply: 20, assumed.**
+- **Playtest workers** (2026-10-19): **worker meeples** in player colors replace cones: any distinct
+  shape in a player color marks where a company is working. The rules say **workers**; DESIGN.md
+  still says cones (same piece). The mat's "cone yard" label is not yet renamed.
+- **Flat, flipping tiles; no wood** (2026-10-19; replaced wooden building tokens): every state of a
+  plot is one face of one tile, and a step forward flips or swaps it. Nothing stacks: a tile on a
+  tile reads as a multi-story building.
+
+  | Tile        | Side A                                    | Side B            |
+  | ----------- | ----------------------------------------- | ----------------- |
+  | Row         | construction (cost, base payout, workers) | finished building |
+  | Park        | construction                              | finished Park     |
+  | Blight      | **dark** (the blighted building)          | construction      |
+  | Restored    | finished building, old look (brick, etc.) | plain common back |
+  | Parking lot | dead land, neutral                        | — (never flips)   |
+
+  - **New build**: placed construction side up; **finish flips it**.
+  - **Blight**: dark side up, so **the city starts dark** (the theme). Restore puts 2 workers on the
+    dark side; **knockdown** takes 1 worker off and **flips it to construction**; **finish swaps
+    it** for a **restored tile** of its type, and the blight tile leaves the game.
+  - **Restored supply**: 3 piles beside the row (House / Commercial / Industrial), **paired by type,
+    not tile to tile** (no hunting for a specific twin). Size per type: open.
+  - The construction side carries what matters only while it's a project; the finished side only
+    needs art and its type.
+  - Why no wood: spaced-out wooden buildings read as a **suburb**, not a city; real blocks are
+    continuous street walls, and wood packed that close gets knocked over. Flat tiles that nearly
+    touch read as one block (the ring is a perimeter block; the plaza its courtyard). The city
+    brightens as it's revived.
+  - **Rejected**: a black wooden building on a single-sided tile (the old plan; sparse look, fiddly
+    swaps); a black cube marker on the construction side (the city doesn't start dark); a dark cover
+    tile stacked on the construction tile (reads as a multi-story building); blight and finished
+    faces on one tile with worker count telling a knocked-down blight apart (breaks if projects need
+    different worker counts).
+  - **Historical** tiles: source open (restored tiles, row tiles finished side up, or their own
+    tiles); burgundy split tiles likely dropped.
 - **Player mat** (2026-10-18): a **TGC half board turned landscape** (10 × 5in), printable one per
   Letter page at `/revival/mats`: company band, credit track (0–3), cone yard (3 open, 2 locked),
   and space kept for later upgrades. One design for now; company colors swap into the band later.
@@ -33,9 +61,9 @@ Update this file rather than re-deriving. Rules live in `RULES.md`; the reasons 
   per player (`/revival/reference`, 2 per Letter page); the board has no room and tiles keep just
   the cost coin. Each row: the tile, what it **sells for** written
   `base + (bonus per Park or
-  hex)` in coins, and its **side effects** with a mini-map of where the
-  bonus counts (the House's own neighborhood, or the plazas hexes are taken from), the 1 + n hex
-  cap, hexes put out, and blight rules.
+  cube)` in coins, and its **side effects** with a mini-map of where
+  the bonus counts (the House's own neighborhood, or the neighborhoods cubes are taken from), the
+  1 + n cube cap, cubes put out, and blight rules.
 
 ## Board
 
@@ -127,10 +155,28 @@ A matrix of rectangular neighborhoods with white streets between them. Plan of r
 
 ### 2. Open
 
-- **Plaza** (room per neighborhood for the mayor's pawn and demand tokens): tried 2026-10-17 as a
-  strip right of the plots ("doesn't look that good"), then a plot-tall strip above them, white and
-  outlined (read too much like a plot), then bare ground (unbalanced, not like real city blocks).
-  All removed; still needed somewhere.
+- **Density for flat tiles** (2026-10-19, proposals, not yet tried):
+  - **Plot gap**: `PLOT_PADDING` 1mm → ~0.25mm, so tiles sit 0.5mm apart (stock tolerance; a lifted
+    tile doesn't drag its neighbor). Touching only works with **thick tiles** (~2mm), gripped by an
+    edge; check the stock 1.25in tiles. In a ring every tile has 2 free sides (middles: sidewalk and
+    courtyard, opposite; corners: two outer sides), so tiles can be flipped and lifted in place.
+  - **Art**: non-directional (top-down roofs; any tile lands on any of the 8 plots), one shared edge
+    treatment (a parapet band) so neighbors read as one block, and the dark and construction sides
+    share the same outline. Empty plots must read as vacant lots.
+  - **Between neighborhoods**: now 5 + 15 + 5 = 25mm tile edge to tile edge, more than needed (≥12mm
+    to read as separate with near-touching tiles, ~8mm for fingers, ≥12mm at fold seams, ~20mm for a
+    real street-to-block ratio of ~0.2). Target **~18–20mm**. Idea: a ~25mm avenue along the
+    quad-fold's centre cross, ~15mm streets elsewhere (hides folds, suggests 4 districts); risk:
+    uneven gaps may suggest uneven adjacency.
+  - **Crowding**: cubes sit on their buildings' tiles (2026-10-19), so the plaza holds only the
+    label and the mayor pawn. A tile's worst case: a restore (2 workers), or a finished House or
+    Commercial with its cube. Idea: print an empty cube outline on finished House and Commercial
+    sides, so a taken cube leaves a visible "demand met".
+
+- **Plaza** (room per neighborhood for the mayor's pawn): solved by the ring's hole; cubes moved
+  onto tiles 2026-10-19. Earlier tries, 2026-10-17: a strip right of the plots ("doesn't look that
+  good"), a plot-tall strip above them, white and outlined (read too much like a plot), bare ground
+  (unbalanced, not like real city blocks).
 
 - **City Hall**: claimable like any block, or civic (not claimable; 91 playable plots)? The mayor's
   start and home? It now carries two prefill marks, which leans claimable.

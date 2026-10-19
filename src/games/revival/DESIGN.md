@@ -16,7 +16,8 @@ tax incentives that sway where it pays to build.
   board, 2 × 2 per panel. Every neighborhood is a **ring of 8 plots** around an empty centre (the
   plaza, labelled with its coordinates A1–D4): 128 plots, 120 after the 8 parking lots. No Blocks or
   other groups of plots: a neighborhood is just its plots.
-- **Cones** (2026-10-17; replaced construction sites, Blocks and the Sell action): each player has
+- **Cones** (2026-10-17; replaced construction sites, Blocks and the Sell action); **workers** in
+  RULES.md since 2026-10-19 (worker meeples for playtesting, same role): each player has
   **construction cones** in their color. A cone on a plot is a building under construction; it's the
   only thing a player owns on the board. Once the cone comes off, the building belongs to the city.
   - **3 cones each** at every player count (starting point): one or two speculative holds plus a
@@ -39,8 +40,8 @@ tax incentives that sway where it pays to build.
      together), and put one of your cones on it:
      - a **base tile** (Housing / Commercial / Industrial) bought from the row;
      - a **Park** for 0 coins from the Park supply; it discards one tile from the row.
-  2. **Finish and sell**: take your cone off, put the building on (no cost), and **sell it**: you're
-     paid its sale value, read from the board **now**.
+  2. **Finish and sell**: take your cone off, flip the tile to its finished side (no cost), and
+     **sell it**: you're paid its sale value, read from the board **now**.
   - **Speculation** is the point of the split: break ground on a Commercial, see a rival's House
     coming nearby, and hold your cone until it's finished to sell higher. Only **finished**
     buildings count toward value; a coned base shows what's coming but counts for nothing yet.
@@ -62,11 +63,11 @@ tax incentives that sway where it pays to build.
      not meant to be a real decision. Whoever breaks ground on that plot takes it. Incentives are
      **ramp currency, not money** (see Victory and ramp).
   2. **No empty plot but blight**: he **knocks one blight down**, **the walker's pick**, **even one
-     a player has coned** (its black building and one of the player's cones come off, leaving a
-     singly coned base: that player's first pick-up done for them). A blight nobody has coned is
-     **removed from the board**, leaving an empty plot (the city clears the lot). The mayor takes
-     matters into his own hands when the market won't. This also breaks the coned-blight lock on
-     Housing once a neighborhood is full.
+     a player has coned** (one of the player's cones comes off and the tile flips to construction,
+     leaving a singly coned project: that player's first pick-up done for them). A blight nobody has
+     coned is **removed from the board**, leaving an empty plot (the city clears the lot). The mayor
+     takes matters into his own hands when the market won't. This also breaks the coned-blight lock
+     on Housing once a neighborhood is full.
   3. **Neither**: he **taxes every company speculating there**: **1 coin per coned plot** they have
      in the neighborhood.
   - **Can't pay**: you lose **projects** (coned plots) **in the taxed neighborhood** (the ones
@@ -105,11 +106,10 @@ tax incentives that sway where it pays to build.
   - **Positive** buildings (was prefill) are **historical** parts of the city, on special base
     tiles. They **affect the value of buildings nearby** like any building, but you get **no credit
     for them when selling**. Capped at 18 so low counts aren't buried in setup.
-  - **Setup cost**: blight 30 × 2 (tile and black building) + parking 8 + historical 0 / 12 / 18 × 2
-    (tile and building) + a hex per historical House or Commercial (0 / 11 / 16) = **68 / 103 /
-    120** pieces (4–5 / 3 / 2 players), split across players (see Setup cards). Cut if it drags:
-    parking printed on the board (−8, but always in the same places). Not a cut: dropping wooden
-    buildings anywhere (see V0 components).
+  - **Setup cost** (2026-10-19, flat tiles): blight 30 + parking 8 + historical 0 / 12 / 18 + a cube
+    per historical House or Commercial (0 / 11 / 16) = **38 / 61 / 72** pieces (4–5 / 3 / 2
+    players), split across players (see Setup cards). Was 68 / 103 / 120 with wooden buildings. Cut
+    if it drags: parking printed on the board (−8, but always in the same places).
 - **Setup cards** (2026-10-17): the starting state is dealt, not printed. **8 blight cards** (every
   player count) and **8 historical (positive) cards** for 2–3P: one deck, its 3P buildings a badged
   subset of 2P's. Shuffle a deck and deal **one card to each of the 4 rows and 4 columns**, laid
@@ -162,34 +162,37 @@ tax incentives that sway where it pays to build.
   | ---------- | ---- | ---------------------------------- | ----- | --------------- |
   | Park       | 0    | 1                                  | +1    | +1              |
   | Housing    | 1    | 3, +1 per Park in its neighborhood | +2    | more with Parks |
-  | Commercial | 2    | 2, +1 per demand hex taken         | 0     | +2 / +3 / +4 …  |
-  | Industrial | 4    | 1, +3 per Commercial hex taken     | −3    | +3 / +6 / +9 …  |
+  | Commercial | 2    | 2, +1 per demand cube taken        | 0     | +2 / +3 / +4 …  |
+  | Industrial | 4    | 1, +3 per Commercial cube taken    | −3    | +3 / +6 / +9 …  |
 
-  - **Hexes in the plazas** (what the hole is for; hexagonal tokens, were cubes until 2026-10-18, so
-    they never read as plot squares): finishing a **House** puts a **demand hex** in its
-    neighborhood's plaza; finishing a **Commercial** puts a **Commercial hex** (second color) in its
-    plaza. **Historical buildings put out their hexes at setup**, so at 2P and 3P an opening shop is
-    a real option; at 4P and 5P Houses come first.
-  - **Taking hexes**: finishing a Commercial (Industrial), count the finished Commercials
+  - **Cubes on the buildings** (2026-10-19: abstract demand, so plain cubes, sitting on the flipped
+    tile; were hexes in the plaza 2026-10-18, shaped so they never read as plot squares): finishing
+    a **House** puts a **demand cube** on its own tile; finishing a **Commercial** puts a
+    **Commercial cube** (second color) on its tile. Finished tiles never move again, so a cube has a
+    stable home, and the board shows which buildings' demand is still unmet. **Historical buildings
+    put out their cubes at setup**, so at 2P and 3P an opening shop is a real option; at 4P and 5P
+    Houses come first. The plaza is left to the mayor and the label.
+  - **Taking cubes**: finishing a Commercial (Industrial), count the finished Commercials
     (Industrials) in its neighborhood, itself and historical ones included: **n**. It **must** take
-    **up to 1 + n** hexes of the type below, **its own plaza first**, then **Commercial: the 4
-    adjacent plazas** (shoppers cross the street); **Industrial: its row and column** (freight
-    lines, 7 plazas). Taken hexes return to the supply. Nothing to calculate: look and pick up.
+    **up to 1 + n** cubes of the type below, **its own neighborhood first**, then **Commercial: the
+    4 adjacent neighborhoods** (shoppers cross the street); **Industrial: its row and column**
+    (freight lines, 7 neighborhoods). Taken cubes return to the supply. Nothing to calculate: look
+    and pick up.
   - **Concentration**: a neighborhood's 1st shop takes up to 2, its 2nd up to 3, its 3rd up to 4:
     shopping districts (and industrial parks) pay, while depletion keeps shops competing for the
     same customers. First mover gets first pick but a small cap; later movers a bigger cap but fewer
-    hexes left. A busy district can drain its neighbors' plazas.
-  - **Ladder**: floors +2 / 0 / −3, per hex +1 / +3. Housing is safe; Commercial breaks even without
-    demand and only beats a House from 3 hexes (a 2nd shop onward), so it's worth building from ~2
-    waiting hexes; Industrial is **rare and swingy** (breaks even at 1 hex, loses 3 at none), too
-    dear to open with, and a rival's Industrial on your row or column can take the hexes you were
-    waiting for.
+    cubes left. A busy district can drain its neighbors.
+  - **Ladder**: floors +2 / 0 / −3, per cube +1 / +3. Housing is safe; Commercial breaks even
+    without demand and only beats a House from 3 cubes (a 2nd shop onward), so it's worth building
+    from ~2 waiting cubes; Industrial is **rare and swingy** (breaks even at 1 cube, loses 3 at
+    none), too dear to open with, and a rival's Industrial on your row or column can take the cubes
+    you were waiting for.
   - Park +1 beats nothing; Housing +2 beats Park: the city pays you a little for Parks, Housing
     makes money. Parks lift every House in their neighborhood (a public good) but make no demand.
-  - **Natural ratio**: balancing hex supply and demand, each level settles at **2–3 of the type
+  - **Natural ratio**: balancing cube supply and demand, each level settles at **2–3 of the type
     below per building** (2 spread out, 3+ clustered), so Houses : Commercial : Industrial ≈ 4 : 2 :
     1 to 9 : 3 : 1; best guess **~5 : 2.5 : 1** (shops cluster, Industrials rarely share a
-    neighborhood). Leftover hexes at game end are wasted demand.
+    neighborhood). Leftover cubes at game end are wasted demand.
   - **Supply mix** (2026-10-17, starting point): new construction is mostly Housing; shops and
     factories mostly come from **converting ruins**. A player who needs Commercial or Industrial and
     isn't seeing it in the row can always go convert a ruin.
@@ -217,17 +220,17 @@ tax incentives that sway where it pays to build.
   per seat overcorrects by more than that (uneven offsets like 5 / 5 / 6 / 6 / 7 aren't smooth
   enough). Add +1 per seat only if playtests show the first seat winning more.
 - **Blight** (2026-10-16; 30 and the cone flow since 2026-10-17): the city starts with **30 blighted
-  buildings at every player count**, dealt by the blight setup cards. Each is a **black wooden
-  building** of its type standing on a single-sided **blight tile** (split black and the type's
-  color). The game swaps buildings, it never flips tiles: a restored building stands on a tile that
-  still shows its blight past (a bit of history; no rule reads it). Its type steers what gets built
-  where. **Restoring** is **slower but cheaper** than building new, so cash-poor players restore and
-  cash-rich players build new:
+  buildings at every player count**, dealt by the blight setup cards. Each is a **blight tile** of
+  its type, **dark side up** (2026-10-19; was a black wooden building on a single-sided tile), so
+  the city starts dark. Its back is a construction side; a finished restoration is swapped for a
+  **restored tile** of the type (old architecture), so the revived city mixes old and new (see
+  COMPONENTS.md). Its type steers what gets built where. **Restoring** is **slower but cheaper**
+  than building new, so cash-poor players restore and cash-rich players build new:
   1. **Cone a blight** (one action): pay its type's cost **minus 1** and put **two** of your cones
      on it (you need 2 free).
-  2. **Knock it down** (pick up one cone): take the black building off with it; the tile beneath,
-     still coned once, is now an ordinary coned base.
-  3. **Finish** as usual (pick up the last cone): put the building on, sell.
+  2. **Knock it down** (pick up one cone): flip the tile to its construction side; still coned once,
+     it's now an ordinary project.
+  3. **Finish** (pick up the last cone): swap the tile for a restored tile of its type, sell.
 
   Three actions to a new build's two, for 1 coin off (and 2 cones tied up until the knockdown, a
   real capacity cost: if nobody restores in playtests, raise the discount): the worth of an action
@@ -251,7 +254,7 @@ tax incentives that sway where it pays to build.
   1. **Final sale**: every player, the one who ended the game included, may finish one coned
      building at full value.
   2. **Firesale**: every other coned project sells for its **base sale value − 1** (never below 0;
-     no Parks or hexes counted): House 2, Commercial 1, Industrial 0. Starting late costs a little
+     no Parks or cubes counted): House 2, Commercial 1, Industrial 0. Starting late costs a little
      but never ruins you, so construction keeps driving the end instead of play stopping when the
      deck gets thin.
 - **Victory and ramp** (2026-10-17): **most money wins**. Two separate economies: coins are the
@@ -272,35 +275,44 @@ tax incentives that sway where it pays to build.
 
 ## Terminology
 
-| Term           | Meaning                                                                                                      |
-| -------------- | ------------------------------------------------------------------------------------------------------------ |
-| Company        | A player; a construction company.                                                                            |
-| Neighborhood   | A ring of 8 plots around a plaza; 16 in a 4 × 4 matrix, A1 bottom-left.                                      |
-| Plot           | One square of a ring; holds one building.                                                                    |
-| Plaza          | A neighborhood's empty centre: its label, and its demand and Commercial hexes.                               |
-| Building       | A wooden token (House, shop, factory) on a tile; typed; earns when finished and sold. A Park is a bare tile. |
-| Base tile      | 32mm typed tile a building stands on; bought from the row, cost on a gold coin.                              |
-| Row            | The face-up building row, K + 2 tiles; the mayor walks when it's down to 2.                                  |
-| Cone           | A player's marker on a project (3 each): 1 on a new build, 2 on a restore; one comes off per pick-up.        |
-| Break ground   | Pay a tile's full cost, place it, and cone it: the first of a build's two actions.                           |
-| Finish         | Take your cone off, put the building on, and sell it: the second action.                                     |
-| Blight         | A black building on a blight tile; blocks Housing sales in its neighborhood.                                 |
-| Restore        | Put 2 cones on a blight (cost − 1); pick-ups knock it down, then finish it: three actions.                   |
-| Knock down     | Take a blight's black building off with one of its cones; by a player or the mayor.                          |
-| Historical     | A building placed at setup (2–3P); burgundy split tile; counts for neighbors, not sold.                      |
-| Parking lot    | Dead land from the blight cards; not a plot.                                                                 |
-| Demand hex     | Put in the plaza when a House is finished; taken by Commercial sales.                                        |
-| Commercial hex | Put in the plaza when a Commercial is finished; taken by Industrial sales.                                   |
-| Mayor          | Pawn that walks to an agenda target: hands out incentives, knocks down blight, taxes.                        |
-| Agenda         | A card naming one neighborhood; two face up; the walker picks the target.                                    |
-| Walker         | The player whose build triggers a walk: steers the mayor, skips that walk's upgrades.                        |
-| Incentive      | Tax incentive: ramp currency (not money); spent on upgrades during walks.                                    |
-| Tax            | Where no plot is empty and no blight stands: 1 coin per coned plot, per company.                             |
-| Credit rating  | An upgrade track; pays its level in coins to every player at each walk.                                      |
-| Upgrade        | Bought with incentives during a walk (not by the walker): credit, cones, later powers.                       |
-| Firesale       | After the final sale, unfinished projects sell for their base sale value − 1.                                |
+| Term            | Meaning                                                                                               |
+| --------------- | ----------------------------------------------------------------------------------------------------- |
+| Company         | A player; a construction company.                                                                     |
+| Neighborhood    | A ring of 8 plots around a plaza; 16 in a 4 × 4 matrix, A1 bottom-left.                               |
+| Plot            | One square of a ring; holds one building.                                                             |
+| Plaza           | A neighborhood's empty centre: its label, and the mayor when he's there.                              |
+| Building        | A tile's finished side (House, shop, factory, Park); typed; earns when finished and sold.             |
+| Tile            | 32mm, two-sided: construction (cost on a gold coin) and finished; bought from the row.                |
+| Restored tile   | Finished building of old architecture; swapped in when a blight's restoration is finished.            |
+| Row             | The face-up building row, K + 2 tiles; the mayor walks when it's down to 2.                           |
+| Cone            | A player's marker on a project (3 each): 1 on a new build, 2 on a restore; one comes off per pick-up. |
+| Break ground    | Pay a tile's full cost, place it, and cone it: the first of a build's two actions.                    |
+| Finish          | Take your cone off, flip the tile, and sell it: the second action.                                    |
+| Blight          | A blight tile, dark side up; blocks Housing sales in its neighborhood.                                |
+| Restore         | Put 2 cones on a blight (cost − 1); pick-ups knock it down, then finish it: three actions.            |
+| Knock down      | Take one cone off a blight and flip it to construction; by a player or the mayor.                     |
+| Historical      | A building placed at setup (2–3P); counts for neighbors, not sold. Tile source open.                  |
+| Parking lot     | Dead land from the blight cards; not a plot.                                                          |
+| Demand cube     | Put on a House's tile when it's finished; taken by Commercial sales.                                  |
+| Commercial cube | Put on a Commercial's tile when it's finished; taken by Industrial sales.                             |
+| Mayor           | Pawn that walks to an agenda target: hands out incentives, knocks down blight, taxes.                 |
+| Agenda          | A card naming one neighborhood; two face up; the walker picks the target.                             |
+| Walker          | The player whose build triggers a walk: steers the mayor, skips that walk's upgrades.                 |
+| Incentive       | Tax incentive: ramp currency (not money); spent on upgrades during walks.                             |
+| Tax             | Where no plot is empty and no blight stands: 1 coin per coned plot, per company.                      |
+| Credit rating   | An upgrade track; pays its level in coins to every player at each walk.                               |
+| Upgrade         | Bought with incentives during a walk (not by the walker): credit, cones, later powers.                |
+| Firesale        | After the final sale, unfinished projects sell for their base sale value − 1.                         |
 
 ## Open
+
+- **Historical tiles** (2026-10-19): restored tiles (one component; supply must cover up to 18 plus
+  restorations), row tiles finished side up (fiddly search by type), or their own tiles. Burgundy
+  likely dropped.
+- **Restored supply size** per type: enough for max historical (if shared) + expected restorations;
+  a smaller supply would be a deliberate brake on restoring.
+- **Cones per project**: the construction side has room for a printed cone count; whether projects
+  vary is undecided.
 
 - **Upgrade menu** (to workshop; starter for testing): credit rating 1 step (max 3) for 2 / 3 / 4
   incentives, +1 coin per walk; +1 cone (max 5) for 3 incentives. Incentive supply: one per visited
@@ -309,9 +321,9 @@ tax incentives that sway where it pays to build.
   trading a cone in for credit; not thematic.)
 - **Restore numbers**: the 1-coin discount is provisional (restores cost 0 / 1 / 3). When the next
   agenda card is revealed (right after each walk?).
-- **Industrial runaway**: capped by 1 + n and by Commercial hexes being scarce (one per shop), but
-  +3 a hex makes the Commercial count in the deck, blight and historical cards its strength dial.
-  Watch 2P, where historical Commercials leave Commercial hexes at setup. Fallbacks: plus-shape
+- **Industrial runaway**: capped by 1 + n and by Commercial cubes being scarce (one per shop), but
+  +3 a cube makes the Commercial count in the deck, blight and historical cards its strength dial.
+  Watch 2P, where historical Commercials leave Commercial cubes at setup. Fallbacks: plus-shape
   reach (more busts), or a lower kicker.
 - **Blight and Commercial**: Housing is blocked and Industrial ignores blight (decided); Commercial:
   lean ignore it for the first playtest (one blight rule), else a value drag.

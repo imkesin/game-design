@@ -27,13 +27,13 @@ export const RING_PLOTS = [[0, 0], [1, 0], [2, 0], [2, 1], [2, 2], [1, 2], [0, 2
  * The sidewalk between the plots and the edge line, all round. Narrower than
  * `STREET`, so neighborhoods separate.
  */
-export const BUFFER = 5
+export const BUFFER = 2
 
 /** A neighborhood's width and height. */
 export const BLOCK = 2 * BUFFER + RING * PLOT
 
 /** The white street between neighboring blocks; cut lines and folds run down the middle of one. */
-export const STREET = 15
+export const STREET = 10
 
 /**
  * A city as a matrix of identical neighborhoods split across tiles, so the
