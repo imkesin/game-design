@@ -14,14 +14,18 @@ Update this file rather than re-deriving. Rules live in `RULES.md`; the reasons 
   restore price, 1 / 3, as a reminder; a blighted House restores free, so no coin). Blighted and
   historical buildings are split diagonally (black or burgundy top-left, the type's color
   bottom-right) under a white icon, on cards and tiles alike.
-- **V0 components** (2026-10-17): **30mm base-plate tiles** (the plot square) on sticker paper over
-  cardstock, printable at `/revival/tiles`; **wooden building tokens** are the finished buildings,
-  and every building on the board is one, blight and historical included: **3D buildings make it
-  look like a city**, which sets Revival apart from city games of pictures on flat pieces. Never
-  trade them away for setup speed; hexes, cones, coins and the mayor are bought bits. All tiles are
-  single-sided; a blight is a blight tile with a **black wooden building** on it (knocking down
-  swaps buildings, no flipping: fiddly on a tight board). Historical tiles are split burgundy and
-  type. **Park supply: 20, assumed.**
+- **V0 components** (2026-10-17): **32mm base-plate tiles** (the plot square; 30mm until 2026-10-18,
+  grown to fit stock 1.25in tiles) on sticker paper over cardstock, printable at `/revival/tiles` as
+  **31mm stickers** (`STICKER`, 1mm under `TILE`) for stock 1.25in tiles: butted 6 × 8 per Letter
+  sheet (however many fit inside a 10mm margin) so a trimmer cuts whole rows, the outer 1mm left
+  unprinted to absorb off cuts (29mm art; widened from 0.5mm for cutting room); **wooden building
+  tokens** are the finished buildings, and every building on the board is one, blight and historical
+  included: **3D buildings make it look like a city**, which sets Revival apart from city games of
+  pictures on flat pieces. Never trade them away for setup speed; hexes, cones, coins and the mayor
+  are bought bits. All tiles are single-sided; a blight is a blight tile with a **black wooden
+  building** on it (knocking down swaps buildings, no flipping: fiddly on a tight board). Historical
+  tiles are split burgundy and type. **Park supply: 20, assumed.** Parks and parking lots are tiles
+  only, no wooden piece (2026-10-18).
 - **Player mat** (2026-10-18): a **TGC half board turned landscape** (10 × 5in), printable one per
   Letter page at `/revival/mats`: company band, credit track (0–3), cone yard (3 open, 2 locked),
   and space kept for later upgrades. One design for now; company colors swap into the band later.
@@ -47,13 +51,16 @@ Supersedes parts of §1; §1 still describes the look (dots, edge, streets, labe
   Blocks stay inside the 15.3pt safe zone. Tiled sheets (Letter, 18×24in) still work via `SHEETS` in
   `BlocksPage.tsx`.
 - **Neighborhoods**: every one a 3×3 ring of 8 plots around an empty dotted centre (the hole), 5mm
-  sidewalk (buffer) all round, 106mm square. 2×2 per panel: a 4×4 city, 16 neighborhoods, 128 plots,
-  ~19mm margin from the trim.
+  sidewalk (buffer) all round, 112mm square. 2×2 per panel: a 4×4 city, 16 neighborhoods, 128 plots,
+  ~7.5mm margin from the trim.
 - **Labels** moved from the bottom-left corner tab into the hole (the plaza), centred, which freed
   the buffer to shrink. Then bigger and faint (6mm bold #a3a3a3 on a #ececec tab): coordinates are a
   minor detail.
-- **32mm system** (2026-10-17; was 26mm): a 30mm plot square, 1mm padding all round. The buffer went
-  half a plot → 10 → 9 → 6 → 5mm once labels left it (8mm and 5mm were too tight for a corner tab).
+- **34mm system** (2026-10-18; 26 → 32 → 34mm): the plot is derived from the tile (`TILE` in
+  `tiles/tiles.ts`, 32mm) plus `PLOT_PADDING` (1mm) all round, so resizing tiles resizes the board.
+  35mm tiles were tried (37mm plots, 2mm buffer, 10mm streets): they fit but crowd the board. The
+  buffer went half a plot → 10 → 9 → 6 → 5mm once labels left it (8mm and 5mm were too tight for a
+  corner tab).
 - **15mm streets** (8 → 12 → 15mm): wider than the buffer, so neighborhoods separate; traded buffer
   for it.
 - **Dropped**: claim rings and band, variable columns and greyed squares, City Hall, and printed

@@ -1,25 +1,23 @@
 import { css } from "~/generated/styled-system/css"
 import { COLORS, split } from "../colors.ts"
 import { ICON } from "../icons.ts"
-import type { TileFace } from "./tiles.ts"
+import { STICKER, type TileFace } from "./tiles.ts"
 
 /**
- * One 30mm tile face. The color sits inset from the cut line, so a slightly
- * off cut lands in white. Blight
+ * One tile face, as a `STICKER`. The color sits inset from the cut line, and
+ * the inset is left unprinted, so a slightly off cut lands in it. Blight
  * and historical tiles are split diagonally (black or burgundy, and the
  * type's color); a tile a player pays to cone (a row tile, or a blight to
  * restore) has its cost on a coin in the top-right corner. `size` draws it
  * scaled, e.g. on a reference card.
  */
 
-export const TILE = 30
-const INSET = 0.8
+const INSET = 1
 
 const tile = css({
   display: "grid",
   gridTemplateAreas: `"tile"`,
   boxSizing: "border-box",
-  background: "white",
   printColorAdjust: "exact",
   "& > *": { gridArea: "tile" }
 })
@@ -45,9 +43,9 @@ const fill = ({ kind, blight, historical }: TileFace) =>
     ? split(COLORS.historical, COLORS[kind])
     : COLORS[kind]
 
-export function Tile({ face, size = TILE }: { face: TileFace | undefined; size?: number }) {
-  const mm = (n: number) => `${(n * size) / TILE}mm`
-  const style = { width: mm(TILE), height: mm(TILE), padding: mm(INSET) }
+export function Tile({ face, size = STICKER }: { face: TileFace | undefined; size?: number }) {
+  const mm = (n: number) => `${(n * size) / STICKER}mm`
+  const style = { width: mm(STICKER), height: mm(STICKER), padding: mm(INSET) }
   if (face === undefined) return <div className={tile} style={style} />
   const Icon = ICON[face.kind]
   return (

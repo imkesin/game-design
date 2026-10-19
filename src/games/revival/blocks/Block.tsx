@@ -1,6 +1,6 @@
 import { type CSSProperties, useId } from "react"
 import { css } from "~/generated/styled-system/css"
-import { BLOCK, BUFFER, DOTS, EDGE, PLOT, PLOT_LINE, RING, RING_PLOTS } from "./blocks.ts"
+import { BLOCK, BUFFER, DOTS, EDGE, PLOT, PLOT_LINE, PLOT_PADDING, RING, RING_PLOTS } from "./blocks.ts"
 import { mm } from "./mm.ts"
 
 /**
@@ -14,7 +14,7 @@ const frame = css({ display: "grid" })
 const backdrop = css({ gridRow: "1 / -1", gridColumn: "1 / -1", width: "100%", height: "100%", overflow: "visible" })
 
 /** A plot square centred in its track. */
-const plot = css({ margin: "1", border: "solid black", background: "white" })
+const plot = css({ border: "solid black", background: "white" })
 
 /**
  * Centred in the plaza: big but faint, light grey on lighter grey, since the
@@ -62,7 +62,11 @@ export function Block(
         <rect width={BLOCK} height={BLOCK} fill={`url(#${dots})`} stroke={EDGE.color} strokeWidth={EDGE.width} />
       </svg>
       {RING_PLOTS.map((position) => (
-        <div key={`${position}`} className={plot} style={{ ...at(position), borderWidth: mm(PLOT_LINE) }} />
+        <div
+          key={`${position}`}
+          className={plot}
+          style={{ ...at(position), margin: mm(PLOT_PADDING), borderWidth: mm(PLOT_LINE) }}
+        />
       ))}
       {text !== undefined && <div className={label}>{text}</div>}
     </div>

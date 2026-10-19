@@ -1,7 +1,13 @@
 /**
- * The base-plate tiles (30mm, the board's plot square): wooden tokens on top
- * are the finished buildings. Counts from DESIGN.md's Supply mix.
+ * The base-plate tiles (the board's plot square): wooden tokens on top are the
+ * finished buildings. Counts from DESIGN.md's Supply mix.
  */
+
+/** A tile's side in mm, room for a stock 1.25in (31.75mm) tile; the board's plots are sized from it. */
+export const TILE = 32
+
+/** A printed sticker's side in mm, under `TILE` so it sits inside a stock tile's edge. */
+export const STICKER = TILE - 1
 
 export type TileKind = "house" | "commercial" | "industrial" | "park" | "parking"
 

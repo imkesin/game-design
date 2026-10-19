@@ -1,17 +1,22 @@
-import { TILE, Tile } from "~/games/revival/tiles/Tile"
-import { type TileFace, TILES } from "~/games/revival/tiles/tiles"
+import { Tile } from "~/games/revival/tiles/Tile"
+import { STICKER, type TileFace, TILES } from "~/games/revival/tiles/tiles"
 import { css } from "~/generated/styled-system/css"
 
 /**
- * The tiles on Letter sticker sheets, 6 × 8 per sheet, butted edge to edge so
+ * The tiles on Letter sticker sheets, as many as fit, butted edge to edge so
  * a trimmer cuts whole rows and columns; ticks in the margins mark every cut.
  * Stick each sheet on cardstock, then cut. Print at 100% with no margins.
  */
 
 const PAGE = { width: 215.9, height: 279.4 }
-const GRID = { cols: 6, rows: 8 }
+/** Kept clear around the grid, for the cut ticks and the printer's unprintable edge. */
+const MIN_MARGIN = 10
+const GRID = {
+  cols: Math.floor((PAGE.width - 2 * MIN_MARGIN) / STICKER),
+  rows: Math.floor((PAGE.height - 2 * MIN_MARGIN) / STICKER)
+}
 const PER_SHEET = GRID.cols * GRID.rows
-const MARGIN = { x: (PAGE.width - GRID.cols * TILE) / 2, y: (PAGE.height - GRID.rows * TILE) / 2 }
+const MARGIN = { x: (PAGE.width - GRID.cols * STICKER) / 2, y: (PAGE.height - GRID.rows * STICKER) / 2 }
 const TICK = { length: 5, width: 0.2 }
 
 type Sheet = { title: string; faces: readonly (TileFace | undefined)[] }
@@ -62,8 +67,8 @@ const label = css({
 })
 
 function Ticks() {
-  const xs = Array.from({ length: GRID.cols + 1 }, (_, c) => MARGIN.x + c * TILE)
-  const ys = Array.from({ length: GRID.rows + 1 }, (_, r) => MARGIN.y + r * TILE)
+  const xs = Array.from({ length: GRID.cols + 1 }, (_, c) => MARGIN.x + c * STICKER)
+  const ys = Array.from({ length: GRID.rows + 1 }, (_, r) => MARGIN.y + r * STICKER)
   const gap = 1
   return (
     <svg viewBox={`0 0 ${PAGE.width} ${PAGE.height}`} width={`${PAGE.width}mm`} height={`${PAGE.height}mm`}>
@@ -100,8 +105,8 @@ export function TilesPage() {
             <div
               className={grid}
               style={{
-                gridTemplateColumns: `repeat(${GRID.cols}, ${TILE}mm)`,
-                gridTemplateRows: `repeat(${GRID.rows}, ${TILE}mm)`
+                gridTemplateColumns: `repeat(${GRID.cols}, ${STICKER}mm)`,
+                gridTemplateRows: `repeat(${GRID.rows}, ${STICKER}mm)`
               }}
             >
               {Array.from({ length: PER_SHEET }, (_, i) => <Tile key={i} face={faces[i]} />)}

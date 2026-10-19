@@ -272,33 +272,33 @@ tax incentives that sway where it pays to build.
 
 ## Terminology
 
-| Term           | Meaning                                                                                               |
-| -------------- | ----------------------------------------------------------------------------------------------------- |
-| Company        | A player; a construction company.                                                                     |
-| Neighborhood   | A ring of 8 plots around a plaza; 16 in a 4 × 4 matrix, A1 bottom-left.                               |
-| Plot           | One square of a ring; holds one building.                                                             |
-| Plaza          | A neighborhood's empty centre: its label, and its demand and Commercial hexes.                        |
-| Building       | A wooden token (House, shop, factory, tree) on a tile; typed; earns when finished and sold.           |
-| Base tile      | 30mm typed tile a building stands on; bought from the row, cost on a gold coin.                       |
-| Row            | The face-up building row, K + 2 tiles; the mayor walks when it's down to 2.                           |
-| Cone           | A player's marker on a project (3 each): 1 on a new build, 2 on a restore; one comes off per pick-up. |
-| Break ground   | Pay a tile's full cost, place it, and cone it: the first of a build's two actions.                    |
-| Finish         | Take your cone off, put the building on, and sell it: the second action.                              |
-| Blight         | A black building on a blight tile; blocks Housing sales in its neighborhood.                          |
-| Restore        | Put 2 cones on a blight (cost − 1); pick-ups knock it down, then finish it: three actions.            |
-| Knock down     | Take a blight's black building off with one of its cones; by a player or the mayor.                   |
-| Historical     | A building placed at setup (2–3P); burgundy split tile; counts for neighbors, not sold.               |
-| Parking lot    | Dead land from the blight cards; not a plot.                                                          |
-| Demand hex     | Put in the plaza when a House is finished; taken by Commercial sales.                                 |
-| Commercial hex | Put in the plaza when a Commercial is finished; taken by Industrial sales.                            |
-| Mayor          | Pawn that walks to an agenda target: hands out incentives, knocks down blight, taxes.                 |
-| Agenda         | A card naming one neighborhood; two face up; the walker picks the target.                             |
-| Walker         | The player whose build triggers a walk: steers the mayor, skips that walk's upgrades.                 |
-| Incentive      | Tax incentive: ramp currency (not money); spent on upgrades during walks.                             |
-| Tax            | Where no plot is empty and no blight stands: 1 coin per coned plot, per company.                      |
-| Credit rating  | An upgrade track; pays its level in coins to every player at each walk.                               |
-| Upgrade        | Bought with incentives during a walk (not by the walker): credit, cones, later powers.                |
-| Firesale       | After the final sale, unfinished projects sell for their base sale value − 1.                         |
+| Term           | Meaning                                                                                                      |
+| -------------- | ------------------------------------------------------------------------------------------------------------ |
+| Company        | A player; a construction company.                                                                            |
+| Neighborhood   | A ring of 8 plots around a plaza; 16 in a 4 × 4 matrix, A1 bottom-left.                                      |
+| Plot           | One square of a ring; holds one building.                                                                    |
+| Plaza          | A neighborhood's empty centre: its label, and its demand and Commercial hexes.                               |
+| Building       | A wooden token (House, shop, factory) on a tile; typed; earns when finished and sold. A Park is a bare tile. |
+| Base tile      | 32mm typed tile a building stands on; bought from the row, cost on a gold coin.                              |
+| Row            | The face-up building row, K + 2 tiles; the mayor walks when it's down to 2.                                  |
+| Cone           | A player's marker on a project (3 each): 1 on a new build, 2 on a restore; one comes off per pick-up.        |
+| Break ground   | Pay a tile's full cost, place it, and cone it: the first of a build's two actions.                           |
+| Finish         | Take your cone off, put the building on, and sell it: the second action.                                     |
+| Blight         | A black building on a blight tile; blocks Housing sales in its neighborhood.                                 |
+| Restore        | Put 2 cones on a blight (cost − 1); pick-ups knock it down, then finish it: three actions.                   |
+| Knock down     | Take a blight's black building off with one of its cones; by a player or the mayor.                          |
+| Historical     | A building placed at setup (2–3P); burgundy split tile; counts for neighbors, not sold.                      |
+| Parking lot    | Dead land from the blight cards; not a plot.                                                                 |
+| Demand hex     | Put in the plaza when a House is finished; taken by Commercial sales.                                        |
+| Commercial hex | Put in the plaza when a Commercial is finished; taken by Industrial sales.                                   |
+| Mayor          | Pawn that walks to an agenda target: hands out incentives, knocks down blight, taxes.                        |
+| Agenda         | A card naming one neighborhood; two face up; the walker picks the target.                                    |
+| Walker         | The player whose build triggers a walk: steers the mayor, skips that walk's upgrades.                        |
+| Incentive      | Tax incentive: ramp currency (not money); spent on upgrades during walks.                                    |
+| Tax            | Where no plot is empty and no blight stands: 1 coin per coned plot, per company.                             |
+| Credit rating  | An upgrade track; pays its level in coins to every player at each walk.                                      |
+| Upgrade        | Bought with incentives during a walk (not by the walker): credit, cones, later powers.                       |
+| Firesale       | After the final sale, unfinished projects sell for their base sale value − 1.                                |
 
 ## Open
 

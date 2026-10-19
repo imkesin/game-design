@@ -1,7 +1,12 @@
 /** The city's measurements, all in mm, and how its blocks lay out on the board. */
 
-/** The 32mm system: a plot's track, holding a 30mm square with 1mm padding all round. */
-export const PLOT = 32
+import { TILE } from "../tiles/tiles.ts"
+
+/** Space around a tile in its plot, all round, so neighboring tiles don't touch. */
+export const PLOT_PADDING = 1
+
+/** A plot's track: a `TILE` square with `PLOT_PADDING` all round. */
+export const PLOT = TILE + 2 * PLOT_PADDING
 export const PLOT_LINE = 0.6
 /**
  * Ground inside a block: pure black dots (a halftone, not a grey fill, so it
