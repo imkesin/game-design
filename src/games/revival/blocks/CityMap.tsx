@@ -1,6 +1,7 @@
+import type { ReactNode } from "react"
 import { css } from "~/generated/styled-system/css"
 import { Block } from "./Block.tsx"
-import { type City, labelOf, type Track } from "./blocks.ts"
+import { type City, labelOf, type Layout, type Track } from "./blocks.ts"
 import { mm } from "./mm.ts"
 
 /**
@@ -16,7 +17,7 @@ const board = css({ display: "grid" })
 const seamLayer = css({ gridRow: "1 / -1", gridColumn: "1 / -1", width: "100%", height: "100%", pointerEvents: "none" })
 
 export function CityMap(
-  { city, xs, ys, width, height, seams }: {
+  { city, xs, ys, width, height, seams, fill, layout }: {
     city: City
     xs: readonly Track[]
     ys: readonly Track[]
@@ -24,6 +25,12 @@ export function CityMap(
     height: number
     /** Screen-only cut lines, in mm from the board's origin. */
     seams?: { xs: readonly number[]; ys: readonly number[] }
+    /** Screen-only pieces on a neighborhood (row 0 at the bottom): its plots and plaza, or hide it. */
+    fill?:
+      | ((row: number, col: number) => { plots?: readonly ReactNode[]; plaza?: ReactNode; hidden?: boolean })
+      | undefined
+    /** Each neighborhood's plots; a ring of 8 by default. */
+    layout?: Layout | undefined
   }
 ) {
   const area = (r: number, c: number) => `n${r}x${c}`
@@ -47,11 +54,16 @@ export function CityMap(
       {Array.from({ length: rows }, (_, r) =>
         Array.from({ length: cols }, (_, c) => {
           const label = labelOf(r, c)
+          const pieces = fill?.(r, c)
           return (
             <Block
               key={area(r, c)}
               label={label}
               style={{ gridArea: area(r, c) }}
+              plots={pieces?.plots}
+              plaza={pieces?.plaza}
+              hidden={pieces?.hidden}
+              layout={layout}
             />
           )
         }))}

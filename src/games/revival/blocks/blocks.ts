@@ -29,8 +29,28 @@ export const RING_PLOTS = [[0, 0], [1, 0], [2, 0], [2, 1], [2, 2], [1, 2], [0, 2
  */
 export const BUFFER = 2
 
+/**
+ * How a neighborhood's plots lay out: a `grid` × `grid` square, its plots as
+ * (column, row) in it, and the plaza's cell, if it has one.
+ */
+export type Layout = {
+  grid: number
+  plots: readonly (readonly [number, number])[]
+  plaza?: readonly [number, number]
+}
+
+export const LAYOUTS = {
+  /** A ring of 8 round a plaza. */
+  ring: { grid: RING, plots: RING_PLOTS, plaza: [1, 1] },
+  /** A 2 × 2 block, no plaza: clockwise from the top-left. */
+  square: { grid: 2, plots: [[0, 0], [1, 0], [1, 1], [0, 1]] }
+} as const satisfies Record<string, Layout>
+
+export type LayoutName = keyof typeof LAYOUTS
+
 /** A neighborhood's width and height. */
-export const BLOCK = 2 * BUFFER + RING * PLOT
+export const blockOf = (layout: Layout) => 2 * BUFFER + layout.grid * PLOT
+export const BLOCK = blockOf(LAYOUTS.ring)
 
 /** The white street between neighboring blocks; cut lines and folds run down the middle of one. */
 export const STREET = 10
@@ -54,26 +74,26 @@ export type Track = { size: number; block?: number }
 
 /**
  * One axis of the board as grid tracks, `counts` neighborhoods per tile. Each
- * tile's blocks sit `STREET` apart, pushed up to the tile edges so half a
+ * tile's blocks (`block` mm square) sit `street` apart, pushed up to the tile edges so half a
  * street lies on either side of each; the slack goes to the board's edge (on
  * a middle tile, or a lone one, it's split between both sides). `inset` is
  * kept clear inside the board's outer edges (a printer's safe zone).
  * `over` lists tiles whose blocks don't fit, with how many mm over.
  */
-export function axis(counts: readonly number[], tile: number, inset = 0) {
+export function axis(counts: readonly number[], tile: number, inset = 0, block = BLOCK, street = STREET) {
   const tracks: Track[] = []
   const over: { tile: number; by: number }[] = []
-  let block = 0
+  let index = 0
   counts.forEach((count, t) => {
     const [first, last] = [t === 0, t === counts.length - 1]
-    const [start, end] = [first ? inset : STREET / 2, last ? inset : STREET / 2]
-    const slack = tile - (count * BLOCK + (count - 1) * STREET + start + end)
+    const [start, end] = [first ? inset : street / 2, last ? inset : street / 2]
+    const slack = tile - (count * block + (count - 1) * street + start + end)
     if (slack < 0) over.push({ tile: t, by: -slack })
     const [before, after] = first === last ? [slack / 2, slack / 2] : first ? [slack, 0] : [0, slack]
     tracks.push({ size: Math.max(before, 0) + start })
     for (let k = 0; k < count; k++) {
-      if (k > 0) tracks.push({ size: STREET })
-      tracks.push({ size: BLOCK, block: block++ })
+      if (k > 0) tracks.push({ size: street })
+      tracks.push({ size: block, block: index++ })
     }
     tracks.push({ size: Math.max(after, 0) + end })
   })

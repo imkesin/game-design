@@ -94,8 +94,7 @@ const badge = css({
 
 const empty = css({ border: "0.3mm dashed #d4d4d4" })
 
-const fill = (deck: SetupCard["deck"], piece: Piece) =>
-  piece === "parking" ? COLORS.parking : split(COLORS[deck], COLORS[piece])
+const fill = (deck: SetupCard["deck"], piece: Piece) => split(COLORS[deck], COLORS[piece])
 
 export function SetupCardFace({ card: { deck, name, entries: list, atThree } }: { card: SetupCard }) {
   return (

@@ -5,18 +5,17 @@ import type { SetupCard } from "./setupCard.ts"
 const H = "house"
 const C = "commercial"
 const I = "industrial"
-const P = "parking"
 
 const card = (name: string, entries: SetupCard["entries"]): SetupCard => ({ deck: "blight", name, entries })
 
-/** 30 blight (8 House / 12 Commercial / 10 Industrial) and 8 parking lots, one per card. */
+/** 30 blight (8 House / 12 Commercial / 10 Industrial). */
 export const BLIGHT_CARDS: readonly SetupCard[] = [
-  card("Mill Row", [[I, I, C], [I, C, C], [P], []]),
-  card("Canal Street", [[], [H, P], [C, H], [I, I, C]]),
-  card("Market Lane", [[P], [C, C, I], [H], []]),
-  card("Foundry Way", [[], [P], [I, C], [H, C]]),
-  card("Rail Yard", [[I, C, H], [P], [], []]),
-  card("Old Main", [[], [], [H, P], [C, I]]),
-  card("Arcade Street", [[], [C, H, P], [], []]),
-  card("Depot Road", [[P], [], [], [I, H]])
+  card("Mill Row", [[I, I, C], [I, C, C], [], []]),
+  card("Canal Street", [[], [H], [C, H], [I, I, C]]),
+  card("Market Lane", [[], [C, C, I], [H], []]),
+  card("Foundry Way", [[], [], [I, C], [H, C]]),
+  card("Rail Yard", [[I, C, H], [], [], []]),
+  card("Old Main", [[], [], [H], [C, I]]),
+  card("Arcade Street", [[], [C, H], [], []]),
+  card("Depot Road", [[], [], [], [I, H]])
 ]

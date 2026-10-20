@@ -6,14 +6,15 @@ Update this file rather than re-deriving. Rules live in `RULES.md`; the reasons 
 
 ## Pieces
 
-- **Color conventions** (2026-10-17; `colors.ts`): **green** Parks, **light tan** Housing, **medium
-  brown** Commercial, **grey** Industrial, **black** anything blighted. Parking lots are a **very
-  grey blue**. Historical buildings' accent is **burgundy** (a heritage plaque; the historical setup
-  cards' header; under review now that tiles flip, see below). The mayor and his agenda cards are
-  **civic navy** (provisional). Costs are printed on a **gold coin** (top-right of a row tile, and
-  of a blighted Commercial or Industrial tile: its restore price, 1 / 3, as a reminder; a blighted
-  House restores free, so no coin). Blighted and historical buildings are split diagonally (black or
-  burgundy top-left, the type's color bottom-right) under a white icon, on cards and tiles alike.
+- **Color conventions** (2026-10-17; `colors.ts`; superseded 2026-10-19 by the equal-lightness
+  palette documented there, see `/palette`): **green** Parks, **light tan** Housing, **medium
+  brown** Commercial, **grey** Industrial, **black** anything blighted. Historical buildings' accent
+  is **burgundy** (a heritage plaque; the historical setup cards' header; under review now that
+  tiles flip, see below). The mayor and his agenda cards are **civic navy** (provisional). Costs are
+  printed on a **gold coin** (top-right of a row tile, and of a blighted Commercial or Industrial
+  tile: its restore price, 1 / 3, as a reminder; a blighted House restores free, so no coin).
+  Blighted and historical buildings are split diagonally (black or burgundy top-left, the type's
+  color bottom-right) under a white icon, on cards and tiles alike.
 - **V0 components** (2026-10-17): **32mm base-plate tiles** (the plot square; 30mm until 2026-10-18,
   grown to fit stock 1.25in tiles) on sticker paper over cardstock, printable at `/revival/tiles` as
   **31mm stickers** (`STICKER`, 1mm under `TILE`) for stock 1.25in tiles: butted 6 × 8 per Letter
@@ -27,13 +28,12 @@ Update this file rather than re-deriving. Rules live in `RULES.md`; the reasons 
   plot is one face of one tile, and a step forward flips or swaps it. Nothing stacks: a tile on a
   tile reads as a multi-story building.
 
-  | Tile        | Side A                                    | Side B            |
-  | ----------- | ----------------------------------------- | ----------------- |
-  | Row         | construction (cost, base payout, workers) | finished building |
-  | Park        | construction                              | finished Park     |
-  | Blight      | **dark** (the blighted building)          | construction      |
-  | Restored    | finished building, old look (brick, etc.) | plain common back |
-  | Parking lot | dead land, neutral                        | — (never flips)   |
+  | Tile     | Side A                                    | Side B            |
+  | -------- | ----------------------------------------- | ----------------- |
+  | Row      | construction (cost, base payout, workers) | finished building |
+  | Park     | construction                              | finished Park     |
+  | Blight   | **dark** (the blighted building)          | construction      |
+  | Restored | finished building, old look (brick, etc.) | plain common back |
 
   - **New build**: placed construction side up; **finish flips it**.
   - **Blight**: dark side up, so **the city starts dark** (the theme). Restore puts 2 workers on the
@@ -92,9 +92,8 @@ Supersedes parts of §1; §1 still describes the look (dots, edge, streets, labe
 - **15mm streets** (8 → 12 → 15mm): wider than the buffer, so neighborhoods separate; traded buffer
   for it.
 - **Dropped**: claim rings and band, variable columns and greyed squares, City Hall, and printed
-  prefill marks (code removed): blight, parking lots and historical buildings are now dealt by setup
-  cards onto fixed halves of each ring (DESIGN.md, Setup cards), so the board prints nothing about
-  setup.
+  prefill marks (code removed): blight and historical buildings are now dealt by setup cards onto
+  fixed halves of each ring (DESIGN.md, Setup cards), so the board prints nothing about setup.
 
 ### 1. Rectangular blocks (`blocks/`, `/revival`)
 

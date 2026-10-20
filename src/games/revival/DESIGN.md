@@ -14,8 +14,8 @@ tax incentives that sway where it pays to build.
 
 - **City geometry** (2026-10-17): a **4 × 4 matrix of neighborhoods** on a 20 × 20in quad-fold
   board, 2 × 2 per panel. Every neighborhood is a **ring of 8 plots** around an empty centre (the
-  plaza, labelled with its coordinates A1–D4): 128 plots, 120 after the 8 parking lots. No Blocks or
-  other groups of plots: a neighborhood is just its plots.
+  plaza, labelled with its coordinates A1–D4): 128 plots. No Blocks or other groups of plots: a
+  neighborhood is just its plots.
 - **Cones** (2026-10-17; replaced construction sites, Blocks and the Sell action); **workers** in
   RULES.md since 2026-10-19 (worker meeples for playtesting, same role): each player has
   **construction cones** in their color. A cone on a plot is a building under construction; it's the
@@ -82,12 +82,12 @@ tax incentives that sway where it pays to build.
   Parks **boost the sale value of Housing in their neighborhood**.
 - **Walk**: an **L-shaped path** to the target (at most one turn), or a straight line when they
   share a row or column. The player whose build triggered the walk picks the target and the L.
-- **Build budget** (2026-10-17): **120 usable plots** (128, less 8 parking lots), the same at every
-  player count. **Built + positive = 60** (half), and **blight + empty at peak = 60**, split **30 /
-  30**: the board peaks **75% full**, leaving 30 empty plots (players feel there was more left to
-  do, and the endgame never crunches down to a few legal plots). Blight holds its plot whether
-  restored or not. (History: 100-plot board at 80% with 20 blight, builds 12 / 14 / 16 / 18; before
-  that 70%.)
+- **Build budget** (2026-10-17): **120 usable plots** (128, less 8 parking lots, since dropped:
+  2026-10-19), the same at every player count. **Built + positive = 60** (half), and **blight +
+  empty at peak = 60**, split **30 / 30**: the board peaks **75% full**, leaving 30 empty plots
+  (players feel there was more left to do, and the endgame never crunches down to a few legal
+  plots). Blight holds its plot whether restored or not. (History: 100-plot board at 80% with 20
+  blight, builds 12 / 14 / 16 / 18; before that 70%.)
 
   | Players | Walk every K tiles | Builds each | Built | Walks | Agenda cards out | Positive | Blight | Empty |
   | ------- | ------------------ | ----------- | ----- | ----- | ---------------- | -------- | ------ | ----- |
@@ -106,10 +106,9 @@ tax incentives that sway where it pays to build.
   - **Positive** buildings (was prefill) are **historical** parts of the city, on special base
     tiles. They **affect the value of buildings nearby** like any building, but you get **no credit
     for them when selling**. Capped at 18 so low counts aren't buried in setup.
-  - **Setup cost** (2026-10-19, flat tiles): blight 30 + parking 8 + historical 0 / 12 / 18 + a cube
-    per historical House or Commercial (0 / 11 / 16) = **38 / 61 / 72** pieces (4–5 / 3 / 2
-    players), split across players (see Setup cards). Was 68 / 103 / 120 with wooden buildings. Cut
-    if it drags: parking printed on the board (−8, but always in the same places).
+  - **Setup cost** (2026-10-19, flat tiles): blight 30 + historical 0 / 12 / 18 + a cube per
+    historical House or Commercial (0 / 11 / 16) = **30 / 53 / 64** pieces (4–5 / 3 / 2 players),
+    split across players (see Setup cards). Was 68 / 103 / 120 with wooden buildings.
 - **Setup cards** (2026-10-17): the starting state is dealt, not printed. **8 blight cards** (every
   player count) and **8 historical (positive) cards** for 2–3P: one deck, its 3P buildings a badged
   subset of 2P's. Shuffle a deck and deal **one card to each of the 4 rows and 4 columns**, laid
@@ -117,19 +116,17 @@ tax incentives that sway where it pays to build.
   and south** (2026-10-18); entry 1 is the neighborhood nearest the card. A card lists 4 entries,
   one per neighborhood along its line, and each neighborhood takes its row card's entry and its
   column card's entry.
-  - **Blight cards** carry the **30 blight** and the **8 parking lots** (one per card): everything
-    that eats the city's land goes together. **Parking lots** are dead land, not plots: never
-    developed, restored, taxed or counted by "every plot developed" checks. Entries list each
-    piece's type (e.g. "House + Parking Lot", "2 House", "House + Commercial", "Factory"), **at most
-    3 pieces**.
+  - **Blight cards** carry the **30 blight**. Entries list each piece's type (e.g. "2 House",
+    "House + Commercial", "Factory"), **at most 3 pieces**. (**Parking lots**, dead land one per
+    card, were dropped 2026-10-19: just filler.)
   - **Historical cards**: **at most 1** historical building per entry, its type listed: a historic
     main street, mostly Houses and Commercial (see Supply mix). **At 2P place all 18; at 3P only the
     12 with a burgundy "3" badge** (exactly 3 per entry position, so neither count favors a quarter
     of the city). One deck instead of a set per count.
   - **Where pieces go**: each line owns half of every ring. A **row** card fills the **top 3 plots**
-    (blight, parking) and the **left-middle plot** (positive); a **column** card the **bottom 3**
-    and the **right-middle**. The entry caps match, so nothing ever overflows, and every row and
-    column can be resolved at once by different players.
+    (blight) and the **left-middle plot** (positive); a **column** card the **bottom 3** and the
+    **right-middle**. The entry caps match, so nothing ever overflows, and every row and column can
+    be resolved at once by different players.
   - Blight lands in **lines**: run-down avenues and hot crossings where two heavy cards meet, not
     blobs. Simulated with lumpy cards (3300, 3210, 3100, …): ~5 clean neighborhoods and ~2–3 with 4+
     blight per game. Where a card's weight sits sets the city's geography: heavy ends decay the
@@ -292,7 +289,6 @@ tax incentives that sway where it pays to build.
 | Restore         | Put 2 cones on a blight (cost − 1); pick-ups knock it down, then finish it: three actions.            |
 | Knock down      | Take one cone off a blight and flip it to construction; by a player or the mayor.                     |
 | Historical      | A building placed at setup (2–3P); counts for neighbors, not sold. Tile source open.                  |
-| Parking lot     | Dead land from the blight cards; not a plot.                                                          |
 | Demand cube     | Put on a House's tile when it's finished; taken by Commercial sales.                                  |
 | Commercial cube | Put on a Commercial's tile when it's finished; taken by Industrial sales.                             |
 | Mayor           | Pawn that walks to an agenda target: hands out incentives, knocks down blight, taxes.                 |

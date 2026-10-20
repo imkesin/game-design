@@ -82,7 +82,7 @@ export function Coin({ amount, size = 7 }: { amount: number | string; size?: num
 
 export function Incentive({ amount }: { amount?: number }) {
   return (
-    <span className={incentive} style={{ background: COLORS.mayor }}>
+    <span className={incentive} style={{ background: COLORS.civicInk }}>
       {amount}
       <BadgePercent size="3.2mm" strokeWidth={2.25} />
     </span>

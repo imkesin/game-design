@@ -5,8 +5,8 @@
  * left-middle plot, a column card's its bottom 3 and right-middle.
  */
 
-/** A building type, or a parking lot (blight cards only). */
-export type Piece = "house" | "commercial" | "industrial" | "parking"
+/** A building type a setup card places. */
+export type Piece = "house" | "commercial" | "industrial"
 
 export type SetupCard = {
   /** Blight (every player count) or historical buildings (2–3 players). */

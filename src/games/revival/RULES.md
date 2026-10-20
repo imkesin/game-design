@@ -15,8 +15,7 @@ The company with the most money at the end of the mayor's term will be declared 
 
 1. **City**: lay out the board.
 2. **Blight**: shuffle the 8 blight cards and deal one to each row and column along the west and
-   north edges. Entry 1 is the neighborhood nearest the card. Parking lots are dead land and can't
-   be changed during the game.
+   north edges. Entry 1 is the neighborhood nearest the card.
 3. **Historical** (2–3 players): deal the 8 historical cards along the east and south edges and
    place them the same way as blight. When you place a historical building, put its cube on it.
 4. **Agenda**: shuffle the 16 agenda cards and remove some (table). Reveal the first card, move the

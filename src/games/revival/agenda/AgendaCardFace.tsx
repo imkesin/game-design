@@ -17,12 +17,12 @@ const SIZE = 4
  * ring offset from it.
  */
 const TARGET = {
-  background: COLORS.mayor,
-  borderColor: COLORS.mayor,
+  background: COLORS.civicInk,
+  borderColor: COLORS.civicInk,
   color: "white",
   fontSize: "4mm",
   /** A second ring, clear of the square, so the target jumps out. */
-  outline: `0.9mm solid ${COLORS.mayor}`,
+  outline: `0.9mm solid ${COLORS.civicInk}`,
   outlineOffset: "0.5mm"
 }
 
@@ -80,7 +80,7 @@ export function AgendaCardFace({ row, col }: {
   const label = labelOf(row, col)
   return (
     <div className={card} style={{ width: `${CARD_TRIM_W_MM}mm`, height: `${CARD_TRIM_H_MM}mm` }}>
-      <div className={title} style={{ background: COLORS.mayor }}>{label}</div>
+      <div className={title} style={{ background: COLORS.civicInk }}>{label}</div>
       <div className={map}>
         {Array.from({ length: SIZE }, (_, k) => SIZE - 1 - k).flatMap((r) =>
           Array.from({ length: SIZE }, (_, c) => {
