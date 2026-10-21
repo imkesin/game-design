@@ -5,15 +5,14 @@
  * left-middle plot, a column card's its bottom 3 and right-middle.
  */
 
-/** A building type a setup card places. */
+/** A building type a historical card places. */
 export type Piece = "house" | "commercial" | "industrial"
 
-export type SetupCard = {
-  /** Blight (every player count) or historical buildings (2–3 players). */
-  deck: "blight" | "historical"
-  name: string
-  /** Entry 1 (nearest the card) first: up to 3 pieces on a blight card, 1 on a historical card. */
-  entries: readonly [readonly Piece[], readonly Piece[], readonly Piece[], readonly Piece[]]
-  /** Historical only: which entries' buildings are placed at 3 players too (all are at 2). */
-  atThree?: readonly [boolean, boolean, boolean, boolean]
-}
+export type Entries4<T> = readonly [T, T, T, T]
+
+/** Entries run from entry 1, nearest the card. */
+export type SetupCard =
+  /** Every player count: how many blight (0–3) each entry places; blight has no type. */
+  | { deck: "blight"; name: string; entries: Entries4<number> }
+  /** 2–3 players: at most 1 building an entry, and which are placed at 3 players too (all are at 2). */
+  | { deck: "historical"; name: string; entries: Entries4<readonly Piece[]>; atThree: Entries4<boolean> }

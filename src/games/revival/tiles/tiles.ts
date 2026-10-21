@@ -14,23 +14,18 @@ export type BuildingKind = "house" | "commercial" | "industrial" | "park"
 
 /**
  * Which face: a project's `construction` side (its numbers), a `finished`
- * building (art only), or a blight's `dark` side.
+ * building (art only), or a blight's `dark` side (no numbers, no type).
  */
 export type Side = "construction" | "finished" | "dark"
 
 /**
- * One face of a tile. `cost` is what a player pays to put workers on it: a
- * row tile's price, or a blight's restore price (none when free). `sale` is
- * its base sale value and `bonus` what's added on top, `workers` how many it
- * takes.
+ * One face of a tile. `cost` is a row tile's price, `sale` its base sale
+ * value and `bonus` what's added on top, `workers` how many it takes.
  */
 export type TileFace = {
-  kind: BuildingKind
+  kind: BuildingKind | "blight"
   side: Side
   historical?: boolean
-  restored?: boolean
-  /** A blight's construction side: still being restored. */
-  restoring?: boolean
   cost?: number
   sale?: number
   bonus?: Bonus
@@ -55,16 +50,13 @@ const BONUS: Partial<Record<BuildingKind, Bonus>> = {
   industrial: { amount: 3, per: "commercial" }
 }
 
-/** Restoring a blight costs its type's cost less this (DESIGN.md, Blight). */
-const RESTORE_DISCOUNT = 1
-
 const paid = (cost: number) => (cost > 0 ? { cost } : {})
 
-/** A project's numbers; `cost` is left off a blight's back, paid when it was restored. */
-const construction = (kind: BuildingKind, cost?: number): TileFace => ({
+/** A project's numbers. */
+const construction = (kind: BuildingKind, cost: number): TileFace => ({
   kind,
   side: "construction",
-  ...paid(cost ?? 0),
+  ...paid(cost),
   sale: SALE[kind],
   ...(BONUS[kind] === undefined ? {} : { bonus: BONUS[kind] }),
   workers: 1
@@ -76,14 +68,11 @@ const many = (count: number, tile: Tile): Tile[] => Array.from({ length: count }
 
 const row = (kind: BuildingKind): Tile => ({ a: construction(kind, COST[kind]), b: finished(kind) })
 
-const blight = (kind: BuildingKind): Tile => ({
-  a: { kind, side: "dark", ...paid(COST[kind] - RESTORE_DISCOUNT), workers: 2 },
-  b: { ...construction(kind), restoring: true }
-})
+/** Every blight is the same: a dark face of no type, its back bare; knockdown swaps in a row tile. */
+export const BLIGHT: TileFace = { kind: "blight", side: "dark" }
 
 /**
- * Every tile: the row deck (9 : 3 : 1), the Park supply, blight and the
- * restored supply it's swapped for (one per blight, for now), historical
+ * Every tile: the row deck (9 : 3 : 1), the Park supply, blight, historical
  * buildings (their source is open).
  */
 export const TILES: readonly Tile[] = [
@@ -92,12 +81,7 @@ export const TILES: readonly Tile[] = [
   ...many(6, row("industrial")),
   /** Assumed: the supply size isn't decided yet. */
   ...many(20, row("park")),
-  ...many(8, blight("house")),
-  ...many(12, blight("commercial")),
-  ...many(10, blight("industrial")),
-  ...many(8, { a: finished("house", { restored: true }) }),
-  ...many(12, { a: finished("commercial", { restored: true }) }),
-  ...many(10, { a: finished("industrial", { restored: true }) }),
+  ...many(30, { a: BLIGHT }),
   ...many(10, { a: finished("house", { historical: true }) }),
   ...many(6, { a: finished("commercial", { historical: true }) }),
   ...many(2, { a: finished("industrial", { historical: true }) })

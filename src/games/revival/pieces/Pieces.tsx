@@ -1,6 +1,6 @@
-import { BadgePercent, Building2, X } from "lucide-react"
+import { BadgePercent, X } from "lucide-react"
 import { css } from "~/generated/styled-system/css"
-import { COLORS, split } from "../colors.ts"
+import { COLORS } from "../colors.ts"
 import { ICON } from "../icons.ts"
 import type { COST } from "../tiles/tiles.ts"
 
@@ -89,7 +89,7 @@ export function Incentive({ amount }: { amount?: number }) {
   )
 }
 
-export function Building({ kind, size, blight = false }: { kind: BuildingKind; size: number; blight?: boolean }) {
+export function Building({ kind, size }: { kind: BuildingKind; size: number }) {
   const Icon = ICON[kind]
   return (
     <span
@@ -98,7 +98,7 @@ export function Building({ kind, size, blight = false }: { kind: BuildingKind; s
         width: `${size}mm`,
         height: `${size}mm`,
         borderRadius: `${size * 0.18}mm`,
-        background: blight ? split(COLORS.blight, COLORS[kind]) : COLORS[kind]
+        background: COLORS[kind]
       }}
     >
       <Icon size={`${size * 0.62}mm`} strokeWidth={1.9} />
@@ -146,7 +146,7 @@ export function NoBlight({ size }: { size: number }) {
         className={chip}
         style={{ width: `${size}mm`, height: `${size}mm`, borderRadius: `${size * 0.18}mm`, background: COLORS.blight }}
       >
-        <Building2 size={`${size * 0.6}mm`} strokeWidth={1.9} />
+        <ICON.blight size={`${size * 0.6}mm`} strokeWidth={1.9} />
       </span>
       <span
         className={badge}

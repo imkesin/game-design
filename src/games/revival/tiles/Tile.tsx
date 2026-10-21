@@ -14,17 +14,16 @@ import { type Bonus, STICKER, type TileFace } from "./tiles.ts"
  *   numbers as `SYMBOL`-tall symbols: workers as meeples top-left, the price
  *   coin top-right, a spade beside its type icon in the centre, and the payoff
  *   bottom-right: base sale coin + (bonus coin / Park or cube).
- * - **Dark** (a blight): its type's color under a banded dark screen,
- *   restore workers and price.
+ * - **Dark** (a blight): grime grey under a faint, generic building; no type, no
+ *   numbers.
  * - **Finished**: its type's color under a white icon, a placeholder for art.
- *   Historical looks like any other; restored gets an inner frame.
+ *   Historical looks like any other.
  */
 
 const INSET = 1
 /** How tall the corner symbols are. */
 const SYMBOL = 5
 const PADDING = 0.6
-const FRAME = 0.6
 
 const tile = css({ display: "grid", boxSizing: "border-box", printColorAdjust: "exact" })
 
@@ -57,21 +56,11 @@ const PAIR = 9
 const WORKER_FILL = "rgba(255, 255, 255, 0.3)"
 const CENTRE_FILL = "rgba(255, 255, 255, 0.1)"
 
-/** A blight's icon: white muddied with 10% blight grey, and faintly filled. */
-const GRIMY = "#e9e9e9"
-const GRIMY_FILL = "rgba(233, 233, 233, 0.2)"
+/** A blight's building: faint white, so the tile reads dark first and the building second. */
+const BLIGHT_STROKE = "rgba(255, 255, 255, 0.3)"
 
 /** Construction's faint diagonal stripes, so a site reads as unfinished. */
 const HATCH = "rgba(255, 255, 255, 0.2)"
-
-/**
- * A dark grey screen in 4 hard bands, darkest at the top: heavy on a blight
- * (the city starts dark), lighter on its construction side while it's restored.
- */
-const bands = (alphas: readonly number[]) =>
-  `linear-gradient(${alphas.map((a, i) => `rgba(31, 31, 31, ${a}) ${i * 25}% ${(i + 1) * 25}%`).join(", ")})`
-const BLIGHT_SCREEN = bands([0.9, 0.7, 0.5, 0.3])
-const SITE_SCREEN = bands([0.4, 0.3, 0.2, 0.1])
 
 /** A mark drawn white in outline over a faint white fill. */
 function Mark({ d, size, fill }: { d: string; size: string; fill: string }) {
@@ -137,6 +126,8 @@ function Unit({ of, size }: { of: Bonus["per"]; size: string }) {
 
 const fill = ({ kind }: TileFace) => COLORS[kind]
 
+const blight = css({ display: "grid", placeItems: "center" })
+
 export function Tile(
   { face: f, size = STICKER, unit = "1mm" }: {
     face: TileFace | undefined
@@ -148,10 +139,18 @@ export function Tile(
   const mm = (n: number) => `calc(${(n * size) / STICKER} * ${unit})`
   const style = { width: mm(STICKER), height: mm(STICKER), padding: mm(INSET) }
   if (f === undefined) return <div className={tile} style={style} />
+  if (f.kind === "blight") {
+    return (
+      <div className={tile} style={style}>
+        <div className={blight} style={{ background: COLORS.blight, borderRadius: mm(1) }}>
+          <ICON.blight style={{ width: mm(14), height: mm(14) }} strokeWidth={1.75} color={BLIGHT_STROKE} />
+        </div>
+      </div>
+    )
+  }
   const Icon = ICON[f.kind]
-  const frame = f.restored === true
   const corners = f.side !== "finished"
-  const iconSize = mm(f.side === "finished" ? 14 : f.side === "construction" ? PAIR : 12)
+  const iconSize = mm(f.side === "finished" ? 14 : PAIR)
   const coinStyle = { background: COLORS.coin, width: mm(SYMBOL), height: mm(SYMBOL), fontSize: mm(SYMBOL * 0.62) }
   return (
     <div className={tile} style={style}>
@@ -159,14 +158,9 @@ export function Tile(
         className={face}
         style={{
           background: f.side === "construction"
-            ? `repeating-linear-gradient(45deg, ${HATCH} 0 ${mm(0.5)}, transparent 0 ${mm(2)}), ${
-              f.restoring === true ? `${SITE_SCREEN}, ` : ""
-            }${fill(f)}`
-            : f.side === "dark"
-            ? `${BLIGHT_SCREEN}, ${fill(f)}`
+            ? `repeating-linear-gradient(45deg, ${HATCH} 0 ${mm(0.5)}, transparent 0 ${mm(2)}), ${fill(f)}`
             : fill(f),
           borderRadius: mm(1),
-          border: frame ? `${mm(FRAME)} solid rgba(255, 255, 255, 0.7)` : undefined,
           padding: corners ? mm(PADDING) : undefined,
           gridTemplateRows: corners ? `${mm(SYMBOL)} 1fr ${mm(SYMBOL)}` : "0 1fr 0"
         }}
@@ -187,8 +181,8 @@ export function Tile(
           <Icon
             style={{ width: iconSize, height: iconSize }}
             strokeWidth={1.75}
-            color={f.side === "dark" ? GRIMY : "white"}
-            fill={f.side === "construction" ? CENTRE_FILL : f.side === "dark" ? GRIMY_FILL : "none"}
+            color="white"
+            fill={f.side === "construction" ? CENTRE_FILL : "none"}
           />
         </span>
         {corners && f.sale !== undefined && (

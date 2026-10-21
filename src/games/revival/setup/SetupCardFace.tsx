@@ -2,15 +2,17 @@ import { css } from "~/generated/styled-system/css"
 import { CARD_TRIM_H_MM, CARD_TRIM_W_MM } from "~/shared/print/cardSize"
 import { COLORS, split } from "../colors.ts"
 import { ICON } from "../icons.ts"
-import type { Piece, SetupCard } from "./setupCard.ts"
+import { Tile } from "../tiles/Tile.tsx"
+import { BLIGHT } from "../tiles/tiles.ts"
+import type { SetupCard } from "./setupCard.ts"
 
 /**
  * A setup card at trim size, portrait, read the standard way up: the name in
  * the top eighth, then the 4 entries in equal zones, 1 to 4 from the top.
  * Every entry shows 3 slots, filled in order: a blight entry's are the 3 plots
- * its line owns in a ring; a historical entry uses only the first. Buildings
- * are split diagonally, black (blight) or burgundy (historical) top-left and
- * the type's color bottom-right. Icons are white.
+ * its line owns in a ring; a historical entry uses only the first. Blight is
+ * drawn as its tile; a historical building is split diagonally, burgundy
+ * top-left and the type's color bottom-right, under a white icon.
  */
 
 const SLOTS = 3
@@ -94,29 +96,41 @@ const badge = css({
 
 const empty = css({ border: "0.3mm dashed #d4d4d4" })
 
-const fill = (deck: SetupCard["deck"], piece: Piece) => split(COLORS[deck], COLORS[piece])
+/** The slot's side, as in `slot`. */
+const SLOT = 13
 
-export function SetupCardFace({ card: { deck, name, entries: list, atThree } }: { card: SetupCard }) {
+/** Entry `i`'s slot `k`: a blight tile, a historical building, or empty. */
+function Slot({ card: c, i, k }: { card: SetupCard; i: number; k: number }) {
+  const area = { gridArea: `plot${k}` }
+  if (c.deck === "blight") {
+    return (c.entries[i] ?? 0) > k
+      ? (
+        <div className={slot} style={area}>
+          <Tile face={BLIGHT} size={SLOT} />
+        </div>
+      )
+      : <div className={`${slot} ${empty}`} style={area} />
+  }
+  const piece = c.entries[i]?.[k]
+  if (piece === undefined) return <div className={`${slot} ${empty}`} style={area} />
+  const Icon = ICON[piece]
+  return (
+    <div className={slot} style={{ ...area, background: split(COLORS.historical, COLORS[piece]) }}>
+      <Icon size="8mm" strokeWidth={1.75} />
+      {c.atThree[i] === true && <span className={badge} style={{ background: COLORS.historical }}>3</span>}
+    </div>
+  )
+}
+
+export function SetupCardFace({ card: c }: { card: SetupCard }) {
   return (
     <div className={card} style={{ width: `${CARD_TRIM_W_MM}mm`, height: `${CARD_TRIM_H_MM}mm` }}>
-      <div className={title} style={{ background: COLORS[deck] }}>{name}</div>
+      <div className={title} style={{ background: COLORS[c.deck] }}>{c.name}</div>
       <div className={entries}>
-        {list.map((pieces, i) => (
+        {c.entries.map((_, i) => (
           <div key={i} className={entry}>
             <span className={number}>{i + 1}</span>
-            {Array.from({ length: SLOTS }, (_, k) => {
-              const piece = pieces[k]
-              if (piece === undefined) {
-                return <div key={k} className={`${slot} ${empty}`} style={{ gridArea: `plot${k}` }} />
-              }
-              const Icon = ICON[piece]
-              return (
-                <div key={k} className={slot} style={{ gridArea: `plot${k}`, background: fill(deck, piece) }}>
-                  <Icon size="8mm" strokeWidth={1.75} />
-                  {atThree?.[i] === true && <span className={badge} style={{ background: COLORS.historical }}>3</span>}
-                </div>
-              )
-            })}
+            {Array.from({ length: SLOTS }, (_, k) => <Slot key={k} card={c} i={i} k={k} />)}
           </div>
         ))}
       </div>

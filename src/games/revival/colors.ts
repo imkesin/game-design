@@ -2,29 +2,30 @@
  * Revival's palette, shared by the board, tiles and cards; picked in OKLCH
  * (lightness, chroma, hue) so the rules hold by eye:
  *
- * - **Buildings** share one lightness (L 0.66) and a low chroma, and differ by
+ * - **Buildings** share one lightness (L 0.70) and a low chroma, and differ by
  *   hue only, so the same white marks and dark screens read the same on all.
  *   Their hues sit in the gaps between the players' (green, sand, teal and
  *   concrete grey), so a worker never matches a building.
- * - **Dark** variants (L 0.34, same hue) are each building type blighted.
- * - **Neutrals** (blight, ink) are desaturated and darker.
+ * - **Neutrals** (blight, ink) are desaturated; blight, of no type, is a
+ *   grime grey, darker than any building.
  * - **Civic** (the mayor, civic buildings) is white, with navy ink.
  * - **Money** keeps its own hues, used by no building.
  * - **Players** are vibrant (chroma 0.18+), to break away from the city.
  *
- * A blighted or historical building drawn small is split diagonally: that
- * color top-left, its type's bottom-right.
+ * A historical building drawn small is split diagonally: that color
+ * top-left, its type's bottom-right.
  */
 export const COLORS = {
-  /** oklch(0.66 0.09 140) */
-  park: "#74a06b",
-  /** Sand: oklch(0.66 0.07 80) */
-  house: "#a98e60",
-  /** Teal: oklch(0.66 0.07 195) */
-  commercial: "#5ba09f",
-  /** Concrete, a warm grey: oklch(0.66 0.015 70) */
-  industrial: "#989189",
-  blight: "#1f1f1f",
+  /** oklch(0.70 0.09 140) */
+  park: "#80ac77",
+  /** Sand: oklch(0.70 0.07 80) */
+  house: "#b69a6c",
+  /** Teal: oklch(0.70 0.07 195) */
+  commercial: "#67acac",
+  /** Concrete, a warm grey: oklch(0.70 0.015 70) */
+  industrial: "#a59d95",
+  /** Grime, a warm dark grey: oklch(0.40 0.013 77), well under the buildings' 0.70 but not black. */
+  blight: "#4c4740",
   /** Historical buildings' accent: heritage-plaque burgundy, oklch(0.38 0.10 15). */
   historical: "#6d2731",
   /** The mayor and civic buildings. */
@@ -37,14 +38,6 @@ export const COLORS = {
   cost: "#b94834",
   /** A construction tile's payoff: "in the black", softened to a dark grey. */
   payoff: "#555555"
-} as const
-
-/** Each building type blighted: its hue at L 0.34. */
-export const DARK = {
-  park: "#2d3d29",
-  house: "#423623",
-  commercial: "#213e3d",
-  industrial: "#3b3732"
 } as const
 
 /** The companies, vibrant so they never read as part of the city. */

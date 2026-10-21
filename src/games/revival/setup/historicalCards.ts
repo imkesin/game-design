@@ -1,4 +1,4 @@
-import type { Piece, SetupCard } from "./setupCard.ts"
+import type { Entries4, Piece, SetupCard } from "./setupCard.ts"
 
 /** The historical setup cards, draft of 2026-10-17; names are placeholders. */
 
@@ -12,8 +12,6 @@ const H3 = { ...H, atThree: true } as const
 const C3 = { ...C, atThree: true } as const
 const I3 = { ...I, atThree: true } as const
 const __ = undefined
-
-type Entries4<T> = readonly [T, T, T, T]
 
 const map4 = <T, U>([a, b, c, d]: Entries4<T>, f: (t: T) => U): Entries4<U> => [f(a), f(b), f(c), f(d)]
 

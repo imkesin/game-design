@@ -42,14 +42,12 @@ Do **one** action. You can't pass.
   - **Row tile**: pay its cost (gold coin).
   - **Park**: free, from the supply. Discard one tile from the row.
   - Take any incentives on the plot.
-- **Restore a blight**: pay its type's cost − 1 (House 0, Commercial 1, Industrial 3) and put
-  **two** workers on it.
+- **Restore a blight**: pay TODO (cost undecided) and put **two** workers on it.
 - **Pick up a worker** from one of your plots:
-  - **Knock down**: on a blight, flip the tile to its construction side. It's now an ordinary
-    project with one worker.
-  - **Finish**: take your last worker off, flip the tile to its finished side (a restored blight:
-    swap it for a restored tile of its type), and **sell it** (below). If the mayor is in this
-    neighborhood, take 1 incentive.
+  - **Knock down**: on a blight, swap it for a **row tile** of your pick (don't pay its cost),
+    construction side up. It's now an ordinary project with one worker.
+  - **Finish**: take your last worker off, flip the tile to its finished side, and **sell it**
+    (below). If the mayor is in this neighborhood, take 1 incentive.
 
 **End of turn**: if **2 or fewer tiles** are left in the row, you're the **walker**: the mayor
 walks. Then refill the row.
@@ -77,8 +75,8 @@ for nothing.
 2. **Visits**: every neighborhood the mayor enters, destination included (not his start). On each,
    the first that applies:
    1. **An empty plot** → the walker puts 1 incentive on one (they stack).
-   2. **Blight** → the walker picks one to knock down. With workers: 1 of them comes off and it
-      flips to construction. Without: the tile leaves; the plot is empty.
+   2. **Blight** → the walker picks one to knock down. With workers: 1 of them comes off and its
+      owner knocks it down (their pick from the row). Without: the tile leaves; the plot is empty.
    3. **Neither** → **tax**: each company pays 1 coin per plot it has a worker on there. Can't pay:
       abandon that many of your plots with workers there (your pick); the tile leaves the game,
       workers come back.

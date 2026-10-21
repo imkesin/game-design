@@ -1,5 +1,5 @@
 import type { LayoutName } from "../blocks/blocks.ts"
-import { type TileFace, TILES } from "../tiles/tiles.ts"
+import { BLIGHT, type TileFace, TILES } from "../tiles/tiles.ts"
 import { BLIGHT_CARDS } from "./blightCards.ts"
 import { HISTORICAL_CARDS } from "./historicalCards.ts"
 import type { Piece, SetupCard } from "./setupCard.ts"
@@ -68,13 +68,16 @@ const faceOf = (find: (f: TileFace) => boolean): TileFace => {
   return tile.a
 }
 
-const placedOf = (deck: SetupCard["deck"], piece: Piece): Placed =>
-  deck === "historical"
-    ? {
-      face: faceOf((f) => f.kind === piece && f.historical === true),
-      ...(piece === "house" || piece === "commercial" ? { cube: piece } : {})
-    }
-    : { face: faceOf((f) => f.kind === piece && f.side === "dark") }
+const historicalOf = (piece: Piece): Placed => ({
+  face: faceOf((f) => f.kind === piece && f.historical === true),
+  ...(piece === "house" || piece === "commercial" ? { cube: piece } : {})
+})
+
+/** Each entry's pieces, in slot order. */
+const piecesOf = (card: SetupCard): readonly (readonly Placed[])[] =>
+  card.deck === "blight"
+    ? card.entries.map((count) => Array.from({ length: count }, () => ({ face: BLIGHT })))
+    : card.entries.map((pieces) => pieces.map(historicalOf))
 
 export function deal(
   players: Players,
@@ -90,7 +93,7 @@ export function deal(
   const lay = (cards: readonly SetupCard[], keep: (card: SetupCard, entry: number) => boolean) =>
     shuffle(cards).slice(0, 2 * size).forEach((card, n) => {
       const [along, line]: [Line, number] = n < size ? ["row", n] : ["col", n - size]
-      card.entries.forEach((pieces, entry) => {
+      piecesOf(card).forEach((pieces, entry) => {
         if (entry >= size || !keep(card, entry)) return
         const [row, col] = EDGES[card.deck][along](size, line, entry)
         if (!inCity(row, col)) return
@@ -98,7 +101,7 @@ export function deal(
         const ring = plots.get(key) ?? Array.from({ length: plotCount }, () => undefined)
         pieces.forEach((piece, i) => {
           const slot = card.deck === "blight" ? slots[along].blight[i] : slots[along].historical
-          if (slot !== undefined) ring[slot] = placedOf(card.deck, piece)
+          if (slot !== undefined) ring[slot] = piece
         })
         plots.set(key, ring)
       })
@@ -106,7 +109,7 @@ export function deal(
 
   lay(BLIGHT_CARDS, () => true)
   if (players === 2) lay(HISTORICAL_CARDS, () => true)
-  if (players === 3) lay(HISTORICAL_CARDS, (card, entry) => card.atThree?.[entry] === true)
+  if (players === 3) lay(HISTORICAL_CARDS, (card, entry) => card.deck === "historical" && card.atThree[entry] === true)
 
   const city = Array.from({ length: size * size }, (_, i) => ({ row: Math.floor(i / size), col: i % size }))
     .filter(({ row, col }) => inCity(row, col))

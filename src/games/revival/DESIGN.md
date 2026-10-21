@@ -25,9 +25,9 @@ tax incentives that sway where it pays to build.
     neighborhood: crowding cones into one neighborhood can block rivals out, and the mayor taxes
     every coned plot there once it's full.
   - **No passing**: with every cone out you must finish (or knock down); with none out you must
-    start something. Breaking ground takes a tile, but **coning a blight doesn't**, so restores (3
-    tile-free turns each) let players delay the mayor. Bounded by the blight: at most ~90 such turns
-    a game, shrinking as blight is restored or cleared. Watch whether restore-heavy play drags.
+    start something. Breaking ground takes a tile; a restore takes one too, but **only at
+    knockdown** (2026-10-20), so coning a blight is a tile-free turn that delays the mayor. Bounded
+    by the blight: at most ~30 such turns a game. Watch whether restore-heavy play drags.
 - **A turn is one decision** (principle, 2026-10-17): **choose one plot and move it one step
   forward**; its state decides the step (empty: break ground, picking the row tile or a Park;
   blight: cone it; your restore: knock it down; your project: finish and sell). How many cones a
@@ -98,9 +98,10 @@ tax incentives that sway where it pays to build.
 
   - **Agenda deck**: **16 cards**. One is revealed at setup to place the mayor, so at most **15
     walks**; walks = Built / K, and the extra cards are thrown out unseen.
-  - **Built** (total builds = tiles taken from the row) is a floor on play time: turns that don't
-    take a tile (open, finish, restore, sell) come on top. 10 or fewer builds per player is
-    "comically low". 4P and 5P share a setup (no positive), so 4P runs as long as 5P in tiles.
+  - **Built** (total builds = tiles taken from the row, knockdowns of coned blight included since
+    2026-10-20) is a floor on play time: turns that don't take a tile (cone a blight, finish, sell)
+    come on top. 10 or fewer builds per player is "comically low". 4P and 5P share a setup (no
+    positive), so 4P runs as long as 5P in tiles.
   - **Row deck**: **78 tiles** (see Supply mix), more than the 62 any game draws, so each game sees
     a slightly different mix.
   - **Positive** buildings (was prefill) are **historical** parts of the city, on special base
@@ -116,9 +117,8 @@ tax incentives that sway where it pays to build.
   and south** (2026-10-18); entry 1 is the neighborhood nearest the card. A card lists 4 entries,
   one per neighborhood along its line, and each neighborhood takes its row card's entry and its
   column card's entry.
-  - **Blight cards** carry the **30 blight**. Entries list each piece's type (e.g. "2 House",
-    "House + Commercial", "Factory"), **at most 3 pieces**. (**Parking lots**, dead land one per
-    card, were dropped 2026-10-19: just filler.)
+  - **Blight cards** carry the **30 blight**. Entries are counts (blight has no type), **at most
+    3**. (**Parking lots**, dead land one per card, were dropped 2026-10-19: just filler.)
   - **Historical cards**: **at most 1** historical building per entry, its type listed: a historic
     main street, mostly Houses and Commercial (see Supply mix). **At 2P place all 18; at 3P only the
     12 with a burgundy "3" badge** (exactly 3 per entry position, so neither count favors a quarter
@@ -195,8 +195,10 @@ tax incentives that sway where it pays to build.
     isn't seeing it in the row can always go convert a ruin.
     - **Row deck**: 78 tiles at **9 : 3 : 1** (54 House / 18 Commercial / 6 Industrial). 4–5P draw
       ~62 of it, 2P ~44, so the mix varies game to game.
-    - **Blight**: 30 at **8 House / 12 Commercial / 10 Industrial** (dead storefronts and
-      factories). Converting one also releases its neighborhood's Housing.
+    - **Blight**: 30, typeless since 2026-10-20 (was 8 House / 12 Commercial / 10 Industrial):
+      knockdown swaps in a row tile, so conversions draw on the row's 9 : 3 : 1, no longer adding
+      shops and factories (the gut check below predates this). Converting one also releases its
+      neighborhood's Housing.
     - **Historical**: 2P's 18 are **10 House / 6 Commercial / 2 Industrial**; 3P's badged 12 are **7
       / 4 / 1**.
     - Gut check, assuming **about half the blight is restored**: 5P builds ~47 / 20 / 10 (4.7 : 2 :
@@ -216,30 +218,32 @@ tax incentives that sway where it pays to build.
   build-sell-build-sell. No turn-order offset: going first is worth ~1–2 coins over a game, and +1
   per seat overcorrects by more than that (uneven offsets like 5 / 5 / 6 / 6 / 7 aren't smooth
   enough). Add +1 per seat only if playtests show the first seat winning more.
-- **Blight** (2026-10-16; 30 and the cone flow since 2026-10-17): the city starts with **30 blighted
-  buildings at every player count**, dealt by the blight setup cards. Each is a **blight tile** of
-  its type, **dark side up** (2026-10-19; was a black wooden building on a single-sided tile), so
-  the city starts dark. Its back is a construction side; a finished restoration is swapped for a
-  **restored tile** of the type (old architecture), so the revived city mixes old and new (see
-  COMPONENTS.md). Its type steers what gets built where. **Restoring** is **slower but cheaper**
-  than building new, so cash-poor players restore and cash-rich players build new:
-  1. **Cone a blight** (one action): pay its type's cost **minus 1** and put **two** of your cones
-     on it (you need 2 free).
-  2. **Knock it down** (pick up one cone): flip the tile to its construction side; still coned once,
-     it's now an ordinary project.
-  3. **Finish** (pick up the last cone): swap the tile for a restored tile of its type, sell.
+- **Blight** (2026-10-16; 30 and the cone flow since 2026-10-17; **typeless since 2026-10-20**): the
+  city starts with **30 blighted buildings at every player count**, dealt by the blight setup cards.
+  Every blight is the same **blight tile** (one concept, no type: was 8 House / 12 Commercial / 10
+  Industrial), dark, so the city starts dark. Knockdown swaps it for a **row tile** of the
+  restorer's pick (restored tiles and their restoring construction side dropped 2026-10-20). (Lost:
+  a blight's type steering what gets built where, and the old-and-new mix of restored architecture.)
+  **Restoring** is **slower but cheaper** than building new, so cash-poor players restore and
+  cash-rich players build new:
+  1. **Cone a blight** (one action): pay **TODO** (was its type's cost minus 1; undecided now that
+     blight has no type) and put **two** of your cones on it (you need 2 free).
+  2. **Knock it down** (pick up one cone): swap it for a row tile of your pick, its cost unpaid,
+     construction side up; still coned once, it's now an ordinary project. When the mayor knocks a
+     coned blight down, the cone's owner picks from the row.
+  3. **Finish** (pick up the last cone): flip the tile, sell.
 
   Three actions to a new build's two, for 1 coin off (and 2 cones tied up until the knockdown, a
   real capacity cost: if nobody restores in playtests, raise the discount): the worth of an action
   (a basic House earns +2 in two), so neither dominates; a blighted House restores for free, a
-  safety valve for a broke player. A restore takes no tile, so it doesn't move the mayor clock. Slow
-  restores, and the firesale's −1 on unfinished projects, make restoring an early-game move.
-  (Half-price restores were rejected: restored Commercial and Industrial would beat new ones per
-  action.)
+  safety valve for a broke player (pre-2026-10-20 numbers; see TODO above). A restore's knockdown
+  takes a row tile, so it moves the mayor clock like a build, just later. Slow restores, and the
+  firesale's −1 on unfinished projects, make restoring an early-game move. (Half-price restores were
+  rejected: restored Commercial and Industrial would beat new ones per action.)
   - **Housing can't be finished while any blight stands in its neighborhood** (a coned blight still
     counts until knocked down). You may still cone a House there, speculating that someone clears
     it. A knockdown is public: it can release every player's Housing in the neighborhood. Restores
-    chain: a blighted House can't be finished while other blight stands there.
+    chain: a House knocked down from blight can't be finished while other blight stands there.
   - With lumpy setup cards only ~5 of 16 neighborhoods start clean, so early Housing sales are
     confined to ~40 plots until people knock down; card lumpiness sets this. Watch in playtest.
   - Higher player counts get crowded (few good plots); at lower counts positive buildings take up
@@ -280,14 +284,13 @@ tax incentives that sway where it pays to build.
 | Plaza           | A neighborhood's empty centre: its label, and the mayor when he's there.                              |
 | Building        | A tile's finished side (House, shop, factory, Park); typed; earns when finished and sold.             |
 | Tile            | 32mm, two-sided: construction (cost on a gold coin) and finished; bought from the row.                |
-| Restored tile   | Finished building of old architecture; swapped in when a blight's restoration is finished.            |
 | Row             | The face-up building row, K + 2 tiles; the mayor walks when it's down to 2.                           |
 | Cone            | A player's marker on a project (3 each): 1 on a new build, 2 on a restore; one comes off per pick-up. |
 | Break ground    | Pay a tile's full cost, place it, and cone it: the first of a build's two actions.                    |
 | Finish          | Take your cone off, flip the tile, and sell it: the second action.                                    |
-| Blight          | A blight tile, dark side up; blocks Housing sales in its neighborhood.                                |
-| Restore         | Put 2 cones on a blight (cost − 1); pick-ups knock it down, then finish it: three actions.            |
-| Knock down      | Take one cone off a blight and flip it to construction; by a player or the mayor.                     |
+| Blight          | A blight tile, one look and no type; blocks Housing sales in its neighborhood.                        |
+| Restore         | Put 2 cones on a blight (cost TODO); pick-ups knock it down, then finish it: three actions.           |
+| Knock down      | Take one cone off a blight, swap it for a row tile of your pick (unpaid); by a player or the mayor.   |
 | Historical      | A building placed at setup (2–3P); counts for neighbors, not sold. Tile source open.                  |
 | Demand cube     | Put on a House's tile when it's finished; taken by Commercial sales.                                  |
 | Commercial cube | Put on a Commercial's tile when it's finished; taken by Industrial sales.                             |
@@ -302,11 +305,12 @@ tax incentives that sway where it pays to build.
 
 ## Open
 
-- **Historical tiles** (2026-10-19): restored tiles (one component; supply must cover up to 18 plus
-  restorations), row tiles finished side up (fiddly search by type), or their own tiles. Burgundy
-  likely dropped.
-- **Restored supply size** per type: enough for max historical (if shared) + expected restorations;
-  a smaller supply would be a deliberate brake on restoring.
+- **Historical tiles** (2026-10-19): row tiles finished side up (fiddly search by type), or their
+  own tiles. Burgundy likely dropped.
+- **Knockdown from the row** (2026-10-20): the row deck must now cover builds plus up to 30
+  knockdowns (78 tiles vs. ~62 builds today); the build budget table and walk count need redoing.
+  During a walk the mayor can knock down several coned blights while the row is at 2 or fewer: what
+  if it's empty (draw from the deck?). May a knockdown take a Park instead?
 - **Cones per project**: the construction side has room for a printed cone count; whether projects
   vary is undecided.
 
@@ -315,8 +319,9 @@ tax incentives that sway where it pays to build.
   neighborhood with an empty plot (~3–4 a walk early), +1 per building finished in the mayor's
   neighborhood. Later: special powers, advanced buildings needing several cones. (Considered:
   trading a cone in for credit; not thematic.)
-- **Restore numbers**: the 1-coin discount is provisional (restores cost 0 / 1 / 3). When the next
-  agenda card is revealed (right after each walk?).
+- **Restore cost** (TODO, 2026-10-20): blight is typeless, so the old type's cost − 1 (0 / 1 / 3) no
+  longer applies. Flat, free, or the picked type's cost − 1 paid at knockdown? When the next agenda
+  card is revealed (right after each walk?).
 - **Industrial runaway**: capped by 1 + n and by Commercial cubes being scarce (one per shop), but
   +3 a cube makes the Commercial count in the deck, blight and historical cards its strength dial.
   Watch 2P, where historical Commercials leave Commercial cubes at setup. Fallbacks: plus-shape

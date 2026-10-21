@@ -8,13 +8,12 @@ Update this file rather than re-deriving. Rules live in `RULES.md`; the reasons 
 
 - **Color conventions** (2026-10-17; `colors.ts`; superseded 2026-10-19 by the equal-lightness
   palette documented there, see `/palette`): **green** Parks, **light tan** Housing, **medium
-  brown** Commercial, **grey** Industrial, **black** anything blighted. Historical buildings' accent
-  is **burgundy** (a heritage plaque; the historical setup cards' header; under review now that
-  tiles flip, see below). The mayor and his agenda cards are **civic navy** (provisional). Costs are
-  printed on a **gold coin** (top-right of a row tile, and of a blighted Commercial or Industrial
-  tile: its restore price, 1 / 3, as a reminder; a blighted House restores free, so no coin).
-  Blighted and historical buildings are split diagonally (black or burgundy top-left, the type's
-  color bottom-right) under a white icon, on cards and tiles alike.
+  brown** Commercial, **grey** Industrial, **grime grey** blight (one color, no type; L 0.40 on
+  trial). Historical buildings' accent is **burgundy** (a heritage plaque; the historical setup
+  cards' header; under review now that tiles flip, see below). The mayor and his agenda cards are
+  **civic navy** (provisional). Costs are printed on a **gold coin** (top-right of a row tile).
+  Historical buildings are split diagonally (burgundy top-left, the type's color bottom-right) under
+  a white icon on cards.
 - **V0 components** (2026-10-17): **32mm base-plate tiles** (the plot square; 30mm until 2026-10-18,
   grown to fit stock 1.25in tiles) on sticker paper over cardstock, printable at `/revival/tiles` as
   **31mm stickers** (`STICKER`, 1mm under `TILE`) for stock 1.25in tiles: butted 6 × 8 per Letter
@@ -28,19 +27,19 @@ Update this file rather than re-deriving. Rules live in `RULES.md`; the reasons 
   plot is one face of one tile, and a step forward flips or swaps it. Nothing stacks: a tile on a
   tile reads as a multi-story building.
 
-  | Tile     | Side A                                    | Side B            |
-  | -------- | ----------------------------------------- | ----------------- |
-  | Row      | construction (cost, base payout, workers) | finished building |
-  | Park     | construction                              | finished Park     |
-  | Blight   | **dark** (the blighted building)          | construction      |
-  | Restored | finished building, old look (brick, etc.) | plain common back |
+  | Tile   | Side A                                    | Side B            |
+  | ------ | ----------------------------------------- | ----------------- |
+  | Row    | construction (cost, base payout, workers) | finished building |
+  | Park   | construction                              | finished Park     |
+  | Blight | **dark** (one look, no type)              | bare              |
 
   - **New build**: placed construction side up; **finish flips it**.
-  - **Blight**: dark side up, so **the city starts dark** (the theme). Restore puts 2 workers on the
-    dark side; **knockdown** takes 1 worker off and **flips it to construction**; **finish swaps
-    it** for a **restored tile** of its type, and the blight tile leaves the game.
-  - **Restored supply**: 3 piles beside the row (House / Commercial / Industrial), **paired by type,
-    not tile to tile** (no hunting for a specific twin). Size per type: open.
+  - **Blight** (typeless since 2026-10-20): every blight tile is the same, **grime grey under a
+    faint generic building** (`ICON.blight`, the sale card's "no blight" badge too), **no numbers or
+    type**, so **the city starts dark** (the theme). Restore puts 2 workers on it; **knockdown**
+    takes 1 worker off and **swaps it** for a **row tile** of the restorer's pick, construction side
+    up (the blight tile leaves the game); **finish flips it**. No restored tiles or restoring
+    construction side (dropped 2026-10-20).
   - The construction side carries what matters only while it's a project; the finished side only
     needs art and its type.
   - Why no wood: spaced-out wooden buildings read as a **suburb**, not a city; real blocks are
@@ -52,8 +51,8 @@ Update this file rather than re-deriving. Rules live in `RULES.md`; the reasons 
     tile stacked on the construction tile (reads as a multi-story building); blight and finished
     faces on one tile with worker count telling a knocked-down blight apart (breaks if projects need
     different worker counts).
-  - **Historical** tiles: source open (restored tiles, row tiles finished side up, or their own
-    tiles); burgundy split tiles likely dropped.
+  - **Historical** tiles: source open (row tiles finished side up, or their own tiles); burgundy
+    split tiles likely dropped.
 - **Player mat** (2026-10-18): a **TGC half board turned landscape** (10 × 5in), printable one per
   Letter page at `/revival/mats`: company band, credit track (0–3), cone yard (3 open, 2 locked),
   and space kept for later upgrades. One design for now; company colors swap into the band later.
