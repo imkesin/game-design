@@ -1,35 +1,36 @@
 import { css } from "~/generated/styled-system/css"
 import { CARD_TRIM_H_MM, CARD_TRIM_W_MM } from "~/shared/print/cardSize"
-import { labelOf } from "../blocks/blocks.ts"
+import { crossingName, streetName } from "../blocks/blocks.ts"
+import { CITY } from "../blocks/city.ts"
 import { COLORS } from "../colors.ts"
 
 /**
- * An agenda card at trim size, portrait: the mayor's target neighborhood
- * named in the top eighth, then the 4 × 4 city with the target filled in,
- * north up and A1 bottom-left, as on the board.
+ * An agenda card at trim size, portrait: the mayor's target intersection named
+ * in the title, then the city's streets as lines, north up, the north–south
+ * streets lettered along the top and the east–west ones numbered down the
+ * right, City Hall marked and the target ringed.
  */
 
-const SIZE = 4
+/** Streets each way, as on the board. */
+const STREETS = CITY.cols.flat().length - 1
 
-/**
- * The target's cell, inline so it overrides `cell` (atomic classes on the same
- * property don't reliably cascade in class order): filled, with an outline
- * ring offset from it.
- */
-const TARGET = {
-  background: COLORS.civicInk,
-  borderColor: COLORS.civicInk,
-  color: "white",
-  fontSize: "4mm",
-  /** A second ring, clear of the square, so the target jumps out. */
-  outline: `0.9mm solid ${COLORS.civicInk}`,
-  outlineOffset: "0.5mm"
-}
+/** In the map's mm: street spacing, how far lines run past the outer streets, and the label band. */
+const PITCH = 10
+const OVERHANG = 5
+const BAND = 6
+const SPAN = (STREETS - 1) * PITCH + 2 * OVERHANG
+const SIZE = SPAN + BAND
+
+/** Where street `s` runs: north–south from the left, east–west from the top, below the letters. */
+const atX = (s: number) => OVERHANG + s * PITCH
+const atY = (s: number) => BAND + OVERHANG + s * PITCH
+/** East–west streets count from the south. */
+const fromTop = (row: number) => STREETS - 1 - row
 
 const card = css({
   display: "grid",
   gridTemplateAreas: `"title" "map"`,
-  gridTemplateRows: "1fr 7fr",
+  gridTemplateRows: "11mm 1fr",
   boxSizing: "border-box",
   outline: "0.2mm solid #a3a3a3",
   outlineOffset: "-0.1mm",
@@ -49,54 +50,51 @@ const title = css({
   fontWeight: 700
 })
 
-/** Neighborhoods as squares, streets as the gaps between them. */
-const map = css({
-  gridArea: "map",
-  placeSelf: "center",
-  display: "grid",
-  gridTemplateColumns: `repeat(${SIZE}, 1fr)`,
-  gridTemplateRows: `repeat(${SIZE}, 1fr)`,
-  gap: "2.5mm",
-  width: "55mm",
-  height: "55mm"
-})
+const map = css({ gridArea: "map", placeSelf: "center", display: "block" })
 
-const cell = css({
-  display: "grid",
-  placeItems: "center",
-  boxSizing: "border-box",
-  border: "0.4mm solid #d4d4d4",
-  borderRadius: "1mm",
-  color: "#a3a3a3",
-  fontSize: "3.2mm",
-  fontWeight: 700
-})
+const LINE = "#d4d4d4"
+const LABEL = "#a3a3a3"
 
-export function AgendaCardFace({ row, col }: {
-  /** The target's block-row (0 = row 1, at the bottom) and block-column (0 = A). */
-  row: number
+export function AgendaCardFace({ col, row }: {
+  /** The target's north–south street (0 = A) and east–west street (0 = 1, at the south). */
   col: number
+  row: number
 }) {
-  const label = labelOf(row, col)
+  const streets = Array.from({ length: STREETS }, (_, s) => s)
+  const [hallX, hallY] = [atX(CITY.hall.col), atY(fromTop(CITY.hall.row))]
+  const [x, y] = [atX(col), atY(fromTop(row))]
+  const label = {
+    fill: LABEL,
+    fontSize: 3.4,
+    fontWeight: 700,
+    textAnchor: "middle",
+    dominantBaseline: "central"
+  } as const
   return (
     <div className={card} style={{ width: `${CARD_TRIM_W_MM}mm`, height: `${CARD_TRIM_H_MM}mm` }}>
-      <div className={title} style={{ background: COLORS.civicInk }}>{label}</div>
-      <div className={map}>
-        {Array.from({ length: SIZE }, (_, k) => SIZE - 1 - k).flatMap((r) =>
-          Array.from({ length: SIZE }, (_, c) => {
-            const here = r === row && c === col
-            return (
-              <div
-                key={`${r},${c}`}
-                className={cell}
-                style={here ? TARGET : {}}
-              >
-                {labelOf(r, c)}
-              </div>
-            )
-          })
-        )}
-      </div>
+      <div className={title} style={{ background: COLORS.civicInk }}>{crossingName(col, row)}</div>
+      <svg viewBox={`0 0 ${SIZE} ${SIZE}`} className={map} style={{ width: `${SIZE}mm`, height: `${SIZE}mm` }}>
+        <g stroke={LINE} strokeWidth={1.6} strokeLinecap="round">
+          {streets.map((s) => <line key={`x${s}`} x1={atX(s)} x2={atX(s)} y1={BAND} y2={BAND + SPAN} />)}
+          {streets.map((s) => <line key={`y${s}`} x1={0} x2={SPAN} y1={atY(s)} y2={atY(s)} />)}
+        </g>
+        {streets.map((s) => <text key={`a${s}`} x={atX(s)} y={BAND / 2} {...label}>{streetName.across(s)}</text>)}
+        {streets.map((s) => (
+          <text key={`n${s}`} x={SPAN + BAND / 2} y={atY(s)} {...label}>{streetName.up(fromTop(s))}</text>
+        ))}
+        <rect
+          x={hallX - 2.5}
+          y={hallY - 2.5}
+          width={5}
+          height={5}
+          rx={0.6}
+          fill={COLORS.civic}
+          stroke={COLORS.civicInk}
+          strokeWidth={0.8}
+        />
+        <circle cx={x} cy={y} r={4.4} fill="none" stroke={COLORS.civicInk} strokeWidth={0.8} />
+        <circle cx={x} cy={y} r={3} fill={COLORS.civicInk} />
+      </svg>
     </div>
   )
 }

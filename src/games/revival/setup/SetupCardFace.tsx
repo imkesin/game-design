@@ -2,25 +2,28 @@ import { css } from "~/generated/styled-system/css"
 import { CARD_TRIM_H_MM, CARD_TRIM_W_MM } from "~/shared/print/cardSize"
 import { COLORS, split } from "../colors.ts"
 import { ICON } from "../icons.ts"
-import { Tile } from "../tiles/Tile.tsx"
-import { BLIGHT } from "../tiles/tiles.ts"
-import type { SetupCard } from "./setupCard.ts"
+import { QUADRANT_SIZE, type SetupCard } from "./setupCard.ts"
 
 /**
- * A setup card at trim size, portrait, read the standard way up: the name in
- * the top eighth, then the 4 entries in equal zones, 1 to 4 from the top.
- * Every entry shows 3 slots, filled in order: a blight entry's are the 3 plots
- * its line owns in a ring; a historical entry uses only the first. Blight is
- * drawn as its tile; a historical building is split diagonally, burgundy
- * top-left and the type's color bottom-right, under a white icon.
+ * A setup card at trim size, portrait: its name, then its quadrant as a 5 × 5
+ * grid without the corners (never built on), read upright whichever quadrant
+ * it lands in. A historical
+ * building is split diagonally, burgundy top-left and the type's color
+ * bottom-right, under a white icon; a corner badge gives the most players
+ * it's placed at (none: every count).
  */
 
-const SLOTS = 3
+/** A plot, and the gap between plots, in mm. */
+const CELL = 9.5
+const GAP = 1.5
+
+const LAST = QUADRANT_SIZE - 1
+const isCorner = (col: number, row: number) => (col === 0 || col === LAST) && (row === 0 || row === LAST)
 
 const card = css({
   display: "grid",
-  gridTemplateAreas: `"title" "entries"`,
-  gridTemplateRows: "1fr 7fr",
+  gridTemplateAreas: `"title" "map"`,
+  gridTemplateRows: "11mm 1fr",
   boxSizing: "border-box",
   outline: "0.2mm solid #a3a3a3",
   outlineOffset: "-0.1mm",
@@ -40,99 +43,64 @@ const title = css({
   fontWeight: 700
 })
 
-const entries = css({ gridArea: "entries", display: "grid", gridTemplateRows: "repeat(4, 1fr)" })
+const map = css({ gridArea: "map", placeSelf: "center", display: "grid" })
 
-/** The number in line with the title's name, then the 3 plots between strips of breathing room. */
-const entry = css({
-  display: "grid",
-  gridTemplateAreas: `"number . plot0 plot1 plot2 ."`,
-  gridTemplateColumns: "auto 1fr 3fr 3fr 3fr 1fr",
-  alignItems: "center",
-  justifyItems: "center",
-  paddingInlineStart: "4mm",
-  "&:not(:last-child)": { borderBottom: "0.2mm solid #e5e5e5" }
-})
-
-/** Like the board's plaza labels: light grey on a lighter tab, rounded. */
-const number = css({
-  gridArea: "number",
-  padding: "1mm 1.6mm",
-  borderRadius: "1.5mm",
-  background: "#ececec",
-  color: "#a3a3a3",
-  fontSize: "4.5mm",
-  fontWeight: 700,
-  letterSpacing: "0.04em",
-  lineHeight: 1.1
-})
-
-const slot = css({
-  width: "13mm",
-  height: "13mm",
+const plot = css({
   boxSizing: "border-box",
   display: "grid",
-  gridTemplateAreas: `"slot"`,
+  gridTemplateAreas: `"plot"`,
   placeItems: "center",
-  borderRadius: "1.5mm",
+  borderRadius: "1mm",
   color: "white",
-  "& > *": { gridArea: "slot" }
+  "& > *": { gridArea: "plot" }
 })
 
-/** On a historical building placed at 3 players too: a burgundy "3" over the slot's corner. */
+const blank = css({ border: "0.3mm solid #d4d4d4" })
+
+/** The most players a building is placed at, over the plot's top-right corner. */
 const badge = css({
   placeSelf: "start end",
   display: "grid",
   placeItems: "center",
-  width: "5mm",
-  height: "5mm",
+  width: "4.2mm",
+  height: "4.2mm",
   borderRadius: "50%",
-  outline: "0.4mm solid white",
+  outline: "0.35mm solid white",
   color: "white",
-  fontSize: "3.4mm",
+  fontSize: "2.9mm",
   fontWeight: 700,
   lineHeight: 1,
   transform: "translate(35%, -35%)"
 })
 
-const empty = css({ border: "0.3mm dashed #d4d4d4" })
-
-/** The slot's side, as in `slot`. */
-const SLOT = 13
-
-/** Entry `i`'s slot `k`: a blight tile, a historical building, or empty. */
-function Slot({ card: c, i, k }: { card: SetupCard; i: number; k: number }) {
-  const area = { gridArea: `plot${k}` }
-  if (c.deck === "blight") {
-    return (c.entries[i] ?? 0) > k
-      ? (
-        <div className={slot} style={area}>
-          <Tile face={BLIGHT} size={SLOT} />
-        </div>
-      )
-      : <div className={`${slot} ${empty}`} style={area} />
-  }
-  const piece = c.entries[i]?.[k]
-  if (piece === undefined) return <div className={`${slot} ${empty}`} style={area} />
-  const Icon = ICON[piece]
-  return (
-    <div className={slot} style={{ ...area, background: split(COLORS.historical, COLORS[piece]) }}>
-      <Icon size="8mm" strokeWidth={1.75} />
-      {c.atThree[i] === true && <span className={badge} style={{ background: COLORS.historical }}>3</span>}
-    </div>
-  )
-}
-
 export function SetupCardFace({ card: c }: { card: SetupCard }) {
+  const at = (col: number, row: number) => ({ gridColumn: col + 1, gridRow: row + 1 })
+  const tracks = `repeat(${QUADRANT_SIZE}, ${CELL}mm)`
+  const plots = Array.from({ length: QUADRANT_SIZE ** 2 }, (_, i) => [i % QUADRANT_SIZE, Math.floor(i / QUADRANT_SIZE)])
+    .filter(([col = 0, row = 0]) => !isCorner(col, row))
   return (
     <div className={card} style={{ width: `${CARD_TRIM_W_MM}mm`, height: `${CARD_TRIM_H_MM}mm` }}>
-      <div className={title} style={{ background: COLORS[c.deck] }}>{c.name}</div>
-      <div className={entries}>
-        {c.entries.map((_, i) => (
-          <div key={i} className={entry}>
-            <span className={number}>{i + 1}</span>
-            {Array.from({ length: SLOTS }, (_, k) => <Slot key={k} card={c} i={i} k={k} />)}
-          </div>
-        ))}
+      <div className={title} style={{ background: COLORS.historical }}>{c.name}</div>
+      <div className={map} style={{ gridTemplateColumns: tracks, gridTemplateRows: tracks, gap: `${GAP}mm` }}>
+        {plots.map(([col = 0, row = 0]) => {
+          const building = c.buildings.find(({ at: [x, y] }) => x === col && y === row)
+          if (building === undefined) {
+            return <div key={`${col},${row}`} className={`${plot} ${blank}`} style={at(col, row)} />
+          }
+          const Icon = ICON[building.piece]
+          return (
+            <div
+              key={`${col},${row}`}
+              className={plot}
+              style={{ ...at(col, row), background: split(COLORS.historical, COLORS[building.piece]) }}
+            >
+              <Icon size="5.5mm" strokeWidth={1.75} />
+              {building.upTo < 5 && (
+                <span className={badge} style={{ background: COLORS.historical }}>{building.upTo}</span>
+              )}
+            </div>
+          )
+        })}
       </div>
     </div>
   )

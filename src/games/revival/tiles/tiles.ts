@@ -68,21 +68,20 @@ const many = (count: number, tile: Tile): Tile[] => Array.from({ length: count }
 
 const row = (kind: BuildingKind): Tile => ({ a: construction(kind, COST[kind]), b: finished(kind) })
 
-/** Every blight is the same: a dark face of no type, its back bare; knockdown swaps in a row tile. */
+/** A blight's dark face, of no type. Out of play since 2026-10-25 (every blank plot is run down); kept for the palette. */
 export const BLIGHT: TileFace = { kind: "blight", side: "dark" }
 
 /**
- * Every tile: the row deck (9 : 3 : 1), the Park supply, blight, historical
- * buildings (their source is open).
+ * Every tile: the row deck (9 : 3 : 1), the Park supply, historical buildings
+ * (their source is open; as many of each type as any 4 setup cards place).
  */
 export const TILES: readonly Tile[] = [
   ...many(54, row("house")),
   ...many(18, row("commercial")),
   ...many(6, row("industrial")),
-  /** Assumed: the supply size isn't decided yet. */
+  /** Assumed: the supply size isn't decided yet. Setup cards place up to 4, finished side up. */
   ...many(20, row("park")),
-  ...many(30, { a: BLIGHT }),
-  ...many(10, { a: finished("house", { historical: true }) }),
-  ...many(6, { a: finished("commercial", { historical: true }) }),
-  ...many(2, { a: finished("industrial", { historical: true }) })
+  ...many(11, { a: finished("house", { historical: true }) }),
+  ...many(8, { a: finished("commercial", { historical: true }) }),
+  ...many(4, { a: finished("industrial", { historical: true }) })
 ]

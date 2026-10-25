@@ -1,57 +1,32 @@
-import type { LayoutName } from "../blocks/blocks.ts"
-import { BLIGHT, type TileFace, TILES } from "../tiles/tiles.ts"
-import { BLIGHT_CARDS } from "./blightCards.ts"
-import { HISTORICAL_CARDS } from "./historicalCards.ts"
-import type { Piece, SetupCard } from "./setupCard.ts"
+import { type TileFace, TILES } from "../tiles/tiles.ts"
+import { type Players, QUADRANT_SIZE, type SetupCard } from "./setupCard.ts"
+import { SETUP_CARDS } from "./setupCards.ts"
 
 /**
- * A random setup, dealt as RULES.md's Setup says: blight cards along the west
- * (rows) and north (columns), historical cards (2–3 players) along the east
- * and south, and the mayor on a random neighborhood. `size` neighborhoods a
- * side: on a smaller city each card's entries past it are dropped. `inCity`
- * cuts neighborhoods out of the square (their pieces are dropped too). On
- * 2 × 2 blocks, a preview: each card places only an entry's first blight
- * (the rest don't fit). Rows count from the bottom, as on the board.
+ * A random setup, dealt as RULES.md's Setup says: 4 setup cards, one per
+ * quadrant, each read upright, and the buildings badged for the player count
+ * placed.
  */
-
-export type Players = 2 | 3 | 4 | 5
 
 /** A tile on a plot; `cube` for a historical House or Commercial, which starts with its cube. */
 export type Placed = { face: TileFace; cube?: "house" | "commercial" }
 
+/** The quadrants clockwise from the north-west, with their top-left plots. */
+const CORNERS = {
+  NW: [0, 0],
+  NE: [QUADRANT_SIZE, 0],
+  SE: [QUADRANT_SIZE, QUADRANT_SIZE],
+  SW: [0, QUADRANT_SIZE]
+} as const
+
+export const QUADRANTS = Object.keys(CORNERS) as readonly (keyof typeof CORNERS)[]
+
 export type Setup = {
-  /** Each neighborhood's plots, keyed `${row},${col}`, indexed like its layout's plots. */
-  plots: ReadonlyMap<string, readonly (Placed | undefined)[]>
-  /** Where the mayor starts; `plot` for a block with no plaza, where he stands on one. */
-  mayor: { row: number; col: number; plot: number }
+  /** Placed tiles, keyed `${x},${y}`: plots from the board's top-left. */
+  plots: ReadonlyMap<string, Placed>
+  /** The card dealt to each quadrant, in `QUADRANTS` order. */
+  cards: readonly SetupCard[]
 }
-
-type Line = "row" | "col"
-
-/**
- * Plot indices a card fills. Ring: a row card the top 3 (left to right) and
- * left-middle, a column card the bottom 3 and right-middle. 2 × 2: a row card
- * the top row, a column card the bottom.
- */
-const SLOTS = {
-  ring: { row: { blight: [0, 1, 2], historical: 7 }, col: { blight: [6, 5, 4], historical: 3 } },
-  square: { row: { blight: [0], historical: 1 }, col: { blight: [2], historical: 3 } }
-} as const satisfies Record<LayoutName, Record<Line, { blight: readonly number[]; historical: number }>>
-
-/** The neighborhood at entry `entry` of line `line`, counted from the card's edge, on a city `n` a side. */
-const EDGES = {
-  blight: {
-    row: (_: number, line: number, entry: number) => [line, entry],
-    col: (n: number, line: number, entry: number) => [n - 1 - entry, line]
-  },
-  historical: {
-    row: (n: number, line: number, entry: number) => [line, n - 1 - entry],
-    col: (_: number, line: number, entry: number) => [entry, line]
-  }
-} as const satisfies Record<
-  SetupCard["deck"],
-  Record<Line, (n: number, line: number, entry: number) => readonly [number, number]>
->
 
 function shuffle<T>(list: readonly T[]): T[] {
   const out = [...list]
@@ -62,57 +37,24 @@ function shuffle<T>(list: readonly T[]): T[] {
   return out
 }
 
-const faceOf = (find: (f: TileFace) => boolean): TileFace => {
-  const tile = TILES.find(({ a }) => find(a))
-  if (tile === undefined) throw new Error("no such tile")
-  return tile.a
+/** A historical building's tile; a Park is a supply Park, finished side up. */
+const historicalOf = (piece: SetupCard["buildings"][number]["piece"]): Placed => {
+  const face = piece === "park"
+    ? TILES.find(({ a }) => a.kind === "park")?.b
+    : TILES.find(({ a }) => a.kind === piece && a.historical === true)?.a
+  if (face === undefined) throw new Error(`no historical ${piece} tile`)
+  return { face, ...(piece === "house" || piece === "commercial" ? { cube: piece } : {}) }
 }
 
-const historicalOf = (piece: Piece): Placed => ({
-  face: faceOf((f) => f.kind === piece && f.historical === true),
-  ...(piece === "house" || piece === "commercial" ? { cube: piece } : {})
-})
-
-/** Each entry's pieces, in slot order. */
-const piecesOf = (card: SetupCard): readonly (readonly Placed[])[] =>
-  card.deck === "blight"
-    ? card.entries.map((count) => Array.from({ length: count }, () => ({ face: BLIGHT })))
-    : card.entries.map((pieces) => pieces.map(historicalOf))
-
-export function deal(
-  players: Players,
-  size = 4,
-  inCity: (row: number, col: number) => boolean = () => true,
-  layout: LayoutName = "ring"
-): Setup {
-  const slots = SLOTS[layout]
-  const plotCount = layout === "ring" ? 8 : 4
-  const plots = new Map<string, (Placed | undefined)[]>()
-
-  /** Shuffle a deck, deal one card per row then per column, and place each kept entry's pieces. */
-  const lay = (cards: readonly SetupCard[], keep: (card: SetupCard, entry: number) => boolean) =>
-    shuffle(cards).slice(0, 2 * size).forEach((card, n) => {
-      const [along, line]: [Line, number] = n < size ? ["row", n] : ["col", n - size]
-      piecesOf(card).forEach((pieces, entry) => {
-        if (entry >= size || !keep(card, entry)) return
-        const [row, col] = EDGES[card.deck][along](size, line, entry)
-        if (!inCity(row, col)) return
-        const key = `${row},${col}`
-        const ring = plots.get(key) ?? Array.from({ length: plotCount }, () => undefined)
-        pieces.forEach((piece, i) => {
-          const slot = card.deck === "blight" ? slots[along].blight[i] : slots[along].historical
-          if (slot !== undefined) ring[slot] = piece
-        })
-        plots.set(key, ring)
-      })
+export function deal(players: Players): Setup {
+  const cards = shuffle(SETUP_CARDS).slice(0, QUADRANTS.length)
+  const plots = new Map<string, Placed>()
+  cards.forEach((card, i) => {
+    const [left, top] = CORNERS[QUADRANTS[i] ?? "NW"]
+    card.buildings.forEach(({ piece, at: [col, row], upTo }) => {
+      if (players > upTo) return
+      plots.set(`${left + col},${top + row}`, historicalOf(piece))
     })
-
-  lay(BLIGHT_CARDS, () => true)
-  if (players === 2) lay(HISTORICAL_CARDS, () => true)
-  if (players === 3) lay(HISTORICAL_CARDS, (card, entry) => card.deck === "historical" && card.atThree[entry] === true)
-
-  const city = Array.from({ length: size * size }, (_, i) => ({ row: Math.floor(i / size), col: i % size }))
-    .filter(({ row, col }) => inCity(row, col))
-  const at = city[Math.floor(Math.random() * city.length)] ?? { row: 0, col: 0 }
-  return { plots, mayor: { ...at, plot: Math.floor(Math.random() * plotCount) } }
+  })
+  return { plots, cards }
 }

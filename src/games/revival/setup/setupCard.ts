@@ -1,18 +1,24 @@
+import { CITY } from "../blocks/city.ts"
+
 /**
- * The setup cards (DESIGN.md, Setup cards): dealt one to each row and column,
- * laid along the city's west and north edges. Each lists 4 entries, entry 1
- * nearest the card. A row card's pieces fill each ring's top 3 plots and
- * left-middle plot, a column card's its bottom 3 and right-middle.
+ * The setup cards (DESIGN.md, Setup cards): each a 5 × 5 map of historical
+ * buildings, its corners always empty (City Hall's notch or a board corner,
+ * whichever quadrant it lands in). Deal 4, one per quadrant, read upright.
+ * There's no blight: every blank plot is run down.
  */
 
-/** A building type a historical card places. */
-export type Piece = "house" | "commercial" | "industrial"
+/** A building type a setup card places. */
+export type Piece = "house" | "commercial" | "industrial" | "park"
 
-export type Entries4<T> = readonly [T, T, T, T]
+export type Players = 2 | 3 | 4 | 5
 
-/** Entries run from entry 1, nearest the card. */
-export type SetupCard =
-  /** Every player count: how many blight (0–3) each entry places; blight has no type. */
-  | { deck: "blight"; name: string; entries: Entries4<number> }
-  /** 2–3 players: at most 1 building an entry, and which are placed at 3 players too (all are at 2). */
-  | { deck: "historical"; name: string; entries: Entries4<readonly Piece[]>; atThree: Entries4<boolean> }
+/**
+ * A historical building: its plot as (column, row) from its quadrant's
+ * top-left; `upTo` is the most players it's placed at.
+ */
+export type Historical = { piece: Piece; at: readonly [number, number]; upTo: Players }
+
+export type SetupCard = { name: string; buildings: readonly Historical[] }
+
+/** A quadrant's plots a side: a panel's, the city being square. */
+export const QUADRANT_SIZE = (CITY.cols[0] ?? []).reduce((a, b) => a + b, 0)

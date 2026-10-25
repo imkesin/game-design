@@ -2,12 +2,15 @@
 
 import { TILE } from "../tiles/tiles.ts"
 
-/** Space around a tile in its plot, all round, so neighboring tiles don't touch. */
-export const PLOT_PADDING = 1
+/**
+ * A plot's black outline, all round its tile: plots butt, so neighboring
+ * tiles sit two outlines apart.
+ */
+export const PLOT_PADDING = 0.5
 
 /** A plot's track: a `TILE` square with `PLOT_PADDING` all round. */
 export const PLOT = TILE + 2 * PLOT_PADDING
-export const PLOT_LINE = 0.6
+
 /**
  * Ground inside a block: pure black dots (a halftone, not a grey fill, so it
  * prints the same anywhere) behind white plots, which makes them pop.
@@ -17,85 +20,96 @@ export const DOTS = { pitch: 2, r: 0.2 }
 /** The line around every block. */
 export const EDGE = { width: 1.2, color: "#1f1f1f" }
 
-/** Plots across and up a neighborhood: a ring of 8 around an empty centre. */
-export const RING = 3
-
-/** Ring positions as (column, row) in the 3×3, clockwise from the top-left. */
-export const RING_PLOTS = [[0, 0], [1, 0], [2, 0], [2, 1], [2, 2], [1, 2], [0, 2], [0, 1]] as const
-
 /**
  * The sidewalk between the plots and the edge line, all round. Narrower than
  * `STREET`, so neighborhoods separate.
  */
 export const BUFFER = 2
 
-/**
- * How a neighborhood's plots lay out: a `grid` × `grid` square, its plots as
- * (column, row) in it, and the plaza's cell, if it has one.
- */
+/** A block's plots as (column, row) in its `cols` × `rows` grid, row 0 at the top. */
 export type Layout = {
-  grid: number
+  cols: number
+  rows: number
   plots: readonly (readonly [number, number])[]
-  plaza?: readonly [number, number]
 }
 
-export const LAYOUTS = {
-  /** A ring of 8 round a plaza. */
-  ring: { grid: RING, plots: RING_PLOTS, plaza: [1, 1] },
-  /** A 2 × 2 block, no plaza: clockwise from the top-left. */
-  square: { grid: 2, plots: [[0, 0], [1, 0], [1, 1], [0, 1]] }
-} as const satisfies Record<string, Layout>
-
-export type LayoutName = keyof typeof LAYOUTS
-
-/** A neighborhood's width and height. */
-export const blockOf = (layout: Layout) => 2 * BUFFER + layout.grid * PLOT
-export const BLOCK = blockOf(LAYOUTS.ring)
+/** A block's side in mm, `plots` across. */
+export const spanOf = (plots: number) => 2 * BUFFER + plots * PLOT
 
 /** The white street between neighboring blocks; cut lines and folds run down the middle of one. */
-export const STREET = 10
+export const STREET = 18
 
 /**
- * A city as a matrix of identical neighborhoods split across tiles, so the
- * mayor can walk in straight lines. Row 0, column 0 is the bottom-left.
+ * A city as a matrix of neighborhoods split across tiles, so the mayor can
+ * walk in straight lines; every block in a block-column shares its width,
+ * every block in a block-row its height. Row 0, column 0 is the bottom-left.
  */
 export type City = {
-  /** Neighborhoods across each tile column, left to right. */
-  cols: number[]
-  /** Neighborhoods up each tile row, bottom to top. */
-  rows: number[]
+  /** Each tile column's block-columns, left to right, as plots across each. */
+  cols: readonly (readonly number[])[]
+  /** Each tile row's block-rows, bottom to top, as plots up each. */
+  rows: readonly (readonly number[])[]
+  /**
+   * City Hall's intersection: the street right of block-column `col` and
+   * above block-row `row`. Each block's plot touching it is left out, for a
+   * plaza.
+   */
+  hall: { col: number; row: number }
 }
 
-/** A neighborhood's label: columns A, B, … from the left, rows 1, 2, … from the bottom. */
-export const labelOf = (row: number, col: number) => `${String.fromCharCode(65 + col)}${row + 1}`
+/** A block's plots (`row` from the bottom): every cell, less any touching City Hall's intersection. */
+export function layoutOf(city: City, row: number, col: number): Layout {
+  const [cols, rows] = [city.cols.flat()[col] ?? 0, city.rows.flat()[row] ?? 0]
+  const { hall } = city
+  const across = col === hall.col ? cols - 1 : col === hall.col + 1 ? 0 : undefined
+  const up = row === hall.row ? 0 : row === hall.row + 1 ? rows - 1 : undefined
+  const cells = Array.from({ length: cols * rows }, (_, i) => [i % cols, Math.floor(i / cols)] as const)
+  return { cols, rows, plots: cells.filter(([c, r]) => c !== across || r !== up) }
+}
 
-/** A grid track along one axis of the board; `block` is the block-column or block-row it holds. */
-export type Track = { size: number; block?: number }
+/** Street names: north–south streets A, B, … from the west; east–west ones 1, 2, … from the south. */
+export const streetName = {
+  across: (street: number) => String.fromCharCode(65 + street),
+  up: (street: number) => `${street + 1}`
+}
+
+/** An intersection's name, e.g. C3: its north–south street, then its east–west one. */
+export const crossingName = (col: number, row: number) => `${streetName.across(col)}${streetName.up(row)}`
 
 /**
- * One axis of the board as grid tracks, `counts` neighborhoods per tile. Each
- * tile's blocks (`block` mm square) sit `street` apart, pushed up to the tile edges so half a
+ * A grid track along one axis of the board: `block` is the block-column or
+ * block-row it holds, `street` the street it's (part of), counted from the
+ * board's left or top. A street down a tile edge is two tracks.
+ */
+export type Track = { size: number; block?: number; street?: number }
+
+/**
+ * One axis of the board as grid tracks, `blocks` each tile's block sizes in
+ * mm. Each tile's blocks sit `street` apart, pushed up to the tile edges so half a
  * street lies on either side of each; the slack goes to the board's edge (on
  * a middle tile, or a lone one, it's split between both sides). `inset` is
  * kept clear inside the board's outer edges (a printer's safe zone).
  * `over` lists tiles whose blocks don't fit, with how many mm over.
  */
-export function axis(counts: readonly number[], tile: number, inset = 0, block = BLOCK, street = STREET) {
+export function axis(blocks: readonly (readonly number[])[], tile: number, inset = 0, street = STREET) {
   const tracks: Track[] = []
   const over: { tile: number; by: number }[] = []
-  let index = 0
-  counts.forEach((count, t) => {
-    const [first, last] = [t === 0, t === counts.length - 1]
+  let [index, gap] = [0, 0]
+  blocks.forEach((sizes, t) => {
+    const [first, last] = [t === 0, t === blocks.length - 1]
     const [start, end] = [first ? inset : street / 2, last ? inset : street / 2]
-    const slack = tile - (count * block + (count - 1) * street + start + end)
+    const used = sizes.reduce((a, b) => a + b, 0) + (sizes.length - 1) * street
+    const slack = tile - (used + start + end)
     if (slack < 0) over.push({ tile: t, by: -slack })
     const [before, after] = first === last ? [slack / 2, slack / 2] : first ? [slack, 0] : [0, slack]
-    tracks.push({ size: Math.max(before, 0) + start })
-    for (let k = 0; k < count; k++) {
-      if (k > 0) tracks.push({ size: street })
+    const size = Math.max(before, 0) + start
+    tracks.push(first ? { size } : { size, street: gap++ })
+    sizes.forEach((block, k) => {
+      if (k > 0) tracks.push({ size: street, street: gap++ })
       tracks.push({ size: block, block: index++ })
-    }
-    tracks.push({ size: Math.max(after, 0) + end })
+    })
+    const rest = Math.max(after, 0) + end
+    tracks.push(last ? { size: rest } : { size: rest, street: gap })
   })
   return { tracks, over }
 }
