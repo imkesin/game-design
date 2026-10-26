@@ -47,13 +47,17 @@ exactly one intersection. City Hall (C3) has no corners: its plots are the plaza
 
 Do **one** action. You can't pass.
 
-- **Break ground** on an empty plot: put down a tile and one of your workers.
+- **Break ground** on an empty plot: put down a tile and as many of your workers as it needs:
+  **Park 1, House 2, Commercial 3, Industrial 4**.
   - **Row tile**: pay its cost (gold coin) plus its slot's surcharge.
   - **Park**: free, from the supply. Discard the tile in the +0 slot.
   - Slide the row's tiles toward +0 to close the gap.
   - Take any incentives on the plot.
-- **Finish** one of your projects: take your worker off, flip the tile to its finished side, and
-  **sell it** (below). If it's one of the mayor's corners, take 1 incentive.
+- **Work** a line of your projects: start at any of them and go one way along its row or column
+  (across streets too), taking **1 worker off each** project in turn. Stop whenever you like; the
+  line ends at the first plot that isn't your project (empty, a rival's, finished, the plaza).
+  - Taking a project's **last** worker **finishes** it: flip the tile and **sell it** (below) right
+    away, before moving on. If it's one of the mayor's corners, take 1 incentive.
 
 **End of turn**: if **2 or fewer tiles** are left in the row, you're the **walker**: the mayor
 walks. Then refill the row's empty slots from the deck.
@@ -63,18 +67,14 @@ walks. Then refill the row's empty slots from the deck.
 Values are on your sale card. Only **finished** buildings count; a tile with a worker on it counts
 for nothing.
 
+Count what the building draws on: **+3** for each in **its own block**, **+1** for each in **one
+neighboring block** (across a street, not diagonal), your pick. Historical buildings count.
+
 - **Park**: 1.
-- **House**: 3, +1 per Park in its block, +? per Industrial it raises (penciled in). **Can't be
-  finished until every plot in its block has a tile** (with workers or not).
-- **Commercial**: 2, +1 per House it raises.
-- **Industrial**: 1, +3 per Commercial it raises.
-- **Raising**: a finished building stays flat until another building draws on it; then put a wooden
-  building of its type on it (**raise** it). Count the finished buildings of the seller's type in
-  its block, itself and historical ones included: **n**. Raise **up to 1 + n** flat buildings it
-  draws on (you must raise what you can): its own block first, then
-  - **Commercial** (draws on Houses): the blocks across the street (up to 4).
-  - **Industrial** (draws on Commercials): the blocks in its row and column.
-  - **House** (draws on Industrials): reach penciled in.
+- **House**: 3, counts **Parks**. **Can't be finished until every plot in its block has a tile**
+  (with workers or not).
+- **Commercial**: 2, counts **Houses**.
+- **Industrial**: 1, counts **Industrials**, itself included.
 
 ## The mayor's walk
 
@@ -89,7 +89,7 @@ for nothing.
 3. **Credit**: every company collects its credit rating in coins.
 4. **Upgrades**: everyone **except the walker** may spend incentives (mat):
    - Credit rating +1 step for 2 / 3 / 4 incentives (max 3).
-   - +1 worker for 3 incentives (max 5).
+   - +1 worker for 3 / 4 / 5 / 6 incentives (max 7).
 5. **Agenda**: discard the target and reveal a new card, if any are left.
 
 ## End of the game
@@ -98,5 +98,5 @@ The game ends after the walk to the **last agenda card**. Then:
 
 1. **Final sale**: every company may finish one project at full value.
 2. **Firesale**: every other project with a worker sells for its base value − 1: House 2, Commercial
-   1, Industrial 0, Park 0. No Parks or raising.
+   1, Industrial 0, Park 0. No bonuses.
 3. **Most coins wins.**

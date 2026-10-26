@@ -33,7 +33,30 @@ out tax incentives that sway where it pays to build.
   forward**; its state decides the step (empty: break ground, picking the row tile or a Park; your
   project: finish and sell). How many cones a step uses is the plot's business, not a choice. The
   game's depth is combinatorial: which plot, and when. Keep new rules inside this shape.
-- **Actions** (2026-10-17): a turn is **one action**, and there are only two: **place cones** (break
+- **Workers per type and lines** (2026-10-26; replaces one cone per build, below): breaking ground
+  puts down **Park 1, House 2, Commercial 3, Industrial 4** workers; every later action takes one
+  off, and the last one off finishes and sells. So a build takes **1 + workers** actions: bigger
+  projects are slower, hold more workers, and pay more tax on full corners. Industrial needs a 4th
+  worker, so it waits for an upgrade: big business is a mid-game unlock. Wording in RULES.md.
+  - **Start 3, cap 7, escalating** (3 / 4 / 5 / 6 incentives a worker): a short, sharp early race
+    for incentives to buy the 4th worker, against credit for the same incentives; the walker
+    sitting out upgrades brakes it, and escalating cost keeps an early lead from compounding. A
+    high cap leaves room for long lines late. Considered: start 4, cap 6 (lines and Industrial
+    from turn one; drop to it if the early game drags).
+  - **Work a line**: one action takes 1 worker off **each** of your projects in a straight run
+    along a row or column (across streets), from any start, one direction, stopping when you like
+    or at the first plot that isn't your project. Finishes sell in the order walked, so an earlier
+    finish counts toward a later sale (not inside out). Pays off planning with very large turns,
+    and pulls game length back down.
+  - A finished building breaks a line, so a long line wants its projects to stay unfinished: big
+    projects hold lines together.
+  - **Known pattern**: House, then Park beside it, work the line from the Park (Park sells), then
+    finish the House counting it: 4 actions for both, not 5. Cleanest in a 2-plot edge block (the
+    pair fills it). Fine as a known opening: the mayor's incentives pull play elsewhere, and rivals
+    can build into the same block.
+  - Considered: workers 0 / 1 / 2 / 3 (instant Parks); a milder ladder only slowing Industrial;
+    must-continue lines (forced finishes before inputs land); lines through rivals' projects.
+- **Actions** (2026-10-17; worker counts superseded 2026-10-26): a turn is **one action**, and there are only two: **place cones** (break
   ground) or **pick one up** (finish and sell). A build takes 1 cone, so two actions. Every payoff
   compares per action:
   1. **Break ground**: put a tile on an empty plot, **pay its full cost** (base and building
@@ -161,14 +184,42 @@ out tax incentives that sway where it pays to build.
   on breaking ground; sale value is read on finishing. **Smallest numbers** that keep the
   incentives, at about **1 coin per action** (every build is two actions):
 
-  | Type       | Cost | Sale                            | Floor | Best (cap)      |
-  | ---------- | ---- | ------------------------------- | ----- | --------------- |
-  | Park       | 0    | 1                               | +1    | +1              |
-  | Housing    | 1    | 3, +1 per Park in its block     | +2    | more with Parks |
-  | Commercial | 2    | 2, +1 per demand cube taken     | 0     | +2 / +3 / +4 …  |
-  | Industrial | 4    | 1, +3 per Commercial cube taken | −3    | +3 / +6 / +9 …  |
+  | Type       | Workers | Actions | Cost | Sale | Counts                 | Floor |
+  | ---------- | ------- | ------- | ---- | ---- | ---------------------- | ----- |
+  | Park       | 1       | 2       | 0    | 1    | —                      | +1    |
+  | Housing    | 2       | 3       | 1    | 3    | Parks                  | +2    |
+  | Commercial | 3       | 4       | 2    | 2    | Houses                 | 0     |
+  | Industrial | 4       | 5       | 4    | 1    | Industrials, itself in | 0     |
 
-  - **Raised buildings** (2026-10-25; replace the cubes below): a finished tile stays **flat** (2D)
+  Every count pays **+3** per building in its own block, **+1** per building in one neighbor.
+  Numbers are placeholders (2026-10-26): inflation is fine until the system is plausible.
+
+  - **Counting** (2026-10-26; replaces raised buildings and cubes below): a sale **counts** what it
+    draws on, and takes nothing: **+3** each in **its own block**, **+1** each in **one orthogonal
+    neighbor** (seller's pick). **House** counts Parks, **Commercial** Houses, **Industrial** other
+    Industrials, itself included. No 1 + n cap, no wood. Wording in RULES.md, Selling.
+    - **Why counting**: much easier to read a payoff: scan your block and one next to it. Blocks
+      are small (1–4 plots), and players can count.
+    - **Mixed use**: the +3 own block pulls each type's input into the same block, so the best
+      Houses and shops sit in mixed blocks (Park, Houses, a shop). Next door is a small top-up.
+      Without it, all-positive counting gave **predictable rings** (Parks, then Houses, then shops,
+      then Industry).
+    - **Industry concentrates**: Industrial counts Industrials, not Commercials, so it forms its own
+      single-use zones (industrial parks), more realistic than a supply chain. It pulls against
+      mixed use for plots, and it breaks the rings. "Itself included" so a lone Industrial isn't a
+      dead loss (base 1 + 3 = its cost); the second in a block collects more. Commercial is now a
+      dead end: nothing counts it.
+    - **Reach 1 for every type**: picking neighbors at sale is arithmetic (take the best), not a
+      decision, and wide reach made every tier decent anywhere, blunting placement. Kept as a dial:
+      widen one type if types feel samey.
+    - **Interaction is over land**: with no depletion, a rival's sale never takes your demand; the
+      fight is for plots. Accepted risk: a housing cluster ringed by shops pays each in full.
+    - Considered the same day: a reach ladder (House 1, Commercial 2, Industrial 3, Civic 4) with
+      own block at par; own block ×2; Nuisance (Houses −1 per Industrial in their block), still a
+      candidate lever; saturation (−1 per same type in the block); a mixed-use bonus; Civic as
+      MIN(House, Commercial, Industrial), which collapses to "count Industrials" at an 8 : 4 : 1
+      deck.
+  - **Raised buildings** (superseded 2026-10-26; 2026-10-25, replaced the cubes below): a finished tile stays **flat** (2D)
     until another building draws on it; then it's **raised**: a wooden building of its type goes on
     it. A flat finished building is unmet demand; wood marks economic integration, so the city fills
     in, in 3D, where the economy flows, and the flat parts are the underserved ones. Why: cubes were
@@ -288,13 +339,13 @@ out tax incentives that sway where it pays to build.
 | Building      | A tile's finished side (House, shop, factory, Park); typed; earns when finished and sold.     |
 | Tile          | 35mm, two-sided: construction (cost on a gold coin) and finished; bought from the row.        |
 | Row           | The face-up building row, N + 3 tiles; the mayor walks when it's down to 2.                   |
-| Cone          | A player's marker on a project (3 each); comes off when it's finished.                        |
-| Break ground  | Pay a tile's full cost, place it, and cone it: the first of a build's two actions.            |
-| Finish        | Take your cone off, flip the tile, and sell it: the second action.                            |
+| Worker        | A player's marker on a project (3 each, up to 7); a type needs 1 / 2 / 3 / 4.                 |
+| Break ground  | Pay a tile's full cost, place it, and put down its workers: a build's first action.           |
+| Work          | Take 1 worker off each of your projects along a row or column, in order.                      |
+| Finish        | Take a project's last worker off, flip the tile, and sell it.                                 |
 | Historical    | A building placed at setup by a setup card; counts for neighbors, not sold.                   |
 | Setup card    | A quadrant's map of historical buildings, badged by player count; 4 dealt, one a quadrant.    |
-| Flat          | A finished building nothing has drawn on yet: unmet demand (was a cube).                      |
-| Raise         | Wood on a flat building a sale draws on: Shops raise Houses, Industry Shops, Houses Industry. |
+| Count         | A sale's bonus: +3 per input in its own block, +1 per input in one neighbor.                  |
 | Mayor         | Pawn that walks the streets to an agenda target: hands out incentives, taxes.                 |
 | Agenda        | A card naming one intersection; two face up; the walker picks the target.                     |
 | Walker        | The player whose build triggers a walk: steers the mayor, skips that walk's upgrades.         |
@@ -311,20 +362,26 @@ out tax incentives that sway where it pays to build.
 - **Row component** (2026-10-25): the row will want its own component (a board or track to hold it);
   undecided. The row deck's 8 : 4 : 1 mix is a work in progress. The sliding row's surcharges need
   tuning.
-- **Cones per project**: the construction side has room for a printed cone count; whether projects
-  vary is undecided.
+- **Game length** (2026-10-26): builds now take 2–5 actions (was 2), roughly 1.7× the turns at
+  the same build budget, less what lines save. Re-check the budget table and walks per count.
+- **Payoff numbers with workers** (2026-10-26): cost and base predate workers. A candidate set:
+  Commercial cost 3 / base 2, Industrial cost 5 / base 2, so Commercial (most common input) stops
+  dominating and Industrial pays only inside an industrial park. Not adopted yet.
 
 - **Upgrade menu** (to workshop; starter for testing): credit rating 1 step (max 3) for 2 / 3 / 4
-  incentives, +1 coin per walk; +1 cone (max 5) for 3 incentives. Incentive supply: one per stop
+  incentives, +1 coin per walk; +1 worker (max 7) for 3 / 4 / 5 / 6 incentives (2026-10-26; was 3
+  each, max 5). Incentive supply: one per stop
   with an empty corner (~3.4 a walk early, max 8), +1 per building finished on the mayor's corners.
   Later: special powers, advanced buildings needing several cones. (Considered: trading a cone in
   for credit; not thematic.)
-- **The cycle's numbers** (2026-10-25): House bonus per Industrial raised, House reach, and whether
-  the House's 1 + n makes sense (n Houses in a block of ≤ 4).
-- **Industrial runaway**: capped by 1 + n and by Commercial cubes being scarce (one per shop), but
-  +3 a cube makes the Commercial count in the deck and setup cards its strength dial. Watch 2P,
-  where historical Commercials leave Commercial cubes at setup. Fallbacks: plus-shape reach (more
-  busts), or a lower kicker.
+- **Industry's share** (2026-10-26): concentration needs Industrials near each other, but the row
+  deck has 6 of 78 (plus ~4 historical) over 36 blocks, so most count only themselves. Likely
+  raise the mix (e.g. 8 : 4 : 2), or seed industrial zones via setup cards.
+- **Commercial as a dead end** (2026-10-26): nothing counts shops; fine if their own sale carries
+  them. Watch whether anyone builds them.
+- **5th type, Civic** (2026-10-26): wanted, room kept for 5 types; what it counts is tabled until
+  there's a clever idea (an idea: it alone counts all 4 neighbors, "serves everyone"). Likely public services (paying in incentives).
+- **Industrial's name**: it's a proxy for big business, not heavy manufacturing. Candidates: Office, Wholesale, Corporate, Enterprise.
 - **Full-block lock** (2026-10-25): a player can cone a plot in a block and sit on it, holding the
   block's Houses hostage; the mayor's tax on full corners is the only pressure. Watch it.
 - **Setup cards**: a draft of the 8 quadrant cards is in `setup/setupCards.ts` (printable at

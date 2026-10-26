@@ -54,8 +54,8 @@ Update this file rather than re-deriving. Rules live in `RULES.md`; the reasons 
   - **Historical** tiles: source open (row tiles finished side up, or their own tiles); burgundy
     split tiles likely dropped.
 - **Player mat** (2026-10-18): a **TGC half board turned landscape** (10 × 5in), printable one per
-  Letter page at `/revival/mats`: company band, credit track (0–3), cone yard (3 open, 2 locked),
-  and space kept for later upgrades. One design for now; company colors swap into the band later.
+  Letter page at `/revival/mats`: company band, credit track (0–3), cone yard (3 open, 2 locked;
+  needs 4 locked, priced 3 / 4 / 5 / 6, since 2026-10-26), and space kept for later upgrades. One design for now; company colors swap into the band later.
 - **Sale card** (2026-10-18): sale values live **only on a 6 × 4in landscape reference card**, one
   per player (`/revival/reference`, 2 per Letter page); the board has no room and tiles keep just
   the cost coin. Each row: the tile, what it **sells for** written
