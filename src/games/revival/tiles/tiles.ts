@@ -72,16 +72,16 @@ const row = (kind: BuildingKind): Tile => ({ a: construction(kind, COST[kind]), 
 export const BLIGHT: TileFace = { kind: "blight", side: "dark" }
 
 /**
- * Every tile: the row deck (9 : 3 : 1), the Park supply, historical buildings
+ * Every tile: the row deck (8 : 4 : 1), the Park supply, historical buildings
  * (their source is open; as many of each type as any 4 setup cards place).
  */
 export const TILES: readonly Tile[] = [
-  ...many(54, row("house")),
-  ...many(18, row("commercial")),
+  ...many(48, row("house")),
+  ...many(24, row("commercial")),
   ...many(6, row("industrial")),
   /** Assumed: the supply size isn't decided yet. Setup cards place up to 4, finished side up. */
   ...many(20, row("park")),
-  ...many(11, { a: finished("house", { historical: true }) }),
-  ...many(8, { a: finished("commercial", { historical: true }) }),
+  ...many(14, { a: finished("house", { historical: true }) }),
+  ...many(7, { a: finished("commercial", { historical: true }) }),
   ...many(4, { a: finished("industrial", { historical: true }) })
 ]

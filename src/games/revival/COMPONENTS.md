@@ -14,12 +14,12 @@ Update this file rather than re-deriving. Rules live in `RULES.md`; the reasons 
   **civic navy** (provisional). Costs are printed on a **gold coin** (top-right of a row tile).
   Historical buildings are split diagonally (burgundy top-left, the type's color bottom-right) under
   a white icon on cards.
-- **V0 components** (2026-10-17): **32mm base-plate tiles** (the plot square; 30mm until 2026-10-18,
-  grown to fit stock 1.25in tiles) on sticker paper over cardstock, printable at `/revival/tiles` as
-  **31mm stickers** (`STICKER`, 1mm under `TILE`) for stock 1.25in tiles: butted 6 × 8 per Letter
-  sheet (however many fit inside a 10mm margin) so a trimmer cuts whole rows, the outer 1mm left
-  unprinted to absorb off cuts (29mm art; widened from 0.5mm for cutting room). Cubes, workers,
-  coins and the mayor are bought bits. **Park supply: 20, assumed.**
+- **V0 components** (2026-10-17): **32mm base-plate tiles** (35mm since 2026-10-19; the plot square;
+  30mm until 2026-10-18, grown to fit stock 1.25in tiles) on sticker paper over cardstock, printable
+  at `/revival/tiles` as **31mm stickers** (`STICKER`, 1mm under `TILE`) for stock 1.25in tiles:
+  butted 6 × 8 per Letter sheet (however many fit inside a 10mm margin) so a trimmer cuts whole
+  rows, the outer 1mm left unprinted to absorb off cuts (29mm art; widened from 0.5mm for cutting
+  room). Cubes, workers, coins and the mayor are bought bits. **Park supply: 20, assumed.**
 - **Playtest workers** (2026-10-19): **worker meeples** in player colors replace cones: any distinct
   shape in a player color marks where a company is working. The rules say **workers**; DESIGN.md
   still says cones (same piece). The mat's "cone yard" label is not yet renamed.
@@ -83,16 +83,64 @@ Supersedes parts of §1; §1 still describes the look (dots, edge, streets, labe
 - **Labels** moved from the bottom-left corner tab into the hole (the plaza), centred, which freed
   the buffer to shrink. Then bigger and faint (6mm bold #a3a3a3 on a #ececec tab): coordinates are a
   minor detail.
-- **34mm system** (2026-10-18; 26 → 32 → 34mm): the plot is derived from the tile (`TILE` in
-  `tiles/tiles.ts`, 32mm) plus `PLOT_PADDING` (1mm) all round, so resizing tiles resizes the board.
-  35mm tiles were tried (37mm plots, 2mm buffer, 10mm streets): they fit but crowd the board. The
-  buffer went half a plot → 10 → 9 → 6 → 5mm once labels left it (8mm and 5mm were too tight for a
-  corner tab).
+- **34mm system** (2026-10-18; 26 → 32 → 34mm; superseded 2026-10-19 by 35mm tiles, 36mm plots,
+  `PLOT_PADDING` 0.5mm): the plot is derived from the tile (`TILE` in `tiles/tiles.ts`, 32mm) plus
+  `PLOT_PADDING` (1mm) all round, so resizing tiles resizes the board. 35mm tiles were tried (37mm
+  plots, 2mm buffer, 10mm streets): they fit but crowd the board. The buffer went half a plot → 10 →
+  9 → 6 → 5mm once labels left it (8mm and 5mm were too tight for a corner tab).
 - **15mm streets** (8 → 12 → 15mm): wider than the buffer, so neighborhoods separate; traded buffer
   for it.
 - **Dropped**: claim rings and band, variable columns and greyed squares, City Hall, and printed
   prefill marks (code removed): blight and historical buildings are now dealt by setup cards onto
   fixed halves of each ring (DESIGN.md, Setup cards), so the board prints nothing about setup.
+
+### 0b. Engraved ground (settled 2026-10-25)
+
+- **Look** (`GROUND` in `blocks/hatch.tsx`; the only look, alternatives and their switcher removed):
+  vacant lots are engraved, **one dark grey ink (#333333), 0.15mm hairlines**, tone from line
+  spacing, never line weight; streets are flat grey.
+  - **Vacant lots**: single 45° lines, **L 0.97** (1.66mm apart).
+  - **Streets, their crossings and City Hall's plaza**: **flat grey at L 0.90** (#dedede), painted
+    as one sheet under the blocks so nothing seams. A square hairline grid at the same L (0.99mm
+    apart) came first; it didn't add enough information to earn its texture, so only the lots are
+    hatched. (This drops the old "never a flat grey" rule from home printing; TGC prints full
+    colour.)
+  - **No sidewalk**: `BUFFER` is half the edge line (was 2mm of dotted sidewalk), so each block's
+    heavy edge touches its plots; the freed space went to the board's outer margin.
+  - **Streets fixed at 18mm** (`STREET`; the 15 / 20mm switcher removed).
+  - **City edge**: half a street (9mm) of grey runs round the outermost blocks, closed by a **hard
+    2mm border** (`BORDER`, the block edge's colour): the city's true edge, with white margin past
+    it.
+  - **Black bleed**: the ⅛in bleed outside the 20×20in trim prints black, framing the board's true
+    edge (a drifting trim shows black, not white); the white between it and the city border is the
+    space still free for other uses.
+  - **Intersection names** are written on every intersection in a darker grey (L 0.60, 4.5mm
+    semibold; 6mm was too big), letter first like the agenda cards (`crossingName`, e.g. D4): 16 of
+    them. None on C or 3 (they run down the folds; a crease would crack the text), so none at City
+    Hall (C3) either. Tried: street names at both ends of each street (on the street, then in the
+    margin, then on the street in darker grey); the agenda names intersections, so the board does
+    too.
+- **Numbers** (how to ask for changes): **L** is how light a zone reads from arm's length, on the
+  OKLab scale of `colors.ts` (white 1, tiles 0.70, grime 0.40). The board page's header reads each
+  zone out (the lots with ink cover and line spacing). Set a target L; the spacing or grey follows.
+- **Lessons** (from ~15 rounds):
+  - **One ink.** Two inks (near-black lots, grey streets) was an unforced error: near-black lines
+    read heavier than their L.
+  - **Darker ink spreads lines, with diminishing returns**: #9a9a9a → #808080 → #555555 → #333333
+    each cut line count less; pure black would add only ~3%. Past that, spreading lines means
+    thicker lines (0.2mm would space them ~⅓ further).
+  - **Hatching only reads as hatching while it's light.** To reach a mid tone, ink must cover most
+    of the area; a cross-hatch past ~50% cover has lines wider than its gaps and reads as white
+    specks on dark (tried lots L 0.60–0.75: "pretty bad"). Lines read as lines while clearly thinner
+    than the gaps (cross ≲ 50%, single ≲ 35%); with these hairlines, the floor is about L 0.85. A
+    darker zone would need a flat tint under the lines.
+  - **Streets darker than lots**, as asphalt is, and both lighter than tiles, so built tiles pop.
+- **Dropped looks**: Plain (all white), Vacant (diagonal lots only), Derelict (dark grime
+  cross-hatched lots, so the city starts dark and brightens as tiles land; streets lined along each
+  street), Asphalt (dark dot streets, L 0.50–0.80), and a first Engraved with lines along each
+  street and a separate crossing grid.
+- **Open**: tax incentives sit on empty plots and must stand out on the hatch; check line weights on
+  a real print (screen zoom shows moiré).
 
 ### 1. Rectangular blocks (`blocks/`, `/revival`)
 

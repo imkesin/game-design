@@ -3,6 +3,7 @@ import { axis, type City, layoutOf, spanOf, STREET } from "~/games/revival/block
 import { CITY } from "~/games/revival/blocks/city"
 import { CityMap } from "~/games/revival/blocks/CityMap"
 import { Desk } from "~/games/revival/blocks/Desk"
+import { describe, GROUND } from "~/games/revival/blocks/hatch"
 import { mm } from "~/games/revival/blocks/mm"
 import { Paper } from "~/games/revival/blocks/Paper"
 import { PrintTile } from "~/games/revival/blocks/PrintTile"
@@ -37,25 +38,22 @@ const SEAMS = {
   ys: Array.from({ length: TILES.rows - 1 }, (_, k) => (k + 1) * TILE.height)
 }
 
-/** The board's tracks for a city and street width, and what's wrong with them, if anything. */
-function geometry(city: City, street: number) {
-  const X = axis(city.cols.map((tile) => tile.map(spanOf)), TILE.width, INSET, street)
-  const Y = axis([...city.rows].reverse().map((tile) => [...tile].reverse().map(spanOf)), TILE.height, INSET, street)
+/** The board's tracks for a city, and what's wrong with them, if anything. */
+function geometry(city: City) {
+  const X = axis(city.cols.map((tile) => tile.map(spanOf)), TILE.width, INSET)
+  const Y = axis([...city.rows].reverse().map((tile) => [...tile].reverse().map(spanOf)), TILE.height, INSET)
   const problems = [
     ...(SHEET.kind === "board" && (SHEET.panels.cols !== TILES.cols || SHEET.panels.rows !== TILES.rows)
       ? [
         `city.ts groups ${TILES.cols}×${TILES.rows} tiles, the board has ${SHEET.panels.cols}×${SHEET.panels.rows} panels`
       ]
       : []),
-    ...(SHEET.kind === "board" && SHEET.fold > street ? [`folds are wider than streets`] : []),
+    ...(SHEET.kind === "board" && SHEET.fold > STREET ? [`folds are wider than streets`] : []),
     ...X.over.map(({ tile, by }) => `tile column ${tile + 1} is ${by.toFixed(1)}mm too wide`),
     ...Y.over.map(({ tile, by }) => `tile row ${TILES.rows - tile} (from the bottom) is ${by.toFixed(1)}mm too tall`)
   ]
   return { xs: X.tracks, ys: Y.tracks, problems }
 }
-
-/** Street widths to try, in mm; the first is the default. */
-const STREETS = [STREET, 20, 15] as const
 
 const notes = css({ textTransform: "none", letterSpacing: 0, fontSize: "13px", color: "#333" })
 
@@ -63,8 +61,22 @@ const problem = css({ color: "#dc2626" })
 
 const tiles = css({ display: "contents" })
 
-/** A folding board's page: the board centred in its bleed, the printer's template over it on screen if toggled. */
-const bleed = css({ display: "grid", gridTemplateAreas: `"bleed"`, placeItems: "center" })
+/**
+ * A folding board's page: the board centred in its bleed, the printer's
+ * template over it on screen if toggled. The bleed is black, so the board's
+ * edge is framed and a drifting trim shows black, not white.
+ */
+const bleed = css({
+  display: "grid",
+  gridTemplateAreas: `"bleed"`,
+  placeItems: "center",
+  background: "rgba(255, 0, 0, 0.4)"
+})
+
+const trimmed = css({ gridArea: "bleed", background: "white" })
+
+/** On screen, the strip inside the trim that's outside the printer's safe zone, tinted like the bleed. */
+const unsafe = css({ gridArea: "bleed", pointerEvents: "none" })
 
 const layer = css({ gridArea: "bleed" })
 
@@ -87,14 +99,13 @@ export function BlocksPage() {
       return false
     }
   })
-  const [street, setStreet] = useState<number>(STREET)
   const [players, setPlayers] = useState<Players | undefined>(undefined)
   const [setup, setSetup] = useState<Setup | undefined>(undefined)
   const dealFor = (count: Players | undefined) => {
     setPlayers(count)
     setSetup(count === undefined ? undefined : deal(count))
   }
-  const { xs, ys, problems } = geometry(CITY, street)
+  const { xs, ys, problems } = geometry(CITY)
   const [rows, cols] = [CITY.rows.flat().length, CITY.cols.flat().length]
   const plots = Array.from({ length: rows * cols }, (_, i) => layoutOf(CITY, Math.floor(i / cols), i % cols))
     .reduce((sum, layout) => sum + layout.plots.length, 0)
@@ -134,12 +145,6 @@ export function BlocksPage() {
             </label>
           )}
           <label className={toggle}>
-            Streets
-            <select value={street} onChange={(e) => setStreet(Number(e.target.value))}>
-              {STREETS.map((s) => <option key={s} value={s}>{`${s}mm`}</option>)}
-            </select>
-          </label>
-          <label className={toggle}>
             Setup
             <select
               value={players ?? ""}
@@ -152,6 +157,7 @@ export function BlocksPage() {
           {players !== undefined && <button type="button" onClick={() => dealFor(players)}>Deal again</button>}
           <span className={notes}>
             {`${rows * cols} neighborhoods · ${plots} plots`}
+            {` · lots ${describe(GROUND.lot)} · streets L ${GROUND.street.l.toFixed(2)} flat (${GROUND.street.color})`}
             {setup !== undefined
               && ` · ${setup.plots.size} historical: ${
                 setup.cards.map((card, i) => `${QUADRANTS[i]} ${card.name}`).join(", ")
@@ -165,9 +171,17 @@ export function BlocksPage() {
         ? (
           <Paper {...SCREEN} areaWidth={BOARD.width} areaHeight={BOARD.height} title={layout}>
             <div className={bleed} style={{ width: mm(PAGE.width), height: mm(PAGE.height) }}>
-              <div className={layer}>
+              <div className={trimmed}>
                 <CityMap {...map} {...dealt} seams={SEAMS} />
               </div>
+              <div
+                className={`${unsafe} screen-only`}
+                style={{
+                  width: mm(BOARD.width),
+                  height: mm(BOARD.height),
+                  boxShadow: `inset 0 0 0 ${mm(SHEET.safe)} rgba(255, 0, 0, 0.4)`
+                }}
+              />
               {showTemplate && <img src={SHEET.template} alt="" className={`${layer} ${template} screen-only`} />}
             </div>
           </Paper>

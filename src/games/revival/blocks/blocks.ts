@@ -11,20 +11,15 @@ export const PLOT_PADDING = 0.5
 /** A plot's track: a `TILE` square with `PLOT_PADDING` all round. */
 export const PLOT = TILE + 2 * PLOT_PADDING
 
-/**
- * Ground inside a block: pure black dots (a halftone, not a grey fill, so it
- * prints the same anywhere) behind white plots, which makes them pop.
- */
-export const DOTS = { pitch: 2, r: 0.2 }
-
 /** The line around every block. */
-export const EDGE = { width: 1.2, color: "#1f1f1f" }
+export const EDGE = { width: 1, color: "#1f1f1f" }
 
 /**
- * The sidewalk between the plots and the edge line, all round. Narrower than
- * `STREET`, so neighborhoods separate.
+ * Room between the plots and the block's box, all round: half the edge line,
+ * so the line's inner side touches the plots (no sidewalk; 2mm until
+ * 2026-10-25).
  */
-export const BUFFER = 2
+export const BUFFER = EDGE.width / 2
 
 /** A block's plots as (column, row) in its `cols` × `rows` grid, row 0 at the top. */
 export type Layout = {
@@ -36,8 +31,16 @@ export type Layout = {
 /** A block's side in mm, `plots` across. */
 export const spanOf = (plots: number) => 2 * BUFFER + plots * PLOT
 
-/** The white street between neighboring blocks; cut lines and folds run down the middle of one. */
+/** The street between neighboring blocks; cut lines and folds run down the middle of one. */
 export const STREET = 18
+
+/**
+ * The city's hard outer edge: a line through the middle of the outermost
+ * plots, under the blocks, so their outer halves hang out past it; the
+ * streets run out to it. (Trial 2026-10-25; before, it ran 3mm clear of the
+ * outermost blocks.)
+ */
+export const BORDER = { width: 2, color: EDGE.color }
 
 /**
  * A city as a matrix of neighborhoods split across tiles, so the mayor can
