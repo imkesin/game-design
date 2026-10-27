@@ -5,18 +5,17 @@ import { Tile } from "../tiles/Tile.tsx"
 import { STICKER, TILE } from "../tiles/tiles.ts"
 import type { Placed } from "./deal.ts"
 
-/** Pieces as they'd sit on the board, true size: a sticker on its MDF tile, cubes, the mayor. */
+/** Pieces as they'd sit on the board, true size: a sticker on its MDF tile, the mayor. */
 
 /** An MDF tile's raw edge, showing round its sticker (whose unprinted inset is white). */
 const MDF = "#b9946a"
-const CUBE = 8
 const MAYOR = 16
 
 const stack = css({ display: "grid", gridTemplateAreas: `"stack"`, "& > *": { gridArea: "stack" } })
 
 const shadow = "0 0.3mm 0.8mm rgba(0, 0, 0, 0.35)"
 
-export function OnBoard({ face, cube }: Placed) {
+export function OnBoard({ face }: Placed) {
   return (
     <div
       className={stack}
@@ -25,19 +24,6 @@ export function OnBoard({ face, cube }: Placed) {
       <div style={{ placeSelf: "center", display: "grid", background: "white" }}>
         <Tile face={face} size={STICKER} unit="var(--u)" />
       </div>
-      {cube !== undefined && (
-        <div
-          style={{
-            placeSelf: "end",
-            margin: mm(5),
-            width: mm(CUBE),
-            height: mm(CUBE),
-            background: COLORS[cube],
-            borderRadius: mm(0.8),
-            boxShadow: `inset 0 0 0 ${mm(0.4)} rgba(0, 0, 0, 0.25), ${shadow}`
-          }}
-        />
-      )}
     </div>
   )
 }

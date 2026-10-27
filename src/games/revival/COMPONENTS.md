@@ -19,7 +19,9 @@ Update this file rather than re-deriving. Rules live in `RULES.md`; the reasons 
   at `/revival/tiles` as **31mm stickers** (`STICKER`, 1mm under `TILE`) for stock 1.25in tiles:
   butted 6 × 8 per Letter sheet (however many fit inside a 10mm margin) so a trimmer cuts whole
   rows, the outer 1mm left unprinted to absorb off cuts (29mm art; widened from 0.5mm for cutting
-  room). Cubes, workers, coins and the mayor are bought bits. **Park supply: 20, assumed.**
+  room). Cubes, workers, coins and the mayor are bought bits. **96 building tiles**, 32 per level,
+  in **3 bags** (one per level, drawn blind; 2026-10-27) (2026-10-26; see DESIGN.md, Levels and era
+  decks). **Park supply: 24** (one per intersection; was 20, assumed).
 - **Playtest workers** (2026-10-19): **worker meeples** in player colors replace cones: any distinct
   shape in a player color marks where a company is working. The rules say **workers**; DESIGN.md
   still says cones (same piece). The mat's "cone yard" label is not yet renamed.
@@ -42,6 +44,15 @@ Update this file rather than re-deriving. Rules live in `RULES.md`; the reasons 
     construction side (dropped 2026-10-20).
   - The construction side carries what matters only while it's a project; the finished side only
     needs art and its type.
+  - **Construction side** (2026-10-27): workers as meeple outlines top-left (Residential 1,
+    Commercial 2, Industrial 3), the **type icon once per level** in the centre, nearly touching:
+    one for L1, a pair for L2, a triangle (one atop two) for L3 (the spade is gone; a stronger hatch
+    says under construction, 2026-10-27), and bottom-right **cost / sale** on one row: the cost
+    coin, a slash, the base sale coin (a Park shows its sale only). **No count on the tile**: what a
+    sale counts is left to the rules.
+  - **Finished side** (2026-10-27): the type icon, larger, **once per level** in the same layout, so
+    an L3 Residential still reads as three houses once it's built. Historical buildings (L1) show
+    one.
   - Why no wood: spaced-out wooden buildings read as a **suburb**, not a city; real blocks are
     continuous street walls, and wood packed that close gets knocked over. Flat tiles that nearly
     touch read as one block (the ring is a perimeter block; the plaza its courtyard). The city
@@ -51,18 +62,20 @@ Update this file rather than re-deriving. Rules live in `RULES.md`; the reasons 
     tile stacked on the construction tile (reads as a multi-story building); blight and finished
     faces on one tile with worker count telling a knocked-down blight apart (breaks if projects need
     different worker counts).
-  - **Historical** tiles: source open (row tiles finished side up, or their own tiles); burgundy
-    split tiles likely dropped.
+  - **Historical** tiles: L1 tiles finished side up (2026-10-26); burgundy split tiles likely
+    dropped.
 - **Player mat** (2026-10-18): a **TGC half board turned landscape** (10 × 5in), printable one per
   Letter page at `/revival/mats`: company band, credit track (0–3), cone yard (3 open, 2 locked;
-  needs 4 locked, priced 3 / 4 / 5 / 6, since 2026-10-26), and space kept for later upgrades. One design for now; company colors swap into the band later.
-- **Sale card** (2026-10-18): sale values live **only on a 6 × 4in landscape reference card**, one
-  per player (`/revival/reference`, 2 per Letter page); the board has no room and tiles keep just
-  the cost coin. Each row: the tile, what it **sells for** written
-  `base + (bonus per Park or
-  cube)` in coins, and its **side effects** with a mini-map of where
-  the bonus counts (the House's own neighborhood, or the neighborhoods cubes are taken from), the
-  1 + n cube cap, cubes put out, and blight rules.
+  needs 4 locked, priced 3 / 4 / 5 / 6, since 2026-10-26), and space kept for later upgrades. One
+  design for now; company colors swap into the band later.
+- **Sale card** (2026-10-18; redone 2026-10-27): a **6 × 4in landscape reference card**, one per
+  player (`/revival/reference`, 2 per Letter page). Cost, base and workers are on the tiles, so the
+  card shows **only what a sale adds**. Left, a row per type: the tile, then `+ coin PER input`
+  (Residential +1 per Park, Commercial +2 per Residential, Industrial +4 per Commercial). Right,
+  **reach by level**, a column each: the level mark (1 / 2 / 3 buildings, laid out like a tile's
+  centre) over a 3 × 3 map of blocks: own block ×2, then 0 / 1 / 2 chosen neighbors ×1, diagonals
+  never. Its coins are **payoff grey**, like the tiles' sale coin (money a sale brings in); gold is
+  for coins in hand (purse, credit income). No hexes, cubes or blight (all gone from the game).
 
 ## Board
 

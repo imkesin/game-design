@@ -2,8 +2,8 @@ import { css } from "~/generated/styled-system/css"
 import { COLORS } from "../colors.ts"
 import { ICON } from "../icons.ts"
 import meepleSvg from "../marks/meeple.svg?raw"
-import spadeSvg from "../marks/spade.svg?raw"
-import { type Bonus, STICKER, type TileFace } from "./tiles.ts"
+import { LEVEL_SLOTS, levelGrid } from "./levels.ts"
+import { STICKER, type TileFace } from "./tiles.ts"
 
 /**
  * One tile face, as a `STICKER`. The color sits inset from the cut line, and
@@ -11,18 +11,21 @@ import { type Bonus, STICKER, type TileFace } from "./tiles.ts"
  * draws it scaled, e.g. on a reference card.
  *
  * - **Construction**: its type's color, like the finished side, with its
- *   numbers as `SYMBOL`-tall symbols: workers as meeples top-left, the price
- *   coin top-right, a spade beside its type icon in the centre, and the payoff
- *   bottom-right: base sale coin + (bonus coin / Park or cube).
+ *   numbers as `SYMBOL`-tall symbols: workers as meeples top-left, its type
+ *   icon once per level in the centre, and bottom-right the price coin and the
+ *   base sale coin, cost / sale. What a sale counts is left to the rules.
+ *   Bold stripes say under construction; its meeples and icons are solid with
+ *   a halo, so the stripes stop short of them.
  * - **Dark** (a blight): grime grey under a faint, generic building; no type, no
  *   numbers.
- * - **Finished**: its type's color under a white icon, a placeholder for art.
- *   Historical looks like any other.
+ * - **Finished**: its type's color under its white icon, once per level like
+ *   the construction side, a placeholder for art. Historical (always L1) looks
+ *   like any other.
  */
 
 const INSET = 1
-/** How tall the corner symbols are. */
-const SYMBOL = 5
+/** How tall the corner symbols are: meeples and coins alike. */
+const SYMBOL = 6
 const PADDING = 0.6
 
 const tile = css({ display: "grid", boxSizing: "border-box", printColorAdjust: "exact" })
@@ -30,43 +33,56 @@ const tile = css({ display: "grid", boxSizing: "border-box", printColorAdjust: "
 const face = css({
   display: "grid",
   boxSizing: "border-box",
-  gridTemplateAreas: `"workers . cost" "icon icon icon" "payoff payoff payoff"`,
-  gridTemplateColumns: "auto 1fr auto"
+  gridTemplateAreas: `"workers" "." "money"`,
+  gridTemplateColumns: "100%"
 })
 
-const icon = css({
-  gridArea: "icon",
-  placeSelf: "center",
+/** Cost / sale: what a tile takes in, then what it pays out. */
+const money = css({
+  gridArea: "money",
+  justifySelf: "end",
   display: "grid",
-  gridAutoFlow: "column",
-  alignItems: "center"
+  gridTemplateAreas: `"cost slash sale"`,
+  alignItems: "center",
+  color: "white",
+  fontWeight: 800,
+  lineHeight: 1
 })
 
-const corner = css({ display: "grid", gridAutoFlow: "column", alignItems: "center" })
+/** The centre spans the whole face, under the corner rows, so it's centred on the tile whatever the corners hold. */
+const icon = css({ gridArea: "1 / 1 / -1 / -1", placeSelf: "center" })
+
+const corner = css({ justifySelf: "start", display: "grid", gridAutoFlow: "column", alignItems: "center" })
 
 /** A mark's path, from a one-path 512 × 512 drawing in `marks/`. */
 const pathOf = (svg: string) => svg.match(/\sd="([^"]+)"/)?.[1] ?? ""
 const MEEPLE = pathOf(meepleSvg)
-const SPADE = pathOf(spadeSvg)
 
-/** Construction's centre: a spade and the type icon, side by side. */
-const PAIR = 9
+/** The centre: one type icon per level, smaller on the construction side, which has corners to fit. */
+const LEVEL_ICON = { construction: 9, finished: 14 } as const
 
-/** How much white fills a construction mark: workers stand out, the centre recedes. */
-const WORKER_FILL = "rgba(255, 255, 255, 0.3)"
-const CENTRE_FILL = "rgba(255, 255, 255, 0.1)"
+/**
+ * How far a construction mark's solid color reaches past its white outline, in
+ * mm: the stripes stop short of every mark, so it reads clean over them.
+ */
+const HALO = 0.5
+
+/** Outline widths in their drawings' units: a mark's 512 box, an icon's 24. */
+const MARK_STROKE = 32
+const ICON_STROKE = 1.75
 
 /** A blight's building: faint white, so the tile reads dark first and the building second. */
 const BLIGHT_STROKE = "rgba(255, 255, 255, 0.3)"
 
-/** Construction's faint diagonal stripes, so a site reads as unfinished. */
-const HATCH = "rgba(255, 255, 255, 0.2)"
+/** Construction's diagonal stripes, so a site reads as unfinished: width and repeat in mm. */
+const HATCH = { color: "rgba(255, 255, 255, 0.35)", stripe: 1.5, period: 3 }
 
-/** A mark drawn white in outline over a faint white fill. */
-function Mark({ d, size, fill }: { d: string; size: string; fill: string }) {
+/** A mark drawn white in outline, filled and haloed (`halo`, in its 512 box) in `color`. */
+function Mark({ d, size, color, halo }: { d: string; size: string; color: string; halo: number }) {
   return (
-    <svg viewBox="0 0 512 512" style={{ width: size, height: size, display: "block" }}>
-      <path d={d} fill={fill} stroke="white" strokeWidth={32} strokeLinejoin="round" />
+    <svg viewBox="0 0 512 512" style={{ width: size, height: size, display: "block", overflow: "visible" }}>
+      <path d={d} fill={color} stroke={color} strokeWidth={MARK_STROKE + 2 * halo} strokeLinejoin="round" />
+      <path d={d} fill={color} stroke="white" strokeWidth={MARK_STROKE} strokeLinejoin="round" />
     </svg>
   )
 }
@@ -81,48 +97,6 @@ const coin = css({
   lineHeight: 1,
   fontVariantNumeric: "tabular-nums"
 })
-
-const payoff = css({
-  gridArea: "payoff",
-  justifySelf: "end",
-  display: "grid",
-  gridAutoFlow: "column",
-  alignItems: "center",
-  color: "white",
-  fontWeight: 700,
-  lineHeight: 1,
-  fontVariantNumeric: "tabular-nums"
-})
-
-/** Parens: light, so the coins carry the payoff. */
-const glyph = css({ fontWeight: 500, lineHeight: 1 })
-
-/** What a bonus counts: a Park (its tile, icon and all) or a cube (a plain square). */
-function Unit({ of, size }: { of: Bonus["per"]; size: string }) {
-  if (of === "park") {
-    const Icon = ICON.park
-    return (
-      <span
-        style={{
-          display: "grid",
-          placeItems: "center",
-          width: size,
-          height: size,
-          borderRadius: "18%",
-          background: COLORS.park,
-          boxShadow: "0 0 0 0.25mm white"
-        }}
-      >
-        <Icon size="70%" strokeWidth={2} color="white" />
-      </span>
-    )
-  }
-  return (
-    <svg viewBox="0 0 10 10" style={{ width: size, height: size, display: "block" }}>
-      <rect x={1} y={1} width={8} height={8} rx={1} fill={COLORS[of]} stroke="white" strokeWidth={1.2} />
-    </svg>
-  )
-}
 
 const fill = ({ kind }: TileFace) => COLORS[kind]
 
@@ -143,14 +117,18 @@ export function Tile(
     return (
       <div className={tile} style={style}>
         <div className={blight} style={{ background: COLORS.blight, borderRadius: mm(1) }}>
-          <ICON.blight style={{ width: mm(14), height: mm(14) }} strokeWidth={1.75} color={BLIGHT_STROKE} />
+          <ICON.blight style={{ width: mm(14), height: mm(14) }} strokeWidth={ICON_STROKE} color={BLIGHT_STROKE} />
         </div>
       </div>
     )
   }
   const Icon = ICON[f.kind]
   const corners = f.side !== "finished"
-  const iconSize = mm(f.side === "finished" ? 14 : PAIR)
+  const across = f.side === "finished" ? LEVEL_ICON.finished : LEVEL_ICON.construction
+  const iconSize = mm(across)
+  const level = f.level ?? 1
+  const slots = LEVEL_SLOTS.slice(0, level)
+  const haloed = f.side === "construction"
   const coinStyle = { background: COLORS.coin, width: mm(SYMBOL), height: mm(SYMBOL), fontSize: mm(SYMBOL * 0.62) }
   return (
     <div className={tile} style={style}>
@@ -158,51 +136,54 @@ export function Tile(
         className={face}
         style={{
           background: f.side === "construction"
-            ? `repeating-linear-gradient(45deg, ${HATCH} 0 ${mm(0.5)}, transparent 0 ${mm(2)}), ${fill(f)}`
+            ? `repeating-linear-gradient(45deg, ${HATCH.color} 0 ${mm(HATCH.stripe)}, transparent 0 ${
+              mm(HATCH.period)
+            }), ${fill(f)}`
             : fill(f),
           borderRadius: mm(1),
           padding: corners ? mm(PADDING) : undefined,
           gridTemplateRows: corners ? `${mm(SYMBOL)} 1fr ${mm(SYMBOL)}` : "0 1fr 0"
         }}
       >
+        <span className={icon} style={levelGrid(level, across, mm)}>
+          {haloed && slots.map((slot) => (
+            <Icon
+              key={`halo-${slot}`}
+              style={{ gridArea: slot, width: iconSize, height: iconSize, overflow: "visible" }}
+              strokeWidth={ICON_STROKE + (2 * HALO * 24) / across}
+              color={fill(f)}
+              fill={fill(f)}
+            />
+          ))}
+          {slots.map((slot) => (
+            <Icon
+              key={slot}
+              style={{ gridArea: slot, width: iconSize, height: iconSize }}
+              strokeWidth={ICON_STROKE}
+              color="white"
+              fill="none"
+            />
+          ))}
+        </span>
         {corners && f.workers !== undefined && (
-          <span className={corner} style={{ gridArea: "workers", gap: mm(0.2) }}>
+          <span className={corner} style={{ gridArea: "workers", gap: mm(2 * HALO) }}>
             {Array.from(
               { length: f.workers },
-              (_, i) => <Mark key={i} d={MEEPLE} size={mm(SYMBOL)} fill={WORKER_FILL} />
+              (_, i) => <Mark key={i} d={MEEPLE} size={mm(SYMBOL)} color={fill(f)} halo={(HALO * 512) / SYMBOL} />
             )}
           </span>
         )}
-        {corners && f.cost !== undefined && (
-          <span style={{ gridArea: "cost", ...coinStyle, background: COLORS.cost }} className={coin}>{f.cost}</span>
-        )}
-        <span className={icon} style={{ gap: mm(1.5) }}>
-          {f.side === "construction" && <Mark d={SPADE} size={mm(PAIR)} fill={CENTRE_FILL} />}
-          <Icon
-            style={{ width: iconSize, height: iconSize }}
-            strokeWidth={1.75}
-            color="white"
-            fill={f.side === "construction" ? CENTRE_FILL : "none"}
-          />
-        </span>
         {corners && f.sale !== undefined && (
-          <span className={payoff} style={{ gap: mm(0.5), fontSize: mm(SYMBOL * 0.62) }}>
-            <span className={coin} style={{ ...coinStyle, background: COLORS.payoff }}>{f.sale}</span>
-            {f.bonus !== undefined && (
+          <span className={money} style={{ columnGap: mm(0.6), fontSize: mm(SYMBOL * 0.8) }}>
+            {f.cost !== undefined && (
               <>
-                <svg
-                  viewBox="0 0 10 10"
-                  style={{ width: mm(2.4), height: mm(2.4), marginInline: mm(0.6), display: "block" }}
-                >
-                  <path d="M5 1V9M1 5H9" stroke="white" strokeWidth={2.4} strokeLinecap="round" />
-                </svg>
-                <span className={glyph} style={{ fontSize: mm(SYMBOL * 0.8) }}>(</span>
-                <span className={coin} style={{ ...coinStyle, background: COLORS.payoff }}>{f.bonus.amount}</span>
-                <span style={{ fontSize: mm(SYMBOL * 0.8), marginInline: mm(0.5) }}>/</span>
-                <Unit of={f.bonus.per} size={mm(SYMBOL * 0.8)} />
-                <span className={glyph} style={{ fontSize: mm(SYMBOL * 0.8) }}>)</span>
+                <span className={coin} style={{ gridArea: "cost", ...coinStyle, background: COLORS.cost }}>
+                  {f.cost}
+                </span>
+                <span style={{ gridArea: "slash" }}>/</span>
               </>
             )}
+            <span className={coin} style={{ gridArea: "sale", ...coinStyle, background: COLORS.payoff }}>{f.sale}</span>
           </span>
         )}
       </div>

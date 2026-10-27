@@ -11,6 +11,7 @@ import { pageOf, type Sheet, SHEETS } from "~/games/revival/boards/sheets"
 import { deal, QUADRANTS, type Setup } from "~/games/revival/setup/deal"
 import { Mayor, OnBoard } from "~/games/revival/setup/OnBoard"
 import type { Players } from "~/games/revival/setup/setupCard"
+import { TILES as PIECES } from "~/games/revival/tiles/tiles"
 import { css } from "~/generated/styled-system/css"
 
 /**
@@ -19,7 +20,8 @@ import { css } from "~/generated/styled-system/css"
  * a street. On screen: the whole board with its tile edges, and anything that
  * doesn't fit called out. In print: one page per tile with crop marks, or one
  * full-bleed page for a folding board. A random setup can be dealt onto it, on
- * screen only, to see the starting city.
+ * screen only, to see the starting city, and construction sites scattered over
+ * the empty plots, to compare them with finished buildings.
  */
 
 const IN = 25.4
@@ -85,6 +87,22 @@ const template = css({ width: "100%", height: "100%", mixBlendMode: "multiply", 
 
 const PLAYERS: readonly Players[] = [2, 3, 4, 5]
 
+/** How many empty plots get a construction site, as a share. */
+const SITES = { Off: 0, Few: 0.15, Many: 0.35 } as const
+type Sites = keyof typeof SITES
+
+/** Every construction face a site can show: any level, Parks included. */
+const SITE_FACES = PIECES.map(({ a }) => a).filter(({ side }) => side === "construction")
+
+/** A number in [0, 1) for a plot, the same for a seed, so sites stay put until scattered again. */
+function noise(seed: number, x: number, y: number, salt: number) {
+  let h = seed ^ Math.imul(x + 1, 374761393) ^ Math.imul(y + 1, 668265263) ^ Math.imul(salt + 1, 2246822519)
+  h = Math.imul(h ^ (h >>> 13), 1274126177)
+  return ((h ^ (h >>> 16)) >>> 0) / 2 ** 32
+}
+
+const newSeed = () => Math.floor(Math.random() * 2 ** 31)
+
 const toggle = css({ display: "grid", gridAutoFlow: "column", gap: "6px", alignItems: "center" })
 
 const TEMPLATE_KEY = "revival:template"
@@ -101,6 +119,8 @@ export function BlocksPage() {
   })
   const [players, setPlayers] = useState<Players | undefined>(undefined)
   const [setup, setSetup] = useState<Setup | undefined>(undefined)
+  const [sites, setSites] = useState<Sites>("Off")
+  const [seed, setSeed] = useState(newSeed)
   const dealFor = (count: Players | undefined) => {
     setPlayers(count)
     setSetup(count === undefined ? undefined : deal(count))
@@ -110,12 +130,16 @@ export function BlocksPage() {
   const plots = Array.from({ length: rows * cols }, (_, i) => layoutOf(CITY, Math.floor(i / cols), i % cols))
     .reduce((sum, layout) => sum + layout.plots.length, 0)
   const map = { city: CITY, xs, ys, ...BOARD }
-  const dealt = setup && {
+  const siteAt = (x: number, y: number) =>
+    noise(seed, x, y, 0) < SITES[sites] ? SITE_FACES[Math.floor(noise(seed, x, y, 1) * SITE_FACES.length)] : undefined
+  const dealt = (setup !== undefined || sites !== "Off") && {
     pieces: (x: number, y: number) => {
-      const placed = setup.plots.get(`${x},${y}`)
-      return placed && <OnBoard {...placed} />
+      const placed = setup?.plots.get(`${x},${y}`)
+      if (placed !== undefined) return <OnBoard {...placed} />
+      const site = siteAt(x, y)
+      return site && <OnBoard face={site} />
     },
-    hall: <Mayor />
+    ...(setup && { hall: <Mayor /> })
   }
   const size = `board ${inches(BOARD.width)}×${inches(BOARD.height)}in`
   const layout = SHEET.kind === "board"
@@ -155,6 +179,13 @@ export function BlocksPage() {
             </select>
           </label>
           {players !== undefined && <button type="button" onClick={() => dealFor(players)}>Deal again</button>}
+          <label className={toggle}>
+            Sites
+            <select value={sites} onChange={(e) => setSites(e.target.value as Sites)}>
+              {Object.keys(SITES).map((name) => <option key={name} value={name}>{name}</option>)}
+            </select>
+          </label>
+          {sites !== "Off" && <button type="button" onClick={() => setSeed(newSeed())}>Scatter again</button>}
           <span className={notes}>
             {`${rows * cols} neighborhoods · ${plots} plots`}
             {` · lots ${describe(GROUND.lot)} · streets L ${GROUND.street.l.toFixed(2)} flat (${GROUND.street.color})`}
