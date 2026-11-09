@@ -17,6 +17,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "d3-delaunay": "6.0.4",
     "lucide-react": "^1.22.0",
     "marked": "^18.1.1",
     "react": "^19.2.7",
@@ -24,6 +25,7 @@
   },
   "devDependencies": {
     "@pandacss/dev": "^1.11.4",
+    "@types/d3-delaunay": "6.0.4",
     "@types/node": "^24.13.2",
     "@types/react": "^19.2.17",
     "@types/react-dom": "^19.2.3",
