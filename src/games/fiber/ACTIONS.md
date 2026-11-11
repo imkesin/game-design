@@ -1,121 +1,93 @@
-# Fiber: action tiles and flip actions (thinking doc, not for print)
+# Fiber: action tiles (thinking doc, not for print)
 
-Draft 2026-11-05, revised 2026-11-06. Anything unknown is a **placeholder** (`$A`, `[who]`, `TBD`),
-not an invented number. Companion to [DESIGN.md](./DESIGN.md).
+Draft 2026-11-05; **overhauled 2026-11-10** (6 paired tiles, flip actions dropped). Unknowns are
+**placeholders** (`$A`, `TBD`), not invented numbers. Companion to [DESIGN.md](./DESIGN.md).
 
-## Two kinds of actions
+## Shape
 
-|            | **Tile actions** (12 tiles)                       | **Flip actions** (6, fixed on the board)          |
-| ---------- | ------------------------------------------------- | ------------------------------------------------- |
-| What       | Card-specific action, Day face or Night face.     | Other actions triggered when a tile is flipped.   |
-| Position   | **Variable**: tiles are shuffled into slots at setup, never move in play. | **Fixed** at printed positions on the board.      |
-| Triggered by | Placing a worker on the tile.                   | Flipping the tile that sits in the linked slot.   |
-
-- 12 tiles + 6 flip actions is the preferred shape (elegance), not a hard number.
-- Flip actions are **actions**, not events: they belong to the game's engine and come back again
-  and again. (My first draft treated them as one-off effects with markers. That was wrong.)
-- Every flip also triggers **Refinance** (every player: income, then optionally 1 ladder step).
-- Link between slots and flip actions: each flip action serves a pair of slots (start here).
-
-## Story: every tile is a department with a Day shift and a Night shift
-
-- **Day** (white workers): visible, public, field-facing. Baseline.
-- **Night** (black workers): off-hours. Quiet, premium, back-office; trades cost for reach or a twist.
-- **Design rule:** black-worker players must never feel punished; Night is *different*, not worse.
-- **Tiles shuffle**, so each must be balanced independent of whichever slot it lands in.
-- Terms: **Day / Night** for tile faces; **Lit / Unlit** for Hubs.
+- **6 double-sided tiles** beside the map. Each tile is one department: a **Day** action on one face,
+  its **Night** counterpart on the other. Only the face-up side is usable, so **6 worker spaces** are
+  open at any time.
+- **Workers:** white place on Day faces, black on Night faces. Each player starts 2 white + 2 black.
+- **Crowding:** a space costs more for each worker already on it.
+- **Flip** (a turn's action instead of placing): pick a tile (or fixed order, see open questions),
+  **take all workers on it into your own supply** (rivals' too), turn it over. That's all: **no global
+  effect, no Refinance, no fixed board actions.**
+- **Workers circulate** (2026-11-10): flipping takes rivals' workers, so counts and white/black mix
+  shift between players. A flip is also **denial**: it strips a busy tile of everyone's workers.
+- **Floor:** at least 1 tile of each side face-up, so the most lopsided board is 5/1.
+- **Pattern:** Day usually _starts_ something, Night _completes_ it (place → splice, capitalize →
+  refinance, market → bill). Cable/Hub is the exception: Night cable opens nodes for next Day's Hubs.
 
 ## Placeholder key
 
-| Symbol | Meaning                                  | Guess        |
-| ------ | ---------------------------------------- | ------------ |
-| `$A`   | Night surcharge / small discount step    | $1           |
-| `$L`   | Loan size                                | ~$5          |
-| `$R`   | Roadshow payout                          | ~$3          |
-| `$S`   | Price per Receipt when securitized       | ~$2          |
-| `$I`   | IRU sale payout                          | ~$3          |
-| `$T`   | Tariff increase cost                     | ~$2          |
-| `$P`   | Discount-plan cash now                   | ~$4          |
-| `$B`   | Settlement rebate on a Commissioner build | ~$2         |
-| `$N`   | Anchor "serve" payout                    | ~$3          |
-| `D`    | Income lost per Debt marker              | 1            |
+| Symbol | Meaning                          | Guess |
+| ------ | -------------------------------- | ----- |
+| `$L`   | Capital raised per Capitalization | ~$5   |
+| `D`    | Income lost per Debt marker      | 1     |
+| `$i`   | Billing per Lit Hub              | TBD   |
 
-## The 12 tile actions
+## The 6 tiles
 
-| #  | Tile         | Day                                                                              | Night                                                                                   |
-| -- | ------------ | -------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------- |
-| 1  | Trench Crew  | Lay 1 cable (printed cost).                                                      | Overnight pull: +`$A`, lay 1 cable and drop an Unlit Hub at the far end, no make-ready surcharge. |
-| 2  | Pole Crew    | Place 1 Unlit Hub.                                                               | Place 2 Unlit Hubs in different nodes of one Region, +`$A` each.                        |
-| 3  | Splice Shop  | Upgrade one of your Hubs to the node's Terminal; the Hub returns to your supply. | Build a Terminal directly (+`$A`) in an empty node your cable reaches. Skips the Hub.   |
-| 4  | Canvass      | Light 1 Unlit Hub (drop cost; 2nd lighter in a node pays more).                  | Quiet sale: light 1 Hub with no 2nd-lighter premium, +`$A` flat.                        |
-| 5  | Campaign     | Regional Marketing: light all your Unlit Hubs in one Region, paying each drop cost. | Promo: light up to 2 Hubs in one Region at a combined −`$A`.                          |
-| 6  | Credit Desk  | Draw a loan: +`$L`, take a Debt marker (−`D` income).                            | Repay: pay `$L`, discard a Debt marker; or refinance debt for a notch-bonus kicker.     |
-| 7  | Roadshow     | Pitch investors: take `$R`.                                                      | Securitize: turn in Receipts for `$S` each (spends the proof for cash).                 |
-| 8  | Account Exec | Sign a neutral tenant: if a Terminal of yours touches a Legacy Telco blocker or Anchor tile, take 1 Receipt free. | IRU sale: lease an edge you own to a neutral carrier; take `$I`, no Receipt.      |
-| 9  | Anchor Desk  | Contract the Anchor Institution in a node where you have a Lit Hub: take its benefit marker. | Serve the anchor: collect its benefit once now, e.g. `$N` / Receipt.            |
-| 10 | Tariff Desk  | Raise prices: pay `$T`, income track +1 (permanent).                             | Discount plan: income track −1, take `$P` now.                                          |
-| 11 | Lobbyist     | Move the Commissioner to a node with equal or less coverage.                     | Grant writer: if you have a Hub in the Commissioner's node, take 1 BEAD token.          |
-| 12 | Counsel      | Pole-attachment settlement: lay a cable into the Commissioner's node at −`$B`.   | Clear a Legacy Telco blocker adjacent to your cable (pay its printed price); take its slot. |
+| #  | Tile             | Day                                                                       | Night                                                                                 |
+| -- | ---------------- | ------------------------------------------------------------------------- | ------------------------------------------------------------------------------------- |
+| 1  | Construction     | **Place Hubs** (Unlit) in nodes your network already reaches.              | **Lay cable** along an edge (printed dots).                                            |
+| 2  | Terminals        | **Place a Terminal**, Unspliced side up, in a node's Terminal slot.        | **Splice:** flip one of your Terminals to Active. Cable may now leave that node.       |
+| 3  | Government       | **Gather permits.** TBD.                                                   | **Lobby:** move the Commissioner (only to a node with equal or less coverage).        |
+| 4  | Finance          | **Seek capitalization:** take `$L` and a Debt marker.                      | **Refinance:** step the credit ladder (cash + 1 proof); maybe also restructure Debt.  |
+| 5  | Sales            | **Marketing:** light Unlit Hubs (drop cost; 2nd lighter in a node pays more). | **Billing:** collect income from your Lit Hubs.                                       |
+| 6  | Reinvestment     | Player-board upgrade, Day flavour. TBD.                                    | Player-board upgrade, Night flavour. TBD.                                             |
 
-Notes:
+Tile names are my labels; the verbs are the user's.
 
-- Tile 2 Night burns Hub supply fast, pulling the end trigger closer. Intended.
-- Tile 8 Day is the Wholesale proof's safety valve when rivals won't route through you.
-- BEAD tokens also come from building into the Commissioner's node; both sources drain the
-  finite pool.
-- Debt (tile 6) is my addition; not confirmed.
-- Pressure balance, loosely: builder 1-3, marketing 4-5, financier 6-10, opportunist 11-12.
-  Opportunist is thin.
+### Readings to confirm
 
-## The 6 flip actions (fixed on the board)
+- **Construction:** Hubs need cable reach (as before). With Hubs and cable on one tile, Day forces
+  **local building** (densify where you already are) before Night **expansion**.
+- **Terminals:** placed directly, no longer upgraded from a Hub. Hubs never return to supply, so
+  supplies run down faster (see the supply-race end trigger in DESIGN.md).
+- **Refinance:** now the **only** source of ladder steps, gated by Night and black workers. The
+  metronome becomes "1 step per Refinance action".
+- **Billing:** replaces income paid at Refinance / flip-income. Income track (Brass-style) vs
+  per-Lit-Hub count still open.
+- **Debt** is now in (user named "taking on debt").
 
-Known so far:
+## Coverage check
 
-- They are actions, fixed at board positions, triggered by flipping the tile in a linked slot.
-- They are "global": more than the flipper's own business.
-- They are **meta-progression** (user, 2026-11-06): flips come less often than tile actions, so
-  these move the long game forward (permanent or structural change), not the turn-to-turn
-  economy. No clear rule for what they are yet.
-- One example from the original intake: **a region's networks collect income** (subscribers pay).
-  Check whether that is meta-progression enough, or belongs to Refinance's income step.
-- **Refinance** fires on every flip regardless (not one of the six).
+| Verb                    | Where                 |
+| ----------------------- | --------------------- |
+| Place Hub               | 1 Day                 |
+| Lay cable               | 1 Night               |
+| Place Terminal          | 2 Day                 |
+| Activate Terminal       | 2 Night               |
+| Permits                 | 3 Day (TBD)           |
+| Move Commissioner       | 3 Night               |
+| Cash / Debt             | 4 Day                 |
+| Ladder step             | 4 Night               |
+| Light a Hub             | 5 Day                 |
+| Income                  | 5 Night               |
+| Player-board upgrades   | 6 Day / 6 Night (TBD) |
+| BEAD grant              | building into Commissioner's node (unchanged); maybe permits |
+| Receipts                | rivals building/lighting through your Terminal (unchanged)   |
 
-Meta-progression candidates to think with (none chosen): a permanent income-track bump, advancing a
-shared track, unlocking a tier privilege for everyone, Commissioner movement, refreshing or
-draining the BEAD pool, revealing or advancing Anchors.
-
-| #  | Flip action | What it does                                                    |
-| -- | ----------- | --------------------------------------------------------------- |
-| F1 | TBD (candidate: Region income) | `[region]` collects income: each Lit Hub there pays its owner `$i`. `[region]` = TBD (fixed by position? chosen by flipper?). |
-| F2 | TBD         | TBD                                                             |
-| F3 | TBD         | TBD                                                             |
-| F4 | TBD         | TBD                                                             |
-| F5 | TBD         | TBD                                                             |
-| F6 | TBD         | TBD                                                             |
-
-## Coverage check: every verb has a home
-
-| Verb                    | Day                | Night                  |
-| ----------------------- | ------------------ | ---------------------- |
-| Lay cable               | 1                  | 1                      |
-| Place Hub               | 2                  | 2 (x2)                 |
-| Upgrade to Terminal     | 3                  | 3 (direct)             |
-| Light a Hub             | 4, 5               | 4, 5                   |
-| Move Commissioner       | 11                 | (maybe a flip action)  |
-| Collect BEAD            | 12 (rebate)        | 11 (grant)             |
-| Clear Legacy blocker    | (none)             | 12                     |
-| Get a Receipt           | 8                  | 7 (sell)               |
-| Cash                    | 7                  | 6, 8                   |
-| Income track            | 10                 | 10                     |
-| Anchors                 | 9                  | 9                      |
-| Refinance (ladder step) | via flip           | via flip               |
+Dropped from the old 12-tile draft: Anchor Desk, Tariff Desk, Roadshow/securitize, IRU sale, Legacy
+blocker clearing, Commissioner settlement. Some may return as Reinvestment upgrades.
 
 ## Open questions
 
-- **What the 6 flip actions are** (biggest gap).
-- **Decided 2026-11-05:** tiles are shuffled randomly into slots; tiles never move during play;
-  one flip action per slot pair (6), starting there. Direction-based (12) is a later option.
-- **Income:** paid at Refinance from a Brass-style track vs. separate. Not confirmed.
-- **Debt:** does it earn its place?
-- **Crowding:** 12 tiles x 4 workers per player: enough contention at 2/3/4?
-- **Flipper's first-mover perk** (DESIGN.md): not chosen.
+- **Permits:** what they are and what they gate.
+- **Reinvestment:** what the player board upgrades; how Day and Night upgrades differ.
+- **Ladder pace:** Refinance is Night-only. If Finance sits on Day a long time, nobody climbs. Is that
+  a feature (flip pressure) or a stall?
+- **Crowding:** 6 spaces, up to 16 workers at 4p, color-locked. Likely very tight; crowding cost
+  scale matters a lot.
+- **Flip choice / sweep (user proposal, 2026-11-10):** all 6 tiles start **Day**. Flips sweep in a
+  fixed order, end to end, until all are Night, then sweep back to Day. Fixed order makes the
+  next-to-flip tile a known prize but removes free-pick denial. Not final.
+- **Flip spam** (soaking workers by flipping repeatedly): user says don't worry about it for now.
+- **Tile order:** fixed or shuffled at setup?
+- **Flipper's perk:** probably unneeded; taking rivals' workers is the reward.
+- **Worker hoarding:** can one player snowball workers? Is there a cap, or a floor for a player left
+  with none (flip is always available, so an empty hand can still act)?
+- **Crowding** (user agrees it's the worst problem): 6 actions is a deliberate trim; fix by cost
+  scale or worker count, not more tiles.

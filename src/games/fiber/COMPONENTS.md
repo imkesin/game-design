@@ -20,10 +20,11 @@ unknown is `TBD`, not invented.
   glance, before color.
 - Hub is 10mm tall, so the **Lit / Unlit face is on the flat top**; it can't be read from the side.
   Print each face edge to edge.
-- Upgrade (Hub → Terminal): the Hub leaves its slot for the player board, the cube goes in the
-  Terminal slot. Terminal slot is never shared with Hub slots, so nothing stacks.
-- Counts per player: `TBD` (Hub supply sets game length; see DESIGN.md Open Questions). Terminals:
-  at most 1 per node, so a ceiling of ~30 on the board; per-player supply `TBD`.
+- Terminal is two-sided in state: placed **Unspliced**, flipped to **Active** by Splice
+  (2026-11-10; placed directly, no Hub upgrade). How a cube shows two states is `TBD` (marker,
+  orientation, or a different piece). Terminal slot is never shared with Hub slots, so nothing stacks.
+- Counts per player: `TBD`. Hubs, Terminals and cables all live on the player mat; emptying any one
+  triggers the end (DESIGN.md). Scaling by player count: see **Board and player counts**.
 - Not yet sized: **Commissioner** pawn, **Legacy Telco** blockers, **Receipt** / **BEAD** tokens,
   workers.
 
@@ -108,6 +109,48 @@ A: side by side (42 × 37)        B: stacked (37 × 42)
   edge costs on the edge midpoint, away from the pad.
 - Every node holds 3 pieces max (1 Terminal, 2 Hubs). Pad is full-size even when empty, so an
   empty map still shows the whole network's capacity.
+
+## Board and player counts (2026-11-10)
+
+- **Double-sided board:** **2–3 player** map on one side, **4–5 player** map on the other.
+- **4–5 is a wider corridor:** same Austin–San Antonio core, plus outlying towns. More nodes,
+  regions about the same size.
+- **Fringes:** each side has edge areas with a player-count badge: a **3p fringe** on the 2–3 side,
+  a **5p fringe** on the 4–5 side. Out of play at the lower count. How they read as "off" (lighter
+  tint, dashed border, badge only) is `TBD`.
+- My suggestion, not decided: keep the geography consistent. Towns in the 3p fringe could be core
+  on the 4–5 side, and the 5p fringe goes one ring further out.
+- **Player mat:** prints the full supply. Some slots carry a player-count badge; at higher counts
+  those pieces go back in the box (fewer starting buildings).
+- **Workers per player by count:** undecided. 6 tiles stay fixed, so total workers rise with player
+  count (16 at 4p at 2 + 2 each). Decide after the map.
+
+### Capacity rule of thumb (from Tiger's Path: count placements, not pieces)
+
+- The game ends when the **first** player empties **one** pile, so at the end the board holds about
+  `players × supply × f` of each piece (`f` < 1, guess ~0.7–0.8). Size each map so its slots run
+  **just short of full** at that point: contention without gridlock.
+- Per piece: **Hub slots** ≈ players × Hub supply × `f`; **nodes** (Terminal slots) ≈ players ×
+  Terminal supply × `f`; **links** ≈ players × cable supply × `f`.
+- A fringe adds about one player's share of each, so 3p ≈ 2p + fringe and 5p ≈ 4p + fringe.
+- If a map can't fit the counts, change the sheet or the mat badges, not the gameplay numbers.
+
+### 2–3 player side: numbers (2026-11-10)
+
+Ratio **Hubs : Terminals : cables = 2 : 1 : 1** on the mat; map is **Hub slots : nodes : links =
+2 : 1 : 1.5** (avg 2 Hub slots per node; 1.5 links per node ≈ 9 loops, about ⅓ of links unbuilt).
+
+| Count | Mat per player     | Total supply | Map (Hub slots : nodes : links)   | Worst-case spare |
+| ----- | ------------------ | ------------ | --------------------------------- | ---------------- |
+| 2p    | 14 : 7 : 7         | 28 : 14 : 14 | core **32 : 16 : 24**             | 4 Hubs, 2 nodes  |
+| 3p    | 12 : 6 : 6 (badge) | 36 : 18 : 18 | core + fringe **40 : 20 : 30**    | 4 Hubs, 2 nodes  |
+
+- **Breathing-room rule (user, all counts):** total Hub supply < Hub slots, and total Terminals <
+  nodes, so the board can never fill even if every piece is placed. Typical games end ~65–75% full.
+- 3p fringe = **8 : 4 : 6** (4 nodes). Mat badges are on 2 Hubs, 1 Terminal, 1 cable.
+- **Action tiles live off the board**, laid along one edge (user, 2026-11-10). The whole board side
+  is map.
+- **Next:** check that 40 : 20 : 30 fits on one side of the board.
 
 ## Open
 

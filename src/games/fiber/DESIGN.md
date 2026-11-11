@@ -56,8 +56,9 @@ Long-distance backbone links are abstracted into single-point entry links.
    territory, **$0 income**, **does not count** for the credit ladder. The node is a dead-end leaf.
 2. **Light** the Hub (Marketing) to flip it permanently: recurring income, counts for density
    thresholds.
-3. Upgrade a Hub to the node's single Terminal (Hub returns to the player board for reuse). The node
-   becomes an active relay and unlocks outbound edges.
+3. Place a Terminal (Day, **Unspliced** side up) in the node's single Terminal slot, then
+   **Splice** it (Night, flip to Active). Placed directly; no longer upgraded from a Hub (2026-11-10).
+   An Active Terminal makes the node a relay and unlocks outbound edges.
 
 Rule: **every intermediate node needs an active Terminal before anyone can lay new cable out of
 it.** Reflects the optical reach limit.
@@ -97,7 +98,7 @@ proofs and are spent on a step.
 
 - No generic VP. A discrete track of 4 tiers × notches (source: 10–12 steps, `B-` → `AAA`; my
   suggestion: 8, see Tensions). Ties broken by cash on hand.
-- **Metronome:** at most **1 step per Refinance**. No hoarding for a late dump.
+- **Metronome:** at most **1 step per Refinance action**. No hoarding for a late dump.
 - **Notch bonus (every step):** micro-reward, e.g. permanent income bump, reduced debt service,
   refinancing kickback.
 - **Tier boundary (every 3rd step in source):** structural privilege, e.g. `BB-` unlocks Terminal
@@ -108,47 +109,18 @@ proofs and are spent on a step.
      higher totals or regional majorities of Lit Hubs).
   3. **Public-private compliance:** turn in BEAD grant / tax-credit vouchers.
 
-### Refinance and the flip tiles (decided 2026-11-05)
+### Worker placement (overhauled 2026-11-10)
 
-**Refinance is induced by tile flipping, not a worker-placement action.** Most flips carry a global
-effect; the Refinance trigger rides on the flip.
+Spec: [ACTIONS.md](./ACTIONS.md). **6 double-sided tiles**, one per department, each with a Day action
+and its Night counterpart; 6 spaces open at a time. White workers on Day faces, black on Night; 2 + 2
+per player. Crowding raises the price of a busy space. **Flip** (a turn's action) takes all workers
+on one tile **into the flipper's supply** (workers circulate between players; flipping doubles as
+denial) and turns it over: **nothing else** (no global effect, no Refinance, no fixed flip
+actions). Floor: at least 1 tile of each side (worst case 5/1).
 
-- **Every player** may advance 1 notch (cost + proof) on each flip. Metronome stays global.
-- **First-mover bonus for the flipper** ("first to refi gets favorable terms", like the first to
-  hire paying lower wages): a small perk, e.g. a cheaper step this Refinance or a notch-bonus
-  kicker. Exact perk open.
-
-### Worker placement (first attempt, 2026-11-04)
-
-Draft of all 12 tiles and 6 flip effects: see [ACTIONS.md](./ACTIONS.md). Two layers: **tiles**
-carry card-specific actions and are **variable** between games; the **flip-triggered effects** are
-printed on the board at **fixed slots**, so a flip's effect depends on the slot, not the tile.
-
-The action spaces sit beside the map. Placement picks the **verb**; the map is where the verb lands.
-Workers are abstract: something you place out to take an action. Verbs now include Build, Upgrade,
-Market (light), Lobby (move Commissioner).
-
-- **12 spaces, double-sided**: 6 show **light** (day), 6 show **dark** (night). Each side has its
-  own behavior, or an entirely different action. E.g. lay cable: cheaper in daylight, dearer at
-  night.
-- **Workers are white or black**; every player starts with **2 white and 2 black**. White places
-  only on light spaces, black only on dark.
-- **Crowding**: a space costs more for each worker already on it, so a popular action gets less
-  economical. Money, on top of the printed cost.
-- **Flip** (a turn's action, instead of placing): **a way to get workers back.** It involves a
-  **single tile**. Take **all** workers on it (rivals' too) and turn it over. It does **not** run
-  the space's action. It resets crowding, swaps the side, gives a small bonus and/or a **global
-  board effect**, and **triggers Refinance**.
-- **Flip order is fixed** (my reading, to confirm): light tiles flip in a set order, so the first
-  light tile becomes dark; likewise the first dark tile becomes light. You choose which side to flip
-  from, not which tile.
-- **Drift is allowed**: the board can go 7/5 or more extreme. **Floor**: at least 1 tile of each
-  side, so the worst case is 11/1.
-- **Global side-effect, to be designed**: flips tied to global events, grouped in pairs. E.g.
-  flipping makes networks in a region collect income (subscribers paying their bill).
-
-If flips pay income, rent only needs tracing for one region at a time. Receipts already remove most
-of that need; income track vs. flip-income is still open.
+**Refinance is now the Night side of the Finance tile** (Day side: seek capitalization / take Debt).
+It replaces the old flip-triggered, all-player Refinance. Income comes from **Billing** (Night side of
+Sales), not Refinance.
 
 ### BEAD grants and the Commissioner
 
@@ -176,17 +148,15 @@ Source thread keeps regional majorities only as a ladder proof (Lit Hub majoriti
 
 ## Open Questions
 
-- **End trigger (decided 2026-11-05):** a player places **all of their Hubs** (placed, not Lit).
-  Everyone gets one more turn, in order, ending with the player who placed that Hub. Winner is
-  highest rating, cash tiebreak. Open: Hub supply size (sets game length); Terminal upgrades return
-  Hubs and delay it; what a "turn" means when a flip may be the turn's action.
-- **Flipper's first-mover perk:** what exactly. Keep it small.
+- **End trigger (2026-11-10, development race):** each player mat holds a fixed supply of
+  **Hubs, Terminals and cables** (e.g. 12 Hubs). A player who **runs out of any one** of the three
+  triggers the end. Replaces "all Hubs placed". Open: supply sizes per piece; what happens after the
+  trigger (final round? last Refinance?); winner = highest rating, cash tiebreak (unchanged).
 - **Rent chain depth:** only the immediate supplier (Terminal + cable), or the whole backhaul
   chain to the spine?
 - **Marketing / churn:** one-time drop cost (current) vs ongoing churn. Avoid Food Chain Magnate
   overhead.
-- **Flip pairs / global effects:** the list of 12 spaces, both sides, and the global effect per
-  flip. Candidates map to the three pressures.
+- **Permits** (Government Day) and **Reinvestment** (both sides): undefined. See ACTIONS.md.
 - **Ladder shape:** number of notches, per-tier proof thresholds, notch bonuses, tier privileges,
   cash costs.
 - **Lit-Hub income values**, drop cost scale, and the second-lighter premium.
@@ -194,21 +164,25 @@ Source thread keeps regional majorities only as a ladder proof (Lit Hub majoriti
 
 ## Tensions to watch
 
-- **Ladder length vs round count:** 12 notches at 1 step/Refinance needs 12 refinances. Refinance now
-  rides flips, so length depends on flip frequency, not a fixed clock. 8 notches is my suggestion.
-- **Refinance tempo is player-controlled:** flips are a tempo tax *and* the only Refinance source.
-  A trailing player may avoid flipping; a leader may spam. The flip bonus must make a flip always
-  worth taking.
-- **End trigger vs ladder:** user chose "all Hubs placed" over "all Lit". Hubs are $1–2 and Unlit
-  ones don't help the ladder, so a rush can end the game before ratings climb. The extra round
-  softens it; Hub supply size and Terminal upgrades (return Hubs) are the dials. Playtest.
+- **Ladder length vs Refinance count:** each step needs a Refinance action (Night, Finance tile,
+  black worker). Ladder length now depends on how often Finance shows Night. 8 notches is my
+  suggestion.
+- **Refinance can stall:** if Finance sits on Day, nobody climbs. Flip pressure or a stall? Playtest.
+- **Supply race: the cheapest pile decides.** Any of the three can end the game, so the pile that's
+  cheapest to empty sets the pace. Size the supplies so each costs about the same to exhaust (e.g.
+  12 Hubs × $1–2 ≈ 4 Terminals × $4–5). Unlit Hubs don't help the ladder, so a rush can still end
+  the game before ratings climb.
+- **Supply vs board space:** 12 Hubs × 4 players = 48 against ~30 Hub slots. At high player counts
+  the board fills before anyone empties their Hubs, and Terminals (1 per node) and cables (1 per
+  edge) are shared too. Supplies must scale with player count, or "no legal placement" needs to
+  count as a trigger (or a flip-cycle cap as a backstop).
 - **Too many systems:** worker placement, light/dark flips, lit/unlit, regional marketing, Commissioner,
   3-proof ladder. User chose to keep all of them for now; cut candidates if playtest bogs.
-- **Fixed flip order is a tempo tax:** reaching your workers may take several flips.
+- **Fixed flip order (if kept) is a tempo tax:** reaching your workers may take several flips.
 - **Lopsided board is a mild pressure, not a deadlock:** every player starts with both colors.
-  At 11/1 the lone side has crowding spikes; watch it.
-- **Flip helps rivals:** the flipper returns everyone's workers on that space. Good pressure valve,
-  bad if it is a free bailout.
+  At 5/1 the lone side has crowding spikes; watch it.
+- **Worker circulation:** the flipper keeps everyone's workers from that tile. Strong denial; watch
+  for a worker-rich leader snowballing.
 - **Day/night clock:** Regolith already uses a sun terminator as its clock. Make sure Fiber's
   light/dark feels like a different mechanism. (Note: "Lit/Unlit" Hubs now reuse light language
   too; avoid confusing day/night tiles with lit/unlit Hubs.)
@@ -217,5 +191,5 @@ Source thread keeps regional majorities only as a ladder proof (Lit Hub majoriti
   route through you.
 - **Footprint-density snowball:** Lit Hubs are permanent and thresholds are cumulative, so the
   early lead compounds. Majority-based thresholds or a cap may be needed.
-- **Hub→Terminal upgrade:** the upgrade swallows a Hub; two Hub slots plus one Terminal means only 3
-  pieces of presence per node. Check contention for 2–4 players.
+- **Node presence:** two Hub slots plus one Terminal = 3 pieces per node. Check contention for 2–4
+  players.
