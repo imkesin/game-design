@@ -85,11 +85,11 @@ Open items are near the bottom, abandoned approaches at the very bottom.
 
 Supersedes parts of §1; §1 still describes the look (dots, edge, streets, labels).
 
-- **Board**: The Game Crafter's 20×20in large quad-fold (`boards/sheets.ts`, template
-  `boards/large-quad-fold-board.svg`, overlaid on screen only). One full-bleed 20.25in page; the 2×2
-  10in panels are the tiles, so folds and the cut run down streets (¼in fold band < 15mm street).
-  Blocks stay inside the 15.3pt safe zone. Tiled sheets (Letter, 18×24in) still work via `SHEETS` in
-  `BlocksPage.tsx`.
+- **Board**: The Game Crafter's 20×20in large quad-fold (`src/shared/print/boards/sheets.ts`,
+  template `large-quad-fold-board.svg` beside it, overlaid on screen only). One full-bleed 20.25in
+  page; the 2×2 10in panels are the tiles, so folds and the cut run down streets (¼in fold band <
+  15mm street). Blocks stay inside the 15.3pt safe zone. Tiled sheets (Letter, 18×24in) still work
+  via `SHEETS` in `BlocksPage.tsx`.
 - **Neighborhoods**: every one a 3×3 ring of 8 plots around an empty dotted centre (the hole), 5mm
   sidewalk (buffer) all round, 112mm square. 2×2 per panel: a 4×4 city, 16 neighborhoods, 128 plots,
   ~7.5mm margin from the trim.

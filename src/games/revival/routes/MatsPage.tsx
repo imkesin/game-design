@@ -1,7 +1,7 @@
 import { useState } from "react"
-import { HALF_BOARD } from "~/games/revival/boards/sheets"
 import { MAT, PlayerMat } from "~/games/revival/mats/PlayerMat"
 import { css } from "~/generated/styled-system/css"
+import { HALF_BOARD } from "~/shared/print/boards/sheets"
 
 /**
  * The player mat on a landscape Letter page, at TGC half-board size turned on

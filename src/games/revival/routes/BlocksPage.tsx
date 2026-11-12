@@ -7,12 +7,12 @@ import { describe, GROUND } from "~/games/revival/blocks/hatch"
 import { mm } from "~/games/revival/blocks/mm"
 import { Paper } from "~/games/revival/blocks/Paper"
 import { PrintTile } from "~/games/revival/blocks/PrintTile"
-import { pageOf, type Sheet, SHEETS } from "~/games/revival/boards/sheets"
 import { deal, QUADRANTS, type Setup } from "~/games/revival/setup/deal"
 import { Mayor, OnBoard } from "~/games/revival/setup/OnBoard"
 import type { Players } from "~/games/revival/setup/setupCard"
 import { TILES as PIECES } from "~/games/revival/tiles/tiles"
 import { css } from "~/generated/styled-system/css"
+import { pageOf, type Sheet, SHEETS } from "~/shared/print/boards/sheets"
 
 /**
  * The city on a board split into tiles: a matrix of neighborhoods with

@@ -1,6 +1,6 @@
 import { Lock, TrafficCone } from "lucide-react"
 import { css } from "~/generated/styled-system/css"
-import { HALF_BOARD } from "../boards/sheets.ts"
+import { HALF_BOARD } from "~/shared/print/boards/sheets"
 import { Coin, Incentive } from "../pieces/Pieces.tsx"
 
 /**
