@@ -28,6 +28,26 @@ unknown is `TBD`, not invented.
 - Not yet sized: **Commissioner** pawn, **Legacy Telco** blockers, **Receipt** / **BEAD** tokens,
   workers.
 
+## Player mat (2026-11-12)
+
+`/fiber/mat`, `mat/PlayerMat.tsx`. 10 × 8in landscape, home-printed on Letter.
+
+- **Three equal columns, light → dark:** Hubs (Day), Terminals (transition), cables (Night). Each a
+  grey from the board ramp.
+- **5 equal cells per column**, one straight row of pieces each, slots drawn as halos (stick slots
+  too, unlike the map). Cells are snug: widest row (2 sticks, 42mm) and Terminal height + 3mm inset
+  → **48 × 22mm**, 2mm gaps.
+- **Pieces per cell, top → bottom:** Hubs 3 · 3 · 3 · 3 · 2; Terminals and cables 2 · 1 · 2 · 1 · 1.
+  Total **14 : 7 : 7**.
+- **Build bottom → top.** An emptied cell takes one **upgrade tile** (same size as a cell). Tiles
+  bought with Reinvestment: white tiles (white workers) on the Hub column, black on cables, either on
+  Terminals.
+- **3+ players:** the bottom row (below a dashed divider, no label) stays in the box → **12 : 6 : 6**,
+  and those cells start open for tiles (perk to speed up the bigger game).
+- **Place costs** in a coin row on top, one per column. Trial values, not decided: Hub 2, Terminal
+  4, cable 10.
+- Rest of the mat is open (workers, cash, Debt, tokens TBD). Credit ladder not planned for the mat.
+
 ## Node pad
 
 A node is one fixed pad with three printed slots. Slot outline = piece + 1mm clearance per side, 3mm

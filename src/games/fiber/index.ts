@@ -1,5 +1,6 @@
 import type { Game } from "~/shared/game"
 import { MapPage } from "./routes/MapPage"
+import { MatPage } from "./routes/MatPage"
 import { PrintPage } from "./routes/PrintPage"
 import { FIBER_THEME_ID } from "./theme"
 
@@ -9,6 +10,7 @@ export const fiber: Game = {
   name: "Fiber",
   routes: {
     "/": MapPage,
-    "/print": PrintPage
+    "/print": PrintPage,
+    "/mat": MatPage
   }
 }

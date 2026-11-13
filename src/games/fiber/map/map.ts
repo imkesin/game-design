@@ -35,21 +35,27 @@ export const CONTENT_MARGIN = IN
 /** Extra air between the fold band and any pad or stick slot. */
 const FOLD_AIR = 2
 
+/**
+ * Experiment (2026-11-12, revert by setting false): no Terminals at all, Hubs become 20mm squares,
+ * with an even 1mm grey buffer: 1mm between slots and 1mm pad border. Pieces looked pretty at 12mm but were fiddly in hand.
+ */
+export const NO_TERMINALS = true
+
 export const PIECE = {
-  terminal: 16,
-  hub: 12,
+  terminal: NO_TERMINALS ? 0 : 16,
+  hub: NO_TERMINALS ? 20 : 12,
   stick: { length: 20, width: 5 }
 }
 
-/** Slots are the exact piece footprint; 2mm between them. */
-export const SLOT = { terminal: PIECE.terminal, hub: PIECE.hub, between: 2 }
+/** Slots are the exact piece footprint, `between` mm apart. */
+export const SLOT = { terminal: PIECE.terminal, hub: PIECE.hub, between: NO_TERMINALS ? 1 : 2 }
 const PITCH = SLOT.hub + SLOT.between
 
 /** Exact stick footprint inside a 1mm flat border, so it reads as a place to put a piece. The border is rounder (1mm) than the rest of the board. */
 export const STICK_SLOT = { length: PIECE.stick.length, width: PIECE.stick.width, border: 1, radius: 1 }
 
 /** `inset`: the flat border around the slots. The name is a label centred below the pad. */
-const PAD = { inset: 2 }
+const PAD = { inset: NO_TERMINALS ? 1 : 2 }
 /** Name label: a box in the pad's color, `gap` mm below the pad. */
 export const LABEL = { gap: 1, size: 4, padX: 2, padY: 0.9 }
 
@@ -171,7 +177,7 @@ export const EDGES: Edge[] = [
   { a: "sanAntonio", b: "schertz", sides: { a: "n", b: "w" } },
   { a: "canyonLake", b: "boerne" },
   { a: "boerne", b: "helotes" },
-  { a: "helotes", b: "sanAntonio" }
+  { a: "helotes", b: "sanAntonio", sides: { a: "e", b: "n" } }
 ]
 
 /**
@@ -214,6 +220,14 @@ export const edgeIsFringe = (e: { a: string; b: string }) => isFringe(e.a) || is
  * Hubs (max 4) built out to its right.
  */
 export function slotsOf(hubs: Node["hubs"]) {
+  if (NO_TERMINALS) {
+    return {
+      width: hubs * PITCH - SLOT.between,
+      height: SLOT.hub,
+      terminal: { x: 0, y: 0 },
+      hubs: Array.from({ length: hubs }, (_, k) => ({ cx: k * PITCH + SLOT.hub / 2, cy: SLOT.hub / 2 }))
+    }
+  }
   const height = SLOT.terminal
   return {
     width: SLOT.terminal + hubs * PITCH,

@@ -26,6 +26,8 @@ export const COLOR = {
   label: "#ffffff",
   /** Stick slots stay solid white: halos made the network links too busy. */
   stickSlot: "#ffffff",
+  /** Player mat's cable (Night) column: near-black to match the black workers, not the map's cable grey. */
+  matNight: "#262626",
   playerOne: "#ff3b1f",
   playerTwo: "#0a66ff"
 } as const
@@ -101,6 +103,12 @@ export const PALETTE: { group: string; swatches: Swatch[] }[] = [
       { name: "halo", role: "Terminal / Hub slot ring (inset, solid)", on: "board" },
       { name: "halo", role: "Terminal / Hub slot well (centre)", on: "board", opacity: WELL_OPACITY },
       { name: "stickSlot", role: "Stick slot (solid)", on: "board" }
+    ]
+  },
+  {
+    group: "Mat",
+    swatches: [
+      { name: "matNight", role: "Player mat cable (Night) column" }
     ]
   },
   {

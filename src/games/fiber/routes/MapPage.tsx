@@ -13,6 +13,7 @@ import {
   isExitNode,
   isFringe,
   LABEL,
+  NO_TERMINALS,
   NODES,
   padOf,
   PIECE,
@@ -231,7 +232,7 @@ const REGION_BORDER = { line: 0.5, dash: 2, gap: 1.6 }
 const HALO_RING = 1
 
 /** An empty slot: a white ring inset inside the footprint, a translucent white well within. */
-function HaloRect(
+export function HaloRect(
   { x, y, width, height, transform }: { x: number; y: number; width: number; height: number; transform?: string }
 ) {
   const h = HALO_RING / 2
@@ -252,7 +253,7 @@ function HaloRect(
   )
 }
 
-function HaloCircle({ cx, cy, r }: { cx: number; cy: number; r: number }) {
+export function HaloCircle({ cx, cy, r }: { cx: number; cy: number; r: number }) {
   return (
     <g>
       <circle cx={cx} cy={cy} r={r} fill={COLOR.halo} fillOpacity={WELL_OPACITY} />
@@ -544,7 +545,7 @@ export function MapArt({ view, layers }: { view: SolvedView; layers: MapLayers }
             >
               {node.name}
             </text>
-            {sample && SAMPLE.terminals[node.id]
+            {NO_TERMINALS ? null : sample && SAMPLE.terminals[node.id]
               ? (
                 <rect
                   rx={CORNER}
@@ -560,10 +561,17 @@ export function MapArt({ view, layers }: { view: SolvedView; layers: MapLayers }
               const cx = pad.slotsLeft + hub.cx
               const cy = pad.slotsTop + hub.cy
               const piece = sample ? SAMPLE.hubs.find((h) => h.node === node.id && h.slot === slot) : undefined
-              if (!piece) return <HaloCircle key={slot} cx={cx} cy={cy} r={SLOT.hub / 2} />
+              const h = SLOT.hub / 2
+              if (!piece) {
+                return NO_TERMINALS
+                  ? <HaloRect key={slot} x={cx - h} y={cy - h} width={SLOT.hub} height={SLOT.hub} />
+                  : <HaloCircle key={slot} cx={cx} cy={cy} r={h} />
+              }
               return (
                 <g key={slot}>
-                  <circle cx={cx} cy={cy} r={PIECE.hub / 2} fill={piece.color} />
+                  {NO_TERMINALS
+                    ? <rect x={cx - h} y={cy - h} width={PIECE.hub} height={PIECE.hub} rx={CORNER} fill={piece.color} />
+                    : <circle cx={cx} cy={cy} r={PIECE.hub / 2} fill={piece.color} />}
                   {piece.lit && <path d={sparkPath(cx, cy)} fill={COLOR.label} />}
                 </g>
               )
@@ -656,7 +664,8 @@ export function MapPage() {
           {SHEET.height / IN}in quad-fold; red: fold bands and safe zone.
         </div>
         <div>
-          Terminal {PIECE.terminal}mm cube, Hub Ø{PIECE.hub}mm disc, cable {PIECE.stick.length}×
+          {NO_TERMINALS ? "No Terminals (experiment)," : `Terminal ${PIECE.terminal}mm cube,`}{" "}
+          Hub Ø{PIECE.hub}mm disc, cable {PIECE.stick.length}×
           {PIECE.stick.width}mm stick; slots are exact. Empty Terminal and Hub slots are halos: a{" "}
           {HALO_RING}mm white ring and a{" "}
           {Math.round(WELL_OPACITY * 100)}% white well. Sample Hubs: blank disc = Unlit, white spark = Lit.

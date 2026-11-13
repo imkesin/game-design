@@ -568,8 +568,14 @@ function verify(
   const violations: string[] = []
   let badness = 0
 
+  // A link with its own `minSpan` (a backbone exit) has its run checked below; that covers the gap
+  // between its two ends, which are often both pinned and can't be pushed apart.
+  const ownRun = new Set(
+    edges.filter((e) => e.minSpan !== undefined).map((e) => `${Math.min(e.a, e.b)}-${Math.max(e.a, e.b)}`)
+  )
   for (let i = 0; i < nodes.length; i++) {
     for (let j = i + 1; j < nodes.length; j++) {
+      if (ownRun.has(`${i}-${j}`)) continue
       const gap = boxGap(nodes[i]!, nodes[j]!)
       if (gap < LAYOUT.nodeGap - 0.5) {
         violations.push(`${name(i)} and ${name(j)} are ${gap.toFixed(0)}mm apart (need ${LAYOUT.nodeGap})`)
