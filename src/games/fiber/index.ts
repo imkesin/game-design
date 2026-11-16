@@ -1,4 +1,6 @@
 import type { Game } from "~/shared/game"
+import { CityPage } from "./routes/CityPage"
+import { FacesPage } from "./routes/FacesPage"
 import { MapPage } from "./routes/MapPage"
 import { MatPage } from "./routes/MatPage"
 import { PrintPage } from "./routes/PrintPage"
@@ -11,6 +13,8 @@ export const fiber: Game = {
   routes: {
     "/": MapPage,
     "/print": PrintPage,
-    "/mat": MatPage
+    "/mat": MatPage,
+    "/city": CityPage,
+    "/faces": FacesPage
   }
 }

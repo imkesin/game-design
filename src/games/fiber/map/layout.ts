@@ -501,11 +501,15 @@ function chooseCurves(nodes: Node[], edges: Edge[], folds: Folds | undefined): C
       if (boundsGap(box, otherBounds[j]!) - LAYOUT.linkClear >= CLEAR_CAP) continue
       const other = others[j]!
       for (let s = i0; s < i1; s += 2) {
+        const a = poly[s]!, b = poly[Math.min(s + 2, i1)]!
+        const ax0 = Math.min(a.x, b.x), ax1 = Math.max(a.x, b.x), ay0 = Math.min(a.y, b.y), ay1 = Math.max(a.y, b.y)
         for (let t = 0; t + 2 < other.length; t += 2) {
-          clear = Math.min(
-            clear,
-            segDist(poly[s]!, poly[Math.min(s + 2, i1)]!, other[t]!, other[t + 2]!) - LAYOUT.linkClear
-          )
+          const c = other[t]!, d = other[t + 2]!
+          // The segments' box gap is a floor on their distance: skip pairs that can't lower the capped score.
+          const gx = Math.max(0, Math.min(c.x, d.x) - ax1, ax0 - Math.max(c.x, d.x))
+          const gy = Math.max(0, Math.min(c.y, d.y) - ay1, ay0 - Math.max(c.y, d.y))
+          if (Math.hypot(gx, gy) - LAYOUT.linkClear >= Math.min(clear, CLEAR_CAP)) continue
+          clear = Math.min(clear, segDist(a, b, c, d) - LAYOUT.linkClear)
         }
       }
     }
@@ -563,6 +567,7 @@ function verify(
   curves: Cubic[]
 ): Omit<Attempt, "nodes" | "curves" | "drift"> {
   const polys = curves.map((c) => polyline(c))
+  const polyBounds = polys.map(boundsOf)
   const name = (i: number) => spec.nodes[i]!.id
   const link = (i: number) => `${name(edges[i]!.a)}–${name(edges[i]!.b)}`
   const violations: string[] = []
@@ -618,6 +623,8 @@ function verify(
     for (let j = i + 1; j < edges.length; j++) {
       const f = edges[j]!
       if (e.a === f.a || e.a === f.b || e.b === f.a || e.b === f.b) continue
+      // Curves whose bounding boxes don't touch can't cross; most pairs end here.
+      if (boundsGap(polyBounds[i]!, polyBounds[j]!) > 0) continue
       const A = polys[i]!, B = polys[j]!
       let crossed = false
       for (let s = 0; s < SAMPLES && !crossed; s += 2) {

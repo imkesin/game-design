@@ -80,8 +80,7 @@ function Geography() {
 const EXIT = { arrow: 5, badge: 4.5, label: 4 }
 
 /** A globe: the backbone symbol, white on a cable-dark disc. */
-function BackboneBadge({ x, y }: { x: number; y: number }) {
-  const r = EXIT.badge
+export function BackboneBadge({ x, y, r = EXIT.badge }: { x: number; y: number; r?: number }) {
   const g = r * 0.62
   return (
     <g>
@@ -133,7 +132,7 @@ function ExitEnd({ exit }: { exit: Exit }) {
 const OUT_OF_PLAY = 0.25
 
 /** Printer's guides, screen only: the fold band and the safe zone inside the trim. */
-function Guides() {
+export function Guides() {
   const band = SHEET.fold
   const guide = { fill: "rgba(255, 0, 0, 0.12)" }
   return (
@@ -220,7 +219,7 @@ const SAMPLE = {
 }
 
 /** Link line width (mm). */
-const CABLE_WIDTH = 2
+export const CABLE_WIDTH = 2
 
 /**
  * Region border: one thin dashed line (mm), the quietest line on the board (2026-11-12; was a double
@@ -275,7 +274,7 @@ function sparkPath(cx: number, cy: number) {
 }
 
 /** One pattern per region level: faint marks on bare paper. `url(#level-k)` works anywhere on the page. */
-function LevelPatterns() {
+export function LevelPatterns() {
   return (
     <defs>
       {LEVELS.map((t, k) => {
